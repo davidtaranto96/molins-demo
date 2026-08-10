@@ -1802,7 +1802,7 @@ class Component extends DCLogic {
     portalesOn: {}, importado: false,
     portalDestacadas: ['MOL-224081','MOL-224226','AIR-D02'],
     portalVista: 'escritorio', portalTocado: [], ancho: typeof window !== 'undefined' ? window.innerWidth : 1440,
-    portalTitulo: 'Molins Propiedades', portalTel: '387 415 3669', portalConsultas: true,
+    portalTitulo: 'Molins Negocios Inmobiliarios', portalTel: '387 415 3669', portalConsultas: true,
     toasts: [], cargando: false,
     paletaAbierta: false, paletaQ: '', paletaSel: 0,
     campAbierta: false, campNombre: 'Reactivación · agosto', campPlantilla: 0,
@@ -2879,7 +2879,7 @@ class Component extends DCLogic {
         self.setState({ portalTocado: [] });
         self.avisar('Portal actualizado · molinsnegociosinmobiliarios.com');
       },
-      descartarCambios: function(){ self.setState({ portalTocado: [], portalDestacadas: ['MOL-224081','MOL-224226','AIR-D02'], portalTitulo: 'Molins Propiedades', portalTel: '387 415 3669', portalConsultas: true }); self.avisar('Cambios descartados', '#a16207'); },
+      descartarCambios: function(){ self.setState({ portalTocado: [], portalDestacadas: ['MOL-224081','MOL-224226','AIR-D02'], portalTitulo: 'Molins Negocios Inmobiliarios', portalTel: '387 415 3669', portalConsultas: true }); self.avisar('Cambios descartados', '#a16207'); },
       verSitio: function(){ self.avisar('Abriendo molinsnegociosinmobiliarios.com en otra pestaña', '#2C4A6E'); },
       swConsultasBg: st.portalConsultas ? ac : '#cdd6e0',
       swConsultasPos: st.portalConsultas ? 'flex-end' : 'flex-start',
@@ -3073,6 +3073,19 @@ body.tour-activo{cursor:default}
   .tour-puntos{margin:11px 0 10px}
 }
 
+/* Abajo de 560px el prototipo ya esconde el buscador y el disparador ocupa su
+   lugar en la barra superior. Sin esto, esos 43 px de más empujan el avatar
+   fuera de la pantalla: el selector de cartera cede ancho con puntos suspensivos
+   —es lo único que puede achicarse— y el botón queda como icono cuadrado. */
+@media (max-width: 560px){
+  #tour-abrir{width:32px; padding:0; justify-content:center}
+  .barra-app > div:first-child{flex:0 1 auto !important; min-width:0}
+  .barra-app > div:first-child > button{max-width:100%; padding:0 8px; gap:6px}
+  .barra-app > div:first-child > button > span:nth-child(2){min-width:0; overflow:hidden}
+  .barra-app > div:first-child > button > span:nth-child(2) > span{overflow:hidden; text-overflow:ellipsis}
+  .barra-app > div:first-child > button > svg{margin-left:0 !important}
+}
+
 /* La barra lateral arranca contraída abajo de 900px: durante el tour se
    expande para poder señalar el menú, y se restituye al terminar. */
 body.tour-activo nav{width:224px !important; transition:none !important}
@@ -3116,6 +3129,17 @@ body.tour-activo nav{width:224px !important; transition:none !important}
     var f = filas(nombrePantalla, anchoMinimo);
     for (var i = 0; i < f.length; i++) if (f[i].textContent.indexOf(texto) >= 0) return f[i];
     return f[0] || null;
+  }
+
+  // El nombre que muestra la fila (primera línea de la celda de la dirección).
+  // Los ejemplos de los carteles se arman con esto y no con un nombre escrito a
+  // mano: si la cartera elegida no incluye la propiedad del ejemplo, filaCon
+  // devuelve otra fila y el texto tiene que hablar de esa, no de la esperada.
+  function nombreFila(f) {
+    var c = f && f.children[2];
+    var s = c && c.children[0];
+    var t = s ? s.textContent.trim() : '';
+    return t.length > 2 ? t : '';
   }
 
   // ---------------------------------------------------------------- los pasos
@@ -3182,12 +3206,16 @@ body.tour-activo nav{width:224px !important; transition:none !important}
       titulo: 'El anillo: qué le falta a la ficha',
       cuerpo: 'Ese número no es una nota, es cuánto está cargado. Y cuenta también lo interno, lo que no ve el público: partida catastral, estado del título, deudas, dónde están las llaves. Por eso ninguna llega a 100.',
       nota: function () {
+        var generico = 'Pasando el mouse por el anillo te dice qué papeles faltan, sin abrir la ficha.';
         var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
-        var cel = f && (f.querySelector('svg[width="36"]') || {}).parentElement;
+        if (!f) return generico;
+        var cel = (f.querySelector('svg[width="36"]') || {}).parentElement;
         var falta = cel && cel.getAttribute('title');
-        return falta && falta.indexOf('Falta') === 0
-          ? 'Córdoba 269 está en 76. ' + falta.replace('Falta:', 'Le faltan') + '. Pasando el mouse por el anillo te dice cuáles, sin abrir la ficha.'
-          : 'Pasando el mouse por el anillo te dice qué papeles faltan, sin abrir la ficha.';
+        var pct = cel ? (cel.textContent.match(/\d+/) || [])[0] : null;
+        var nom = nombreFila(f);
+        return nom && pct && falta && falta.indexOf('Falta') === 0
+          ? nom + ' está en ' + pct + '. ' + falta.replace('Falta:', 'Le faltan') + '. Pasando el mouse por el anillo te dice cuáles, sin abrir la ficha.'
+          : generico;
       }
     },
     {
@@ -3200,13 +3228,15 @@ body.tour-activo nav{width:224px !important; transition:none !important}
       titulo: 'Cuántos interesados tiene cada propiedad',
       cuerpo: 'Al lado de cada una ves cuánta gente preguntó por ella y hace cuánto que nadie los llama. Es la columna que muestra dónde se está enfriando una venta.',
       nota: function () {
+        var generico = 'Con esta columna sabés a quién llamar hoy sin revisar propiedad por propiedad.';
         var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
         var c = f ? f.children[7] : null;
         var cuantos = c && c.children[0] ? c.children[0].textContent.trim().toLowerCase() : '';
         var desde = c && c.children[1] ? c.children[1].textContent.trim().toLowerCase() : '';
-        return cuantos && desde
-          ? 'Córdoba 269 tiene ' + cuantos + ' y ' + desde + '. Con eso sabés a quién llamar hoy.'
-          : 'Con esta columna sabés a quién llamar hoy sin revisar propiedad por propiedad.';
+        var nom = nombreFila(f);
+        return nom && cuantos && desde
+          ? nom + ' tiene ' + cuantos + ' y ' + desde + '. Con eso sabés a quién llamar hoy.'
+          : generico;
       }
     },
     {
@@ -3487,7 +3517,14 @@ body.tour-activo nav{width:224px !important; transition:none !important}
     var r = el.getBoundingClientRect();
     if (r.bottom <= zona) return;
     var cont = contenedorScroll(el);
-    if (cont) cont.scrollTop += (r.bottom - zona + 14);
+    if (!cont) return;
+    // Con un objetivo más alto que la franja libre —el mapa, por ejemplo—
+    // subirlo del todo lo mete abajo de la barra superior y el hueco termina
+    // encerrando la barra. Se sube solo hasta apoyarlo contra ella.
+    var barra = q('header.barra-app');
+    var techo = barra ? barra.getBoundingClientRect().bottom + 8 : 8;
+    var salto = Math.min(r.bottom - zona + 14, Math.max(0, r.top - techo));
+    if (salto > 0) cont.scrollTop += salto;
   }
 
   var pendiente = 0;

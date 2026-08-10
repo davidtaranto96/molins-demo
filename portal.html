@@ -127,10 +127,13 @@ header.nav.over .burger span{background:var(--white)}
   .navlinks.open{opacity:1;visibility:visible}
   .navlinks a{font-size:19px;font-family:var(--fd);font-weight:600;padding:8px 0;color:var(--ink)}
   header.nav.over .navlinks a{color:var(--ink)}
-  .burger{display:flex;z-index:201}
+  .burger{display:flex;position:relative;z-index:201}
   .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
   .burger.open span:nth-child(2){opacity:0}
   .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  /* sobre el hero las barras van en blanco; con el panel abierto quedarían
+     blancas sobre blanco y la cruz de cerrar desaparecía */
+  header.nav.over .burger.open span{background:var(--ink)}
   .nav-cta .btn{display:none}
 }
 
@@ -516,6 +519,7 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
 .m-sim .st{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   font-size:13.5px;font-weight:600;line-height:1.3;margin:4px 0 6px}
 .m-sim .sp{display:block;font-family:var(--fd);font-size:16.5px;font-weight:600}
+.m-sim .sp small{font-family:var(--fs);font-size:11.5px;font-weight:500;color:var(--muted)}
 .m-sim .sq{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
 
 /* contacto */
@@ -720,7 +724,7 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
       </div>
       <div class="aires-ph reveal">
         <img src="fotos/MOL-213170-1.jpg" alt="Vista de la zona de San Lorenzo, Salta" loading="lazy" />
-        <div class="cap">Imagen de la zona de San Lorenzo. Las imágenes del emprendimiento se entregan en la consulta.</div>
+        <div class="cap">Imagen de la zona de San Lorenzo, tomada de otra propiedad de la cartera: el lote marcado no es Aires. Las imágenes del emprendimiento se entregan en la consulta.</div>
       </div>
     </div>
   </div>
@@ -1600,7 +1604,8 @@ function abrir(cod){
       '<span class="sbd">' +
         '<span class="sz">' + esc(x.zona) + '</span>' +
         '<span class="st">' + esc(x.titulo) + '</span>' +
-        '<span class="sp">' + money(x.moneda, x.precio) + '</span>' +
+        '<span class="sp">' + money(x.moneda, x.precio) +
+          (x.operacion === 'Alquiler' ? ' <small>por mes</small>' : '') + '</span>' +
         '<span class="sq">' + esc(x.tipo + (esp.length ? ' · ' + esp.join(' · ') : '')) + '</span>' +
       '</span></button>';
   }).join('');
@@ -2356,6 +2361,18 @@ body.tour-activo .navlinks.open{opacity:0;visibility:hidden}
     }, 24);
   }
 
+  /* Al cambiar el tamaño de la ventana el objetivo puede quedar fuera de la
+     pantalla: medir() devuelve null y el paso caería a tarjeta centrada para
+     siempre. Se lo vuelve a traer antes de remedir. El scroll no hace esto:
+     ahí manda el usuario. */
+  function alRedimensionar(){
+    if(!abierto) return;
+    var p = pasos[i];
+    var els = comoLista(p && p.objetivo ? p.objetivo() : null);
+    if(els.length && !medir(els)) desplazar(els);
+    remedir();
+  }
+
   /* ----------------------------------------------------- el cursor simulado */
   function hayCursor(){ return !esAngosto() && !reducido(); }
 
@@ -2509,7 +2526,7 @@ body.tour-activo .navlinks.open{opacity:0;visibility:hidden}
     revelarTodo();
     var links = q('#navlinks');
     if(links) links.classList.remove('open');
-    window.addEventListener('resize', remedir);
+    window.addEventListener('resize', alRedimensionar);
     window.addEventListener('scroll', remedir, true);
     window.addEventListener('keydown', teclado, true);
     mostrar();
@@ -2526,7 +2543,7 @@ body.tour-activo .navlinks.open{opacity:0;visibility:hidden}
     document.body.classList.remove('tour-activo');
     document.documentElement.style.scrollBehavior = '';
     qq('[data-tour]').forEach(function(n){ n.removeAttribute('data-tour'); });
-    window.removeEventListener('resize', remedir);
+    window.removeEventListener('resize', alRedimensionar);
     window.removeEventListener('scroll', remedir, true);
     window.removeEventListener('keydown', teclado, true);
     cerrarFicha().then(function(){
