@@ -15,7 +15,7 @@
   --gold:#D3A961;
   /* neutros */
   --ink:#101A24;--slate:#39485A;--muted:#6C7A8A;--line:#E5EAF0;--line-2:#D5DDE7;
-  --bg:#FFFFFF;--bg-soft:#F5F8FB;--bg-warm:#FBF7F2;--white:#FFFFFF;
+  --bg:#FFFFFF;--bg-soft:#F5F8FB;--bg-warm:#F3F6FA;--white:#FFFFFF;
   --ok:#1E8A50;--ok-50:#E4F2EA;--wa:#25D366;--wa-dark:#1EB558;
   /* alfas */
   --a-04:rgba(16,26,36,.04);--a-06:rgba(16,26,36,.06);--a-08:rgba(16,26,36,.08);
@@ -289,6 +289,18 @@ header.nav.over .burger span{background:var(--white)}
 
 /* ---- zonas ---- */
 .zonas{background:var(--bg-soft)}
+.mapa-wrap{display:grid;grid-template-columns:1fr 300px;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--white)}
+.mapa{height:460px;background:var(--bg-soft)}
+.mapa-lista{border-left:1px solid var(--line);overflow-y:auto;max-height:460px}
+.zona-fila{display:flex;align-items:baseline;gap:11px;width:100%;text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);background:none;cursor:pointer;transition:background .15s}
+.zona-fila:hover,.zona-fila.act{background:var(--navy-50)}
+.zona-fila .n{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--terra-600);min-width:24px;font-variant-numeric:tabular-nums}
+.zona-fila .t{display:block;font-weight:600;font-size:14px;color:var(--navy-900);line-height:1.25}
+.zona-fila .d{display:block;font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:3px}
+.pin-zona{display:flex;align-items:center;justify-content:center;font:600 13px/1 var(--sans);color:#fff;background:var(--navy-700);border:2px solid #fff;border-radius:99px;box-shadow:0 2px 8px rgba(20,35,58,.35);transition:transform .18s,background .18s}
+.pin-zona.act{background:var(--terra-600);transform:scale(1.18)}
+.leaflet-popup-content{margin:11px 13px;font:400 13px/1.45 var(--sans)}
+.leaflet-popup-content b{display:block;font-size:14px;color:var(--navy-900);margin-bottom:2px}
 .zona-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .zona-item{display:flex;gap:14px;background:var(--white);border:1px solid var(--line);border-radius:var(--r);
   padding:17px 18px;transition:.22s;align-items:flex-start}
@@ -302,7 +314,12 @@ header.nav.over .burger span{background:var(--white)}
 .zona-item .zt p{font-size:13px;color:var(--muted);margin-top:4px}
 .zona-note{margin-top:22px;font-size:13px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
 .zona-note svg{width:16px;height:16px;color:var(--navy-600);margin-top:3px}
-@media(max-width:900px){.zona-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+  .zona-grid{grid-template-columns:repeat(2,1fr)}
+  .mapa-wrap{grid-template-columns:1fr}
+  .mapa{height:320px}
+  .mapa-lista{border-left:0;border-top:1px solid var(--line);max-height:none}
+}
 @media(max-width:560px){.zona-grid{grid-template-columns:1fr}}
 
 /* ---- calculadora ---- */
@@ -329,17 +346,15 @@ input[type=range]::-moz-range-thumb{width:19px;height:19px;border-radius:50%;bac
 @media(max-width:860px){.calc-grid{grid-template-columns:1fr;gap:26px}}
 
 /* ---- pasos ---- */
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:st}
-.step{position:relative;padding-top:6px}
-.step .num{width:46px;height:46px;border-radius:12px;background:var(--navy-50);color:var(--navy-700);
-  display:grid;place-items:center;margin-bottom:15px;position:relative}
-.step .num svg{width:22px;height:22px}
-.step .num i{position:absolute;top:-6px;right:-6px;width:21px;height:21px;border-radius:50%;background:var(--terra-600);
-  color:var(--white);font-size:11.5px;font-weight:700;display:grid;place-items:center;font-style:normal;font-family:var(--fs)}
-.step h3{font-size:17px;margin-bottom:6px}
-.step p{font-size:13.5px;color:var(--muted)}
-@media(max-width:800px){.steps{grid-template-columns:1fr 1fr;gap:26px}}
-@media(max-width:430px){.steps{grid-template-columns:1fr}}
+
+
+
+
+
+
+
+@media(max-width:800px){}
+@media(max-width:430px){}
 
 /* ---- contacto ---- */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
@@ -433,7 +448,27 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
   .reveal{opacity:1;transform:none}
   .hs{opacity:0}.hs:first-child{opacity:1}
 }
+
+/* Qué se firma: cadena de tramos, no tarjetas */
+.tramos{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.tramo{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;padding:24px 0;border-bottom:1px solid var(--line);align-items:start;counter-increment:tramo}
+.tramo .tr-t{position:relative;padding-left:44px}
+.tramo .tr-t:before{content:counter(tramo);position:absolute;left:0;top:-2px;font-family:var(--serif);font-size:26px;font-weight:600;color:var(--line-2);line-height:1}
+.tramo h3{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--navy-900);margin:0 0 6px;letter-spacing:-.01em}
+.tramo p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.6;max-width:60ch}
+.tramo .tr-p{padding-left:18px;border-left:2px solid var(--terra-500)}
+.tramo .tr-p .et{display:block;font-weight:650;font-size:13.5px;color:var(--navy-900);letter-spacing:-.005em}
+.tramo .tr-p .ex{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:4px}
+.tramos{counter-reset:tramo}
+.tramos-pie{margin-top:26px;font-size:14px;color:var(--muted);max-width:74ch;line-height:1.65}
+@media(max-width:860px){
+  .tramo{grid-template-columns:1fr;gap:14px;padding:20px 0}
+  .tramo .tr-t{padding-left:38px}
+  .tramo .tr-p{margin-left:38px;padding-left:14px}
+}
 </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -592,10 +627,13 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
       <h2>Dónde hay propiedades</h2>
       <p class="lead">La cartera se concentra en el centro de Salta y se abre hacia el valle. Cada número es lo que hay publicado hoy, contado sobre el listado de arriba.</p>
     </div>
-    <div class="zona-grid reveal" id="zonaGrid"></div>
+    <div class="mapa-wrap reveal">
+      <div id="mapaZonas" class="mapa"></div>
+      <aside class="mapa-lista" id="zonaLista"></aside>
+    </div>
     <p class="zona-note">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
-      No publicamos porcentajes de plusvalía ni de rentabilidad: no hay una fuente seria para Salta y preferimos no inventarla. Lo que sí podemos, es contarte cómo se movió cada zona en las operaciones que hicimos.
+      Los puntos marcan la zona, no la dirección exacta. Y no vas a encontrar acá porcentajes de plusvalía: no hay una fuente seria para Salta y preferimos no inventarla. Lo que sí podemos es contarte cómo se movió cada zona en las operaciones que hicimos.
     </p>
   </div>
 </section>
@@ -639,33 +677,44 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
 <!-- PASOS -->
 <section class="section" id="proceso" style="background:var(--bg-soft)">
   <div class="wrap">
-    <div class="sec-head center reveal">
+    <div class="sec-head reveal">
       <div class="rule"></div>
-      <h2>Cómo es comprar</h2>
-      <p class="lead">Cuatro pasos, sin vueltas. Todo con corredor matriculado y con escribano en la escritura.</p>
+      <h2>Qué se firma, y cuándo</h2>
+      <p class="lead">Comprar una propiedad es una cadena de papeles. Esta es la cadena completa, en orden, y qué te queda en la mano después de cada uno.</p>
     </div>
-    <div class="steps reveal">
-      <div class="step">
-        <div class="num"><i>1</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/></svg></div>
-        <h3>Elegís y visitamos</h3>
-        <p>Nos decís qué te interesa, coordinamos día y la recorremos juntos. Si no es la indicada, te mostramos otra.</p>
-      </div>
-      <div class="step">
-        <div class="num"><i>2</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></div>
-        <h3>Reserva por escrito</h3>
-        <p>Se firma una reserva con la oferta, el plazo y la seña. Queda todo asentado: qué se ofrece y hasta cuándo.</p>
-      </div>
-      <div class="step">
-        <div class="num"><i>3</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
-        <h3>Boleto de compraventa</h3>
-        <p>Aceptada la oferta, se firma el boleto con precio, forma de pago, plazo de escrituración y entrega de posesión.</p>
-      </div>
-      <div class="step">
-        <div class="num"><i>4</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <h3>Escritura</h3>
-        <p>Se escritura ante escribano, con los informes de dominio e inhibición al día y la propiedad libre de gravámenes.</p>
-      </div>
-    </div>
+
+    <ol class="tramos reveal">
+      <li class="tramo">
+        <div class="tr-t">
+          <h3>La visita</h3>
+          <p>Coordinamos día y la recorremos juntos. Si no es la indicada, seguimos con otra: no hay compromiso hasta que hay algo firmado.</p>
+        </div>
+        <div class="tr-p"><span class="et">No se firma nada</span><span class="ex">Todavía no hay obligación de ninguna de las dos partes</span></div>
+      </li>
+      <li class="tramo">
+        <div class="tr-t">
+          <h3>La reserva</h3>
+          <p>Si te decidís, se hace una oferta por escrito con el monto, el plazo para que el propietario la acepte y la seña que entregás.</p>
+        </div>
+        <div class="tr-p"><span class="et">Reserva firmada</span><span class="ex">Con el plazo de aceptación y qué pasa con la seña si no se acepta</span></div>
+      </li>
+      <li class="tramo">
+        <div class="tr-t">
+          <h3>El boleto</h3>
+          <p>Aceptada la oferta, se firma el boleto de compraventa: precio final, forma de pago, plazo para escriturar y cuándo se entrega la posesión.</p>
+        </div>
+        <div class="tr-p"><span class="et">Boleto de compraventa</span><span class="ex">Es el contrato. Desde acá la operación está cerrada entre las partes</span></div>
+      </li>
+      <li class="tramo">
+        <div class="tr-t">
+          <h3>La escritura</h3>
+          <p>Ante escribano, con el informe de dominio y el de inhibición al día. Se verifica que la propiedad esté libre de gravámenes antes de firmar.</p>
+        </div>
+        <div class="tr-p"><span class="et">Escritura traslativa de dominio</span><span class="ex">La propiedad pasa a tu nombre y se inscribe en el Registro</span></div>
+      </li>
+    </ol>
+
+    <p class="tramos-pie">Todo el recorrido con corredor matriculado —matrícula CUCIS MP 251— y con escribano en la escritura. Si en algún punto querés que te expliquemos un papel antes de firmarlo, es exactamente para eso que estamos.</p>
   </div>
 </section>
 
@@ -966,11 +1015,76 @@ document.getElementById('gridLotes').innerHTML = terrenos.map(function(p){
 /* ---------- zonas ---------- */
 var conteo = {};
 PROPS.forEach(function(p){ conteo[p.zona] = (conteo[p.zona] || 0) + 1; });
-document.getElementById('zonaGrid').innerHTML = ZONA_ORDEN.filter(function(z){ return conteo[z]; }).map(function(z){
-  var n = conteo[z];
-  return '<div class="zona-item"><span class="zn">' + n + '<em>' + (n === 1 ? 'propiedad' : 'propiedades') + '</em></span>' +
-    '<div class="zt"><b>' + esc(z) + '</b><p>' + esc(ZONA_DESC[z] || '') + '</p></div></div>';
-}).join('');
+/* Centroides reales de cada zona. El pin marca la zona, no la dirección exacta:
+   las direcciones de la cartera no están geocodificadas y no se inventan. */
+var ZONA_GEO = {
+  'Centro':                     [-24.7889, -65.4103],
+  'San Lorenzo':                [-24.7338, -65.4859],
+  'Vaqueros':                   [-24.6927, -65.4106],
+  'Cerrillos':                  [-24.8996, -65.4867],
+  'El Portezuelo':              [-24.7998, -65.3838],
+  'San Antonio':                [-24.8035, -65.4005],
+  'Chicoana':                   [-25.1078, -65.5375],
+  'El Encón · Rosario de Lerma':[-24.9847, -65.5806]
+};
+
+var zonasConPin = ZONA_ORDEN.filter(function(z){ return conteo[z] && ZONA_GEO[z]; });
+var zonasSinPin = ZONA_ORDEN.filter(function(z){ return conteo[z] && !ZONA_GEO[z]; });
+
+document.getElementById('zonaLista').innerHTML =
+  zonasConPin.concat(zonasSinPin).map(function(z){
+    return '<button class="zona-fila" data-zona="' + esc(z) + '" type="button">' +
+      '<span class="n">' + conteo[z] + '</span>' +
+      '<span><span class="t">' + esc(z) + '</span>' +
+      '<span class="d">' + esc(ZONA_DESC[z] || '') + '</span></span></button>';
+  }).join('');
+
+(function montarMapa(){
+  var cont = document.getElementById('mapaZonas');
+  if (!cont || !window.L) { if (cont) cont.style.display = 'none'; return; }
+
+  var mapa = L.map(cont, { scrollWheelZoom:false, zoomControl:true, attributionControl:true })
+    .setView([-24.83, -65.45], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:18, attribution:'© OpenStreetMap'
+  }).addTo(mapa);
+
+  var marcas = {};
+  zonasConPin.forEach(function(z){
+    var n = conteo[z], d = 28 + Math.min(n, 21) * 0.95;
+    var m = L.marker(ZONA_GEO[z], {
+      icon: L.divIcon({ className:'', html:'<div class="pin-zona" style="width:'+d+'px;height:'+d+'px">'+n+'</div>',
+        iconSize:[d,d], iconAnchor:[d/2,d/2] }),
+      title: z, zIndexOffset: n * 10, riseOnHover: true
+    }).addTo(mapa);
+    m.bindPopup('<b>' + esc(z) + '</b>' + esc(ZONA_DESC[z] || ''));
+    marcas[z] = m;
+    m.on('click', function(){ marcar(z); });
+  });
+
+  function marcar(z){
+    document.querySelectorAll('.zona-fila').forEach(function(f){ f.classList.toggle('act', f.dataset.zona === z); });
+    Object.keys(marcas).forEach(function(k){
+      var el = marcas[k].getElement(); if (el) el.querySelector('.pin-zona').classList.toggle('act', k === z);
+    });
+  }
+
+  document.querySelectorAll('.zona-fila').forEach(function(f){
+    f.addEventListener('click', function(){
+      var z = f.dataset.zona;
+      marcar(z);
+      if (marcas[z]) { mapa.flyTo(ZONA_GEO[z], 13, { duration:.7 }); marcas[z].openPopup(); }
+    });
+    f.addEventListener('mouseenter', function(){
+      var m = marcas[f.dataset.zona]; if (!m) return;
+      var el = m.getElement(); if (el) el.querySelector('.pin-zona').classList.add('act');
+    });
+    f.addEventListener('mouseleave', function(){
+      var m = marcas[f.dataset.zona]; if (!m) return;
+      var el = m.getElement(); if (el && !f.classList.contains('act')) el.querySelector('.pin-zona').classList.remove('act');
+    });
+  });
+})();
 
 /* ---------- filtros ---------- */
 var CHIPS = [
