@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa · CRM Molins</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="datos.js"></script>
+<style>
+  html,body,#m{height:100%;margin:0}
+  body{font-family:"Manrope",system-ui,sans-serif}
+  .leaflet-div-icon{background:transparent;border:0}
+  .wrap{position:relative;display:inline-block;transform-origin:center bottom;transition:transform .14s cubic-bezier(.2,.7,.3,1)}
+  .wrap:hover{transform:scale(1.12);z-index:900}
+  .wrap.sel{transform:scale(1.24);z-index:1000}
+  .pin{color:#fff;padding:3px 9px;border-radius:999px;font:700 11px/1.5 "Manrope",sans-serif;white-space:nowrap;
+       box-shadow:0 3px 10px rgba(16,24,40,.35);border:2px solid #fff;position:relative}
+  .wrap.sel .pin{box-shadow:0 0 0 3px rgba(28,39,51,.28),0 5px 14px rgba(16,24,40,.42)}
+  .cola{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:0;height:0;
+        border-left:6px solid transparent;border-right:6px solid transparent}
+  .leaflet-tooltip.crm{background:#1c2733;color:#fff;border:0;border-radius:8px;
+        font:600 11.5px/1.4 "Manrope",sans-serif;padding:5px 9px;box-shadow:0 8px 20px -4px rgba(16,24,40,.4)}
+  .leaflet-tooltip-top.crm:before{border-top-color:#1c2733}
+  .zona{font:800 10px/1.2 "Manrope",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#24405f;
+        background:rgba(233,239,246,.92);padding:3px 8px;border-radius:999px;border:1px solid #b9c9dd;white-space:nowrap}
+</style>
+</head><body>
+<div id="m"></div>
+<script>
+  var params = new URLSearchParams(location.search);
+  var cartera = params.get('cartera') || 'todas';
+  var op = params.get('op') || 'todas';
+  var D = window.DATOS_CRM;
+  var props = D.PROPS.filter(function(p){
+    return (cartera === 'todas' || p.cartera === cartera) && p.estado !== 'vendida' && (op === 'todas' || p.operacion === op);
+  });
+
+  var map = L.map('m', { zoomSnap: 0.5 });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
+
+  function etiqueta(p) {
+    if (p.moneda === 'USD') {
+      var k = Math.round(p.precio / 1000);
+      return 'USD ' + (k >= 1000 ? (k / 1000).toFixed(1).replace('.', ',') + ' M' : k + ' mil');
+    }
+    var m = p.precio / 1000000;
+    return 'ARS ' + (m >= 1 ? m.toFixed(1).replace('.', ',').replace(',0', '') + ' M' : Math.round(p.precio / 1000) + ' mil');
+  }
+  function icono(p, sel) {
+    var color = p.operacion === 'Venta' ? '#2C4A6E' : '#a16207';
+    var html = '<div class="wrap' + (sel ? ' sel' : '') + '"><div class="pin" style="background:' + color + '">' + etiqueta(p) +
+      '<div class="cola" style="border-top:7px solid ' + color + '"></div></div></div>';
+    return L.divIcon({ html: html, iconSize: null, iconAnchor: [34, 30] });
+  }
+
+  // Zona del emprendimiento Aires
+  var aires = D.BARRIOS_GEO['San Lorenzo'];
+  L.circle(aires, { radius: 620, color: '#2C4A6E', weight: 1.5, dashArray: '5 5', fillColor: '#2C4A6E', fillOpacity: 0.09 }).addTo(map);
+  L.marker([aires[0] + 0.0068, aires[1]], { icon: L.divIcon({ html: '<div class="zona">Aires de San Lorenzo</div>', iconSize: null, iconAnchor: [58, 10] }), interactive: false }).addTo(map);
+
+  var marcas = {}, selCodigo = null;
+  function seleccionar(codigo, avisarPadre, pan) {
+    if (selCodigo && marcas[selCodigo]) marcas[selCodigo].setIcon(icono(marcas[selCodigo]._p, false));
+    selCodigo = codigo;
+    var mk = marcas[codigo];
+    if (!mk) return;
+    mk.setIcon(icono(mk._p, true));
+    if (pan) map.panTo([mk._p.geo.lat, mk._p.geo.lng], { animate: true });
+    if (avisarPadre) parent.postMessage({ tipo: 'pin-crm', codigo: codigo }, '*');
+  }
+  props.forEach(function(p) {
+    var mk = L.marker([p.geo.lat, p.geo.lng], { icon: icono(p, false), riseOnHover: true }).addTo(map);
+    mk.bindTooltip(p.direccion + ' · ' + p.tipo, { direction: 'top', offset: [0, -30], className: 'crm' });
+    mk.on('click', function() { seleccionar(p.codigo, true, false); });
+    mk._p = p;
+    marcas[p.codigo] = mk;
+  });
+
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.tipo === 'sel-crm') seleccionar(e.data.codigo, false, true);
+  });
+
+  if (props.length) {
+    map.fitBounds(L.latLngBounds(props.map(function(p){ return [p.geo.lat, p.geo.lng]; })).pad(0.14));
+  } else {
+    map.setView([-24.7889, -65.4103], 13);
+  }
+</script>
+</body></html>

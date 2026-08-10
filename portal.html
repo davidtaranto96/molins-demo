@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Molins Negocios Inmobiliarios — Propiedades en Salta</title>
+<meta name="description" content="Casas, departamentos, locales, oficinas y terrenos en Salta. Cartera propia de Francisco Molins, corredor inmobiliario matriculado CUCIS MP 251. LPZ Grupo y Molins." />
+<style>
+:root{
+  /* azules derivados del CRM #2C4A6E */
+  --navy-900:#132437;--navy-800:#1D3550;--navy-700:#2C4A6E;--navy-600:#3B5F86;--navy-500:#5079A3;
+  --navy-100:#DCE5EF;--navy-50:#EEF3F8;
+  /* acento cálido */
+  --terra-700:#A2542A;--terra-600:#BE6A34;--terra-500:#D5854B;--terra-50:#FAF0E7;
+  --gold:#D3A961;
+  /* neutros */
+  --ink:#101A24;--slate:#39485A;--muted:#6C7A8A;--line:#E5EAF0;--line-2:#D5DDE7;
+  --bg:#FFFFFF;--bg-soft:#F5F8FB;--bg-warm:#FBF7F2;--white:#FFFFFF;
+  --ok:#1E8A50;--ok-50:#E4F2EA;--wa:#25D366;--wa-dark:#1EB558;
+  /* alfas */
+  --a-04:rgba(16,26,36,.04);--a-06:rgba(16,26,36,.06);--a-08:rgba(16,26,36,.08);
+  --a-12:rgba(16,26,36,.12);--a-20:rgba(16,26,36,.20);--a-55:rgba(16,26,36,.55);--a-70:rgba(16,26,36,.70);
+  --w-06:rgba(255,255,255,.06);--w-10:rgba(255,255,255,.10);--w-14:rgba(255,255,255,.14);
+  --w-22:rgba(255,255,255,.22);--w-40:rgba(255,255,255,.40);--w-55:rgba(255,255,255,.55);
+  --w-64:rgba(255,255,255,.64);--w-78:rgba(255,255,255,.78);--w-90:rgba(255,255,255,.90);
+  --w-95:rgba(255,255,255,.95);
+  --nv-92:rgba(19,36,55,.92);--nv-82:rgba(19,36,55,.82);--nv-62:rgba(19,36,55,.62);
+  --nv-38:rgba(19,36,55,.38);--nv-18:rgba(19,36,55,.18);
+  --gl-navy:rgba(44,74,110,.26);--gl-terra:rgba(190,106,52,.28);--gl-wa:rgba(37,211,102,.38);
+  /* tipografía */
+  --fd:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman',serif;
+  --fs:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+  /* layout */
+  --maxw:1180px;--r:14px;--r-sm:10px;--r-lg:20px;
+  --sh-sm:0 1px 2px var(--a-04),0 4px 14px var(--a-06);
+  --sh-md:0 10px 30px var(--a-08),0 28px 56px var(--a-06);
+  --sh-lg:0 24px 60px var(--a-12);
+  --e:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fs);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit}
+svg{flex-shrink:0}
+section{scroll-margin-top:80px}
+h1,h2,h3,h4{font-family:var(--fd);font-weight:600;line-height:1.14;letter-spacing:-.012em;color:var(--ink)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.lead{font-size:clamp(15.5px,1.8vw,17.5px);color:var(--muted);max-width:62ch}
+:focus-visible{outline:3px solid var(--navy-500);outline-offset:2px;border-radius:6px}
+
+/* ---- botones ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 20px;border-radius:var(--r-sm);
+  font-weight:600;font-size:14.5px;cursor:pointer;border:none;transition:all .2s var(--e);min-height:46px}
+.btn svg{width:17px;height:17px;transition:transform .2s var(--e)}
+.btn-terra{background:var(--terra-600);color:var(--white);box-shadow:0 6px 16px var(--gl-terra)}
+.btn-terra:hover{background:var(--terra-700);transform:translateY(-2px)}
+.btn-terra:hover svg{transform:translateX(3px)}
+.btn-navy{background:var(--navy-700);color:var(--white);box-shadow:0 6px 16px var(--gl-navy)}
+.btn-navy:hover{background:var(--navy-800);transform:translateY(-2px)}
+.btn-out{background:var(--white);color:var(--navy-800);border:1.5px solid var(--line-2)}
+.btn-out:hover{border-color:var(--navy-500);color:var(--navy-700)}
+.btn-ghost{background:var(--w-10);color:var(--white);border:1.5px solid var(--w-55)}
+.btn-ghost:hover{background:var(--w-22)}
+.btn-wa{background:var(--wa);color:var(--white)}
+.btn-wa:hover{background:var(--wa-dark);transform:translateY(-2px)}
+
+/* ---- volver al CRM ---- */
+.back-crm{position:fixed;top:6px;left:12px;z-index:400;display:inline-flex;align-items:center;gap:7px;
+  height:28px;padding:0 11px;border-radius:100px;border:1px solid var(--w-22);background:var(--navy-800);
+  color:var(--w-78);font-size:11.5px;font-weight:600;cursor:pointer;transition:.2s;box-shadow:var(--sh-sm)}
+.back-crm:hover{background:var(--navy-700);color:var(--white)}
+.back-crm svg{width:13px;height:13px}
+@media(max-width:640px){.back-crm span{display:none}.back-crm{padding:0 8px}}
+/* deja lugar al botón fijo cuando la barra superior ya no está en pantalla */
+@media(max-width:900px){.nav .wrap{padding-left:56px}}
+
+/* ---- topbar ---- */
+.topbar{background:var(--navy-900);color:var(--w-78);font-size:12.5px;position:relative;z-index:101}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:40px;gap:16px;padding-left:160px}
+.topbar .tb-left{display:flex;align-items:center;gap:8px;min-width:0}
+.topbar .tb-left svg{width:14px;height:14px;color:var(--gold)}
+.topbar .tb-left b{color:var(--white);font-weight:600}
+.topbar .tb-right{display:flex;align-items:center;gap:16px;white-space:nowrap}
+.topbar a{color:var(--w-78);transition:color .2s}
+.topbar a:hover{color:var(--white)}
+.topbar .wa{display:inline-flex;align-items:center;gap:6px;color:var(--wa);font-weight:600}
+.topbar .wa svg,.topbar .ig svg{width:14px;height:14px}
+.topbar .ig{display:inline-flex;align-items:center;gap:6px}
+@media(max-width:900px){.topbar .tb-left{display:none}.topbar .wrap{justify-content:flex-end;padding-left:60px}}
+@media(max-width:520px){.topbar .hide-xs{display:none}}
+
+/* ---- nav ---- */
+header.nav{position:sticky;top:0;z-index:100}
+/* el fondo va en un pseudo-elemento: si el backdrop-filter estuviera en el header,
+   crearía un bloque contenedor y rompería el position:fixed del menú mobile */
+header.nav::before{content:"";position:absolute;inset:0;background:var(--w-95);backdrop-filter:blur(12px);
+  box-shadow:0 1px 0 var(--line),0 8px 26px var(--a-06);opacity:0;transition:opacity .3s var(--e);pointer-events:none}
+header.nav.scrolled::before{opacity:1}
+.nav .wrap{position:relative;z-index:1}
+header.nav.over .brand b{color:var(--white)}
+header.nav.over .brand small{color:var(--gold)}
+header.nav.over .brand .mk{background:var(--w-14);border-color:var(--w-40)}
+header.nav.over .brand .mk span{color:var(--white)}
+header.nav.over .navlinks a{color:var(--w-90)}
+header.nav.over .burger span{background:var(--white)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand .mk{width:40px;height:40px;border-radius:9px;background:var(--navy-700);border:1px solid var(--navy-700);
+  display:grid;place-items:center}
+.brand .mk span{font-family:var(--fd);font-size:17px;font-weight:600;color:var(--white);letter-spacing:.02em}
+.brand b{font-family:var(--fd);font-weight:600;font-size:18px;letter-spacing:-.015em;line-height:1.1;display:block}
+.brand small{display:block;font-size:10.5px;color:var(--terra-600);font-weight:600;letter-spacing:.02em;margin-top:1px}
+.navlinks{display:flex;align-items:center;gap:24px}
+.navlinks a{font-size:14px;font-weight:500;color:var(--slate);position:relative;padding:6px 0;transition:color .2s}
+.navlinks a:hover{color:var(--navy-700)}
+.navlinks a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--terra-500);transition:width .25s var(--e)}
+.navlinks a:hover::after{width:100%}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+.burger span{width:23px;height:2px;background:var(--ink);border-radius:2px;transition:.3s}
+@media(max-width:1000px){
+  .navlinks{position:fixed;inset:0 0 0 auto;width:min(82vw,320px);background:var(--white);flex-direction:column;
+    align-items:flex-start;justify-content:center;gap:6px;padding:40px;opacity:0;visibility:hidden;
+    transition:opacity .3s,visibility .3s;z-index:200;box-shadow:-14px 0 44px var(--a-20)}
+  .navlinks.open{opacity:1;visibility:visible}
+  .navlinks a{font-size:19px;font-family:var(--fd);font-weight:600;padding:8px 0;color:var(--ink)}
+  header.nav.over .navlinks a{color:var(--ink)}
+  .burger{display:flex;z-index:201}
+  .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav-cta .btn{display:none}
+}
+
+/* ---- hero ---- */
+.hero{position:relative;min-height:min(88vh,760px);display:flex;align-items:flex-end;color:var(--white);
+  overflow:hidden;margin-top:-108px;padding:170px 0 60px}
+.hero-bg{position:absolute;inset:0;z-index:-2;background:var(--navy-900)}
+.hs{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;will-change:transform,opacity;
+  animation:hsCycle 40s linear infinite;animation-delay:calc(var(--i) * 8s)}
+.hs:first-child{opacity:1}
+@keyframes hsCycle{
+  0%{opacity:0;transform:scale(1.05) translate3d(0,0,0)}
+  3%{opacity:1}
+  20%{opacity:1}
+  24%{opacity:0;transform:scale(1.15) translate3d(-1.4%,-1%,0)}
+  100%{opacity:0;transform:scale(1.05) translate3d(0,0,0)}
+}
+.hero-bg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--nv-82) 0%,var(--nv-38) 26%,var(--nv-38) 42%,var(--nv-92) 100%)}
+.hero-inner{max-width:680px;position:relative}
+.hero h1{color:var(--white);font-size:clamp(33px,5.4vw,60px);line-height:1.04;letter-spacing:-.025em}
+.hero .mat{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;font-weight:600;
+  color:var(--gold);border:1px solid var(--w-22);background:var(--w-06);padding:6px 13px;border-radius:100px}
+.hero .mat svg{width:14px;height:14px}
+.hero p.tit{font-size:clamp(16px,1.9vw,19px);color:var(--w-90);max-width:52ch;margin:18px 0 28px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+@keyframes hUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero h1{animation:hUp .8s var(--e) .08s both}
+.hero .mat{animation:hUp .8s var(--e) .22s both}
+.hero p.tit{animation:hUp .8s var(--e) .34s both}
+.hero-actions{animation:hUp .8s var(--e) .46s both}
+@media(max-width:600px){
+  .hero{min-height:82vh;padding:150px 0 48px}
+  .hero .mat{border-radius:10px;align-items:flex-start;font-size:12.5px;padding:8px 12px}
+  .hero .mat svg{margin-top:2px}
+  .hero-actions .btn{flex:1 1 100%}
+}
+
+/* ---- franja de confianza ---- */
+.strip{background:var(--bg-soft);border-bottom:1px solid var(--line)}
+.strip .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 20px}
+.strip .ti{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--slate)}
+.strip .ti svg{width:19px;height:19px;color:var(--navy-600)}
+
+/* ---- secciones ---- */
+.section{padding:clamp(52px,6.5vw,92px) 0}
+.sec-head{max-width:660px;margin-bottom:34px}
+.sec-head .rule{width:44px;height:3px;background:var(--terra-500);border-radius:3px;margin-bottom:18px}
+.sec-head h2{font-size:clamp(27px,3.8vw,42px)}
+.sec-head p{margin-top:12px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head.center .rule{margin-left:auto;margin-right:auto}
+.sec-head.center p{margin-left:auto;margin-right:auto}
+
+/* ---- filtros ---- */
+.filters{margin-bottom:26px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1.5px solid var(--line-2);background:var(--white);color:var(--slate);font-size:13.5px;font-weight:600;
+  padding:9px 15px;border-radius:100px;cursor:pointer;transition:.2s;min-height:42px;display:inline-flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--navy-500);color:var(--navy-700)}
+.chip.on{background:var(--navy-700);border-color:var(--navy-700);color:var(--white);box-shadow:0 5px 14px var(--gl-navy)}
+.chip .n{font-size:11.5px;opacity:.72;font-weight:600}
+.selects{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.selects select{appearance:none;-webkit-appearance:none;background:var(--bg-soft);border:1.5px solid var(--line-2);
+  border-radius:var(--r-sm);padding:10px 34px 10px 13px;font-size:13.5px;color:var(--ink);min-height:44px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.selects select:focus{outline:none;border-color:var(--navy-500);background-color:var(--white)}
+.selects .res{font-size:13px;color:var(--muted);margin-left:auto}
+.selects .clr{background:none;border:none;color:var(--terra-600);font-size:13px;font-weight:600;cursor:pointer;padding:8px}
+.selects .clr:hover{text-decoration:underline}
+
+/* ---- grilla de propiedades ---- */
+.grid-props{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;
+  flex-direction:column;transition:transform .3s var(--e),box-shadow .3s var(--e),border-color .3s;cursor:pointer;text-align:left}
+.card:hover{transform:translateY(-5px);box-shadow:var(--sh-md);border-color:var(--line-2)}
+.card .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--navy-50)}
+.card .ph img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--e)}
+.card:hover .ph img{transform:scale(1.06)}
+.card .badge{position:absolute;top:11px;left:11px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:100px;
+  color:var(--white);display:inline-flex;align-items:center;gap:5px;background:var(--ok)}
+.card .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.95}
+.card .badge.rent{background:var(--navy-600)}
+.card .badge.taken{background:var(--a-70)}
+.card .op{position:absolute;top:11px;right:11px;font-size:11px;font-weight:600;padding:5px 10px;border-radius:100px;
+  background:var(--w-90);color:var(--navy-800)}
+.card .cod{position:absolute;bottom:10px;right:10px;font-size:10.5px;font-weight:600;color:var(--w-78);
+  background:var(--a-55);padding:3px 8px;border-radius:6px;letter-spacing:.02em}
+.card .body{padding:16px 17px 17px;display:flex;flex-direction:column;flex:1}
+.card .zona{font-size:12px;font-weight:600;color:var(--navy-600);display:flex;align-items:center;gap:5px}
+.card .zona svg{width:13px;height:13px}
+.card h3{font-size:17.5px;margin:6px 0 3px;letter-spacing:-.01em}
+.card .tipo{font-size:12.5px;color:var(--muted);margin-bottom:13px}
+.card .specs{display:flex;gap:7px;flex-wrap:wrap;padding-bottom:13px;border-bottom:1px solid var(--line);margin-bottom:13px}
+.card .specs span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--slate);background:var(--bg-soft);
+  border:1px solid var(--line);padding:4px 9px;border-radius:8px}
+.card .specs svg{width:13px;height:13px;color:var(--navy-600)}
+.card .price{margin-top:auto}
+.card .price .v{font-family:var(--fd);font-size:23px;font-weight:600;line-height:1.1;color:var(--ink)}
+.card .price .per{font-size:12.5px;color:var(--muted);font-family:var(--fs)}
+.card .price .mo{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;font-weight:600;
+  color:var(--terra-700);background:var(--terra-50);padding:4px 10px;border-radius:7px}
+.card .price .mo svg{width:13px;height:13px}
+.card .foot{display:flex;gap:8px;margin-top:14px;align-items:center}
+.card .foot .see{flex:1;font-size:13.5px;font-weight:600;color:var(--navy-700);display:inline-flex;align-items:center;gap:6px}
+.card .foot .see svg{width:15px;height:15px;transition:transform .2s var(--e)}
+.card:hover .foot .see svg{transform:translateX(3px)}
+.card .foot .wa{width:40px;height:40px;flex:none;background:var(--wa);color:var(--white);border-radius:var(--r-sm);
+  display:grid;place-items:center;transition:.2s}
+.card .foot .wa:hover{background:var(--wa-dark)}
+.card .foot .wa svg{width:19px;height:19px}
+.card.hide{display:none}
+.empty{display:none;text-align:center;color:var(--muted);padding:40px 0;font-size:15px}
+.empty.show{display:block}
+@media(max-width:940px){.grid-props{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-props{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+/* ---- terrenos ---- */
+.terrenos{background:var(--bg-warm)}
+.grid-lotes{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.lote{display:grid;grid-template-columns:190px 1fr;background:var(--white);border:1px solid var(--line);
+  border-radius:var(--r);overflow:hidden;transition:transform .3s var(--e),box-shadow .3s var(--e);cursor:pointer;text-align:left}
+.lote:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.lote .ph{position:relative;overflow:hidden;background:var(--navy-50);min-height:150px}
+.lote .ph img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .7s var(--e)}
+.lote:hover .ph img{transform:scale(1.06)}
+.lote .bd{padding:16px 17px;display:flex;flex-direction:column}
+.lote .zona{font-size:12px;font-weight:600;color:var(--navy-600);display:flex;align-items:center;gap:5px}
+.lote .zona svg{width:13px;height:13px}
+.lote h3{font-size:17px;margin:5px 0 8px}
+.lote .v{font-family:var(--fd);font-size:21px;font-weight:600}
+.lote .mo{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;font-weight:600;
+  color:var(--terra-700);background:var(--terra-50);padding:4px 10px;border-radius:7px;align-self:flex-start}
+.lote .mo svg{width:13px;height:13px}
+.lote .cod{font-size:11px;color:var(--muted);margin-top:auto;padding-top:10px}
+@media(max-width:760px){.grid-lotes{grid-template-columns:1fr}}
+@media(max-width:420px){.lote{grid-template-columns:1fr}.lote .ph{aspect-ratio:16/10;min-height:0}}
+
+/* ---- aires ---- */
+.aires{background:var(--navy-900);color:var(--white);position:relative;overflow:hidden}
+.aires-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:center}
+.aires .tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--navy-900);
+  background:var(--gold);padding:5px 12px;border-radius:100px}
+.aires h2{color:var(--white);font-size:clamp(28px,4vw,44px);margin:18px 0 14px}
+.aires p{color:var(--w-78);font-size:16px;max-width:52ch}
+.aires .pts{list-style:none;margin:24px 0 28px;display:flex;flex-direction:column;gap:12px}
+.aires .pts li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;color:var(--w-90)}
+.aires .pts li svg{width:19px;height:19px;color:var(--gold);margin-top:2px}
+.aires .acts{display:flex;gap:12px;flex-wrap:wrap}
+.aires-ph{position:relative;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-lg);aspect-ratio:4/3}
+.aires-ph img{width:100%;height:100%;object-fit:cover}
+.aires-ph .cap{position:absolute;bottom:0;left:0;right:0;padding:26px 16px 12px;font-size:11.5px;color:var(--w-78);
+  background:linear-gradient(180deg,transparent,var(--nv-82))}
+@media(max-width:880px){.aires-grid{grid-template-columns:1fr;gap:30px}.aires-ph{order:-1}}
+
+/* ---- zonas ---- */
+.zonas{background:var(--bg-soft)}
+.zona-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.zona-item{display:flex;gap:14px;background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  padding:17px 18px;transition:.22s;align-items:flex-start}
+.zona-item:hover{border-color:var(--navy-500);box-shadow:var(--sh-sm);transform:translateY(-3px)}
+.zona-item .zn{font-family:var(--fd);font-size:27px;font-weight:600;color:var(--navy-700);line-height:1;
+  width:76px;flex:none}
+.zona-item .zn em{font-style:normal;font-size:11px;color:var(--muted);display:block;font-family:var(--fs);
+  font-weight:600;margin-top:5px;line-height:1.2}
+.zona-item .zt{min-width:0}
+.zona-item .zt b{font-size:15.5px;display:block;font-family:var(--fd);font-weight:600}
+.zona-item .zt p{font-size:13px;color:var(--muted);margin-top:4px}
+.zona-note{margin-top:22px;font-size:13px;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+.zona-note svg{width:16px;height:16px;color:var(--navy-600);margin-top:3px}
+@media(max-width:900px){.zona-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.zona-grid{grid-template-columns:1fr}}
+
+/* ---- calculadora ---- */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:38px;align-items:center}
+.calc-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:26px;box-shadow:var(--sh-sm)}
+.calc-row{margin-bottom:22px}
+.calc-row:last-child{margin-bottom:0}
+.calc-row .cl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:12px}
+.calc-row label{font-size:13.5px;font-weight:600}
+.calc-row .cv{font-family:var(--fd);font-weight:600;color:var(--navy-700);font-size:16px}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:var(--line-2);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--navy-700);cursor:pointer;border:3px solid var(--white);box-shadow:0 2px 7px var(--gl-navy)}
+input[type=range]::-moz-range-thumb{width:19px;height:19px;border-radius:50%;background:var(--navy-700);
+  cursor:pointer;border:3px solid var(--white)}
+.calc-out{background:var(--navy-800);color:var(--white);border-radius:var(--r);padding:30px;box-shadow:var(--sh-md);position:relative;overflow:hidden}
+.calc-out .lbl{font-size:13px;color:var(--w-78);margin-bottom:6px}
+.calc-out .val{font-family:var(--fd);font-size:clamp(36px,5.4vw,50px);font-weight:600;line-height:1}
+.calc-out .val small{font-size:19px;color:var(--gold);font-weight:600}
+.calc-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;border-top:1px solid var(--w-14);padding-top:20px}
+.calc-split b{display:block;font-family:var(--fd);font-size:22px;font-weight:600}
+.calc-split div>span{font-size:12px;color:var(--w-64)}
+.calc-note{font-size:12px;color:var(--w-64);margin-top:18px;line-height:1.55;border-top:1px solid var(--w-14);padding-top:14px}
+@media(max-width:860px){.calc-grid{grid-template-columns:1fr;gap:26px}}
+
+/* ---- pasos ---- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:st}
+.step{position:relative;padding-top:6px}
+.step .num{width:46px;height:46px;border-radius:12px;background:var(--navy-50);color:var(--navy-700);
+  display:grid;place-items:center;margin-bottom:15px;position:relative}
+.step .num svg{width:22px;height:22px}
+.step .num i{position:absolute;top:-6px;right:-6px;width:21px;height:21px;border-radius:50%;background:var(--terra-600);
+  color:var(--white);font-size:11.5px;font-weight:700;display:grid;place-items:center;font-style:normal;font-family:var(--fs)}
+.step h3{font-size:17px;margin-bottom:6px}
+.step p{font-size:13.5px;color:var(--muted)}
+@media(max-width:800px){.steps{grid-template-columns:1fr 1fr;gap:26px}}
+@media(max-width:430px){.steps{grid-template-columns:1fr}}
+
+/* ---- contacto ---- */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
+.ci-list{display:flex;flex-direction:column;margin-top:24px}
+.ci{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.ci .ic{width:42px;height:42px;border-radius:11px;background:var(--navy-50);display:grid;place-items:center;flex:none}
+.ci .ic svg{width:19px;height:19px;color:var(--navy-700)}
+.ci b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;display:block}
+.ci p{font-size:15.5px;font-weight:500;margin-top:1px}
+.ci a:hover{color:var(--navy-700)}
+.form{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:28px;box-shadow:var(--sh-sm)}
+.form h3{font-size:20px}
+.form .sub{font-size:13.5px;color:var(--muted);margin-top:3px}
+.form .ctx{display:none;margin-top:14px;font-size:12.5px;color:var(--navy-700);background:var(--navy-50);
+  border:1px solid var(--navy-100);border-radius:var(--r-sm);padding:9px 12px}
+.form .ctx.show{display:block}
+.field{margin:15px 0}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.field input,.field select{width:100%;padding:12px 13px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);
+  font-size:15px;color:var(--ink);background:var(--bg-soft);transition:.2s;min-height:47px}
+.field input:focus,.field select:focus{outline:none;border-color:var(--navy-500);background:var(--white)}
+.field input.err{border-color:var(--terra-600)}
+.form .btn{width:100%}
+.form .rea{font-size:12px;color:var(--muted);text-align:center;margin-top:11px}
+.form-ok{display:none;text-align:center;padding:24px 6px}
+.form-ok.show{display:block}
+.form-ok .oi{width:56px;height:56px;border-radius:50%;background:var(--ok-50);display:grid;place-items:center;margin:0 auto 14px}
+.form-ok .oi svg{width:29px;height:29px;color:var(--ok)}
+.form-ok h3{font-size:20px;margin-bottom:6px}
+.form-ok p{color:var(--muted);font-size:14px}
+.form-ok .dm{margin-top:16px;font-size:12px;color:var(--muted);background:var(--bg-soft);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:10px 12px}
+@media(max-width:860px){.contact{grid-template-columns:1fr;gap:32px}}
+
+/* ---- footer ---- */
+footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:34px;padding-bottom:28px;border-bottom:1px solid var(--w-10)}
+.foot-brand b{color:var(--white);font-family:var(--fd);font-size:19px;font-weight:600}
+.foot-brand p{font-size:13.5px;color:var(--w-64);margin-top:12px;max-width:38ch}
+.foot-brand .mp{margin-top:14px;font-size:12.5px;color:var(--gold)}
+.foot-col h4{color:var(--white);font-size:13px;margin-bottom:12px;font-family:var(--fs);font-weight:700}
+.foot-col a{display:block;font-size:13.5px;color:var(--w-64);padding:5px 0;transition:.2s}
+.foot-col a:hover{color:var(--gold)}
+.foot-bottom{display:flex;justify-content:space-between;gap:12px;padding-top:18px;font-size:12.5px;color:var(--w-55);flex-wrap:wrap}
+.demo-flag{margin-top:14px;text-align:center;font-size:11.5px;color:var(--w-55);border-top:1px solid var(--w-10);padding-top:14px}
+@media(max-width:720px){.foot-grid{grid-template-columns:1fr 1fr}.foot-brand{grid-column:1/-1}}
+@media(max-width:600px){footer{padding-bottom:84px}}
+
+/* ---- fab whatsapp ---- */
+.wafab{position:fixed;right:16px;bottom:16px;z-index:150;width:54px;height:54px;border-radius:50%;background:var(--wa);
+  color:var(--white);display:grid;place-items:center;box-shadow:0 8px 22px var(--gl-wa);transition:transform .25s var(--e)}
+.wafab:hover{transform:scale(1.07)}
+.wafab svg{width:28px;height:28px}
+
+/* ---- modal ---- */
+.modal{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:20px;background:var(--a-70)}
+.modal.open{display:flex}
+.modal-box{background:var(--white);border-radius:var(--r-lg);max-width:900px;width:100%;max-height:92vh;overflow-y:auto;
+  box-shadow:var(--sh-lg);position:relative}
+.modal-close{position:absolute;top:12px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;border:none;
+  background:var(--w-90);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:var(--sh-sm)}
+.modal-close svg{width:17px;height:17px}
+.m-ph{position:relative;aspect-ratio:16/10;max-height:46vh;background:var(--navy-50);overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0}
+.m-ph img{width:100%;height:100%;object-fit:cover}
+.m-thumbs{display:flex;gap:8px;padding:12px 22px 0}
+.m-thumbs button{width:72px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;
+  cursor:pointer;background:none;transition:.2s}
+.m-thumbs button.on{border-color:var(--navy-700)}
+.m-thumbs img{width:100%;height:100%;object-fit:cover}
+.m-body{padding:18px 22px 24px}
+.m-body .zona{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--navy-600)}
+.m-body .zona svg{width:14px;height:14px}
+.m-body h3{font-size:clamp(21px,3vw,28px);margin:6px 0 4px}
+.m-body .tipo{font-size:14px;color:var(--muted)}
+.m-price{font-family:var(--fd);font-size:30px;font-weight:600;margin:16px 0 4px}
+.m-price small{font-size:15px;color:var(--muted);font-family:var(--fs)}
+.m-specs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.m-specs span{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--slate);background:var(--bg-soft);
+  border:1px solid var(--line);padding:7px 12px;border-radius:9px}
+.m-specs svg{width:14px;height:14px;color:var(--navy-600)}
+.m-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);
+  padding-top:14px;margin-top:6px}
+.m-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+@media(max-width:600px){.m-body{padding:16px 16px 22px}.m-thumbs{padding:12px 16px 0}}
+
+/* ---- reveal ---- */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s var(--e),transform .7s var(--e)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+  .hs{opacity:0}.hs:first-child{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<button class="back-crm" id="backCrm" type="button" aria-label="Volver al CRM">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  <span>Volver al CRM</span>
+</button>
+
+<!-- TOPBAR -->
+<div class="topbar"><div class="wrap">
+  <div class="tb-left">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>20 de Febrero 1705, Of. 7 — Salta · <b>LPZ Grupo y Molins</b></span>
+  </div>
+  <div class="tb-right">
+    <a class="ig hide-xs" href="https://instagram.com/molins.negociosinmobilarios" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      @molins.negociosinmobilarios
+    </a>
+    <a href="tel:+543874153669">387 415 3669</a>
+    <a class="wa" href="https://wa.me/5493874153669?text=Hola%2C%20vi%20el%20sitio%20y%20quiero%20consultar%20por%20una%20propiedad." target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>
+      WhatsApp
+    </a>
+  </div>
+</div></div>
+
+<!-- NAV -->
+<header class="nav" id="nav"><div class="wrap">
+  <a href="#top" class="brand" aria-label="Molins Negocios Inmobiliarios, inicio">
+    <span class="mk"><span>M</span></span>
+    <span><b>Molins</b><small>Negocios Inmobiliarios</small></span>
+  </a>
+  <nav class="navlinks" id="navlinks">
+    <a href="#propiedades">Propiedades</a>
+    <a href="#terrenos">Terrenos</a>
+    <a href="#aires">Aires de San Lorenzo</a>
+    <a href="#zonas">Zonas</a>
+    <a href="#financiacion">Financiación</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <div class="nav-cta">
+    <a href="#contacto" class="btn btn-terra">Reservar una visita</a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</div></header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hs" style="--i:0;background-image:url('fotos/hero/MOL-209940.jpg')"></div>
+    <div class="hs" style="--i:1;background-image:url('fotos/hero/MOL-204329.jpg')"></div>
+    <div class="hs" style="--i:2;background-image:url('fotos/hero/MOL-215232.jpg')"></div>
+    <div class="hs" style="--i:3;background-image:url('fotos/hero/MOL-213170.jpg')"></div>
+    <div class="hs" style="--i:4;background-image:url('fotos/hero/MOL-220887.jpg')"></div>
+  </div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <h1>Molins Negocios Inmobiliarios</h1>
+      <span class="mat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        Corredor inmobiliario matriculado · CUCIS MP 251
+      </span>
+      <p class="tit">Casas, departamentos, locales y terrenos en Salta. Cartera propia, atendida de forma directa por quien la conoce.</p>
+      <div class="hero-actions">
+        <a href="#propiedades" class="btn btn-terra">Ver las propiedades
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#aires" class="btn btn-ghost">Aires de San Lorenzo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRANJA -->
+<div class="strip"><div class="wrap">
+  <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg> Operaciones con corredor matriculado</div>
+  <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/></svg> Boleto y escritura con escribano</div>
+  <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg> Terrenos con plan de pago a convenir</div>
+</div></div>
+
+<!-- PROPIEDADES -->
+<section class="section" id="propiedades">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="rule"></div>
+      <h2>La cartera, completa</h2>
+      <p class="lead">Todo lo que Molins tiene hoy en venta y en alquiler, con la foto real de cada propiedad. Empezá por lo que estás buscando y después afiná por tipo y por zona.</p>
+    </div>
+
+    <div class="filters reveal">
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por intención"></div>
+      <div class="selects">
+        <select id="fTipo" aria-label="Filtrar por tipo"></select>
+        <select id="fZona" aria-label="Filtrar por zona"></select>
+        <button class="clr" id="fClear" type="button">Limpiar filtros</button>
+        <span class="res" id="fRes"></span>
+      </div>
+    </div>
+
+    <div class="grid-props" id="grid"></div>
+    <p class="empty" id="empty">No hay propiedades con esa combinación. Probá con otro filtro o escribinos y la buscamos.</p>
+  </div>
+</section>
+
+<!-- TERRENOS -->
+<section class="section terrenos" id="terrenos">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="rule"></div>
+      <h2>Terrenos y lotes</h2>
+      <p class="lead">Es lo que mejor se acomoda a un plan de pago: se aparta con una entrega y el saldo se conversa. Los valores de cuota que ves abajo son una referencia con 30% de anticipo en 60 meses.</p>
+    </div>
+    <div class="grid-lotes reveal" id="gridLotes"></div>
+    <p style="margin-top:22px;font-size:13px;color:var(--muted)">Cada plan se arma según la propiedad y el comprador. Para ver el tuyo, usá la <a href="#financiacion" style="color:var(--terra-700);font-weight:600">calculadora</a> o consultá directo.</p>
+  </div>
+</section>
+
+<!-- AIRES -->
+<section class="section aires" id="aires">
+  <div class="wrap">
+    <div class="aires-grid">
+      <div class="reveal">
+        <span class="tag">Emprendimiento en pozo</span>
+        <h2>Aires de San Lorenzo</h2>
+        <p>Para el que quiere vivir en la zona de San Lorenzo y hoy no le da para San Lorenzo Chico ni para Ciudad Oeste. Se compra en pozo, con un plan largo, y se entra a la zona antes de que termine de valer lo que va a valer.</p>
+        <ul class="pts">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg> Financiación directa del desarrollo, con planes de hasta 7 u 8 años.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/></svg> Pensado para primera vivienda, no para especular.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> En San Lorenzo, a pocos minutos del centro de Salta.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Unidades y valores vigentes, a consultar según etapa.</li>
+        </ul>
+        <div class="acts">
+          <a href="https://wa.me/5493874153669?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20Aires%20de%20San%20Lorenzo." target="_blank" rel="noopener" class="btn btn-wa">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>
+            Consultar por Aires
+          </a>
+          <button class="btn btn-ghost" type="button" id="airesForm">Pedir el plan de pago</button>
+        </div>
+      </div>
+      <div class="aires-ph reveal">
+        <img src="fotos/MOL-213170-1.jpg" alt="Vista de la zona de San Lorenzo, Salta" loading="lazy" />
+        <div class="cap">Imagen de la zona de San Lorenzo. Las imágenes del emprendimiento se entregan en la consulta.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ZONAS -->
+<section class="section zonas" id="zonas">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="rule"></div>
+      <h2>Dónde hay propiedades</h2>
+      <p class="lead">La cartera se concentra en el centro de Salta y se abre hacia el valle. Cada número es lo que hay publicado hoy, contado sobre el listado de arriba.</p>
+    </div>
+    <div class="zona-grid reveal" id="zonaGrid"></div>
+    <p class="zona-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+      No publicamos porcentajes de plusvalía ni de rentabilidad: no hay una fuente seria para Salta y preferimos no inventarla. Lo que sí podemos, es contarte cómo se movió cada zona en las operaciones que hicimos.
+    </p>
+  </div>
+</section>
+
+<!-- CALCULADORA -->
+<section class="section" id="financiacion">
+  <div class="wrap">
+    <div class="calc-grid">
+      <div class="reveal">
+        <div class="rule" style="width:44px;height:3px;background:var(--terra-500);border-radius:3px;margin-bottom:18px"></div>
+        <h2 style="font-size:clamp(27px,3.6vw,40px)">Cuánto te queda por mes</h2>
+        <p class="lead" style="margin-top:12px">Movés el precio, el anticipo y la cantidad de cuotas, y ves qué te queda por mes. Sirve para saber si el número te cierra antes de sentarte a conversar.</p>
+        <div class="calc-card" style="margin-top:22px">
+          <div class="calc-row">
+            <div class="cl"><label for="cPrecio">Precio de la propiedad</label><span class="cv" id="vPrecio">USD 75.000</span></div>
+            <input type="range" id="cPrecio" min="20000" max="700000" step="5000" value="75000" />
+          </div>
+          <div class="calc-row">
+            <div class="cl"><label for="cAnt">Anticipo</label><span class="cv" id="vAnt">30%</span></div>
+            <input type="range" id="cAnt" min="10" max="70" step="5" value="30" />
+          </div>
+          <div class="calc-row">
+            <div class="cl"><label for="cCuotas">Cantidad de cuotas</label><span class="cv" id="vCuotas">60 meses</span></div>
+            <input type="range" id="cCuotas" min="12" max="120" step="6" value="60" />
+          </div>
+        </div>
+      </div>
+      <div class="calc-out reveal">
+        <div class="lbl">Cuota mensual estimada</div>
+        <div class="val">USD <span id="oCuota">875</span> <small>/mes</small></div>
+        <div class="calc-split">
+          <div><b>USD <span id="oAnticipo">22.500</span></b><span id="lblAnt">Anticipo (30%)</span></div>
+          <div><b>USD <span id="oSaldo">52.500</span></b><span id="lblSaldo">Saldo en 60 cuotas</span></div>
+        </div>
+        <p class="calc-note">Son números de referencia, calculados sin interés sobre el saldo, para que veas el orden de magnitud. El plan real se arma en cada caso: depende de la propiedad, del vendedor y de tu situación. Esto no es una cotización ni una oferta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PASOS -->
+<section class="section" id="proceso" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <div class="rule"></div>
+      <h2>Cómo es comprar</h2>
+      <p class="lead">Cuatro pasos, sin vueltas. Todo con corredor matriculado y con escribano en la escritura.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="num"><i>1</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6"/></svg></div>
+        <h3>Elegís y visitamos</h3>
+        <p>Nos decís qué te interesa, coordinamos día y la recorremos juntos. Si no es la indicada, te mostramos otra.</p>
+      </div>
+      <div class="step">
+        <div class="num"><i>2</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg></div>
+        <h3>Reserva por escrito</h3>
+        <p>Se firma una reserva con la oferta, el plazo y la seña. Queda todo asentado: qué se ofrece y hasta cuándo.</p>
+      </div>
+      <div class="step">
+        <div class="num"><i>3</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+        <h3>Boleto de compraventa</h3>
+        <p>Aceptada la oferta, se firma el boleto con precio, forma de pago, plazo de escrituración y entrega de posesión.</p>
+      </div>
+      <div class="step">
+        <div class="num"><i>4</i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Escritura</h3>
+        <p>Se escritura ante escribano, con los informes de dominio e inhibición al día y la propiedad libre de gravámenes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="section" id="contacto">
+  <div class="wrap">
+    <div class="contact">
+      <div class="reveal">
+        <div class="rule" style="width:44px;height:3px;background:var(--terra-500);border-radius:3px;margin-bottom:18px"></div>
+        <h2 style="font-size:clamp(26px,3.4vw,38px)">Escribinos y te respondemos</h2>
+        <p class="lead" style="margin-top:12px">Contanos qué buscás y con qué presupuesto. Si no lo tenemos, lo salimos a buscar.</p>
+        <div class="ci-list">
+          <div class="ci">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92"/></svg></span>
+            <div><b>Teléfono y WhatsApp</b><p><a href="tel:+543874153669">387 415 3669</a></p></div>
+          </div>
+          <div class="ci">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div><b>Oficina</b><p>20 de Febrero 1705, Oficina 7 — Salta</p></div>
+          </div>
+          <div class="ci">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+            <div><b>Instagram</b><p><a href="https://instagram.com/molins.negociosinmobilarios" target="_blank" rel="noopener">@molins.negociosinmobilarios</a></p></div>
+          </div>
+          <div class="ci">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+            <div><b>Matrícula</b><p>CUCIS MP 251 — LPZ Grupo y Molins</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form reveal">
+        <div id="formFields">
+          <h3>Dejanos tu consulta</h3>
+          <p class="sub">Te contestamos por WhatsApp o por mail, como prefieras.</p>
+          <div class="ctx" id="formCtx"></div>
+          <form id="leadForm" novalidate>
+            <div class="field"><label for="fNombre">Nombre</label><input type="text" id="fNombre" name="nombre" placeholder="Cómo te llamás" autocomplete="name" /></div>
+            <div class="field"><label for="fWa">WhatsApp</label><input type="tel" id="fWa" name="whatsapp" placeholder="387 000 0000" autocomplete="tel" /></div>
+            <div class="field"><label for="fMail">Email</label><input type="email" id="fMail" name="email" placeholder="tu@correo.com" autocomplete="email" /></div>
+            <div class="field"><label for="fBusca">¿Qué estás buscando?</label>
+              <select id="fBusca" name="busca">
+                <option value="Para vivir">Para vivir</option>
+                <option value="Para invertir">Para invertir</option>
+                <option value="Alquilar">Alquilar</option>
+                <option value="Un terreno">Un terreno</option>
+                <option value="Aires de San Lorenzo">Aires de San Lorenzo</option>
+                <option value="Todavía estoy viendo">Todavía estoy viendo</option>
+              </select>
+            </div>
+            <button class="btn btn-terra" type="submit">Enviar la consulta</button>
+            <p class="rea">Sin compromiso. Usamos tus datos solo para responderte.</p>
+          </form>
+        </div>
+        <div class="form-ok" id="formOk">
+          <div class="oi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <h3>Consulta recibida</h3>
+          <p id="okMsg">Te vamos a escribir a la brevedad al WhatsApp que dejaste.</p>
+          <div class="dm">Demo: la consulta quedó guardada en este navegador bajo <b>molins_consultas_demo</b>. En el sistema real entra directo al CRM, con el origen y el vendedor asignado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <b>Molins Negocios Inmobiliarios</b>
+        <p>Compra, venta y alquiler de inmuebles en Salta. Cartera propia y comercialización de emprendimientos.</p>
+        <div class="mp">Francisco Molins — Corredor inmobiliario matriculado · CUCIS MP 251<br />LPZ Grupo y Molins</div>
+      </div>
+      <div class="foot-col">
+        <h4>Propiedades</h4>
+        <a href="#propiedades">Toda la cartera</a>
+        <a href="#terrenos">Terrenos y lotes</a>
+        <a href="#aires">Aires de San Lorenzo</a>
+        <a href="#zonas">Zonas</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contacto</h4>
+        <a href="tel:+543874153669">387 415 3669</a>
+        <a href="https://wa.me/5493874153669" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://instagram.com/molins.negociosinmobilarios" target="_blank" rel="noopener">@molins.negociosinmobilarios</a>
+        <a href="#contacto">20 de Febrero 1705, Of. 7 — Salta</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="anio">2026</span> LPZ Grupo y Molins — CUCIS MP 251</span>
+      <span>Salta, Argentina</span>
+    </div>
+    <div class="demo-flag">Sitio de demostración. Las propiedades, fotos y precios son los de la cartera real; la disponibilidad se confirma al consultar.</div>
+  </div>
+</footer>
+
+<a class="wafab" href="https://wa.me/5493874153669?text=Hola%2C%20vi%20el%20sitio%20y%20quiero%20consultar." target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>
+</a>
+
+<!-- MODAL -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Detalle de la propiedad">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="m-ph"><img id="mImg" src="" alt="" /></div>
+    <div class="m-thumbs" id="mThumbs"></div>
+    <div class="m-body">
+      <span class="zona" id="mZona"></span>
+      <h3 id="mTitulo"></h3>
+      <p class="tipo" id="mTipo"></p>
+      <div class="m-price" id="mPrecio"></div>
+      <div class="m-specs" id="mSpecs"></div>
+      <div class="m-meta" id="mMeta"></div>
+      <div class="m-acts" id="mActs"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============================================================
+   DATOS REALES — 35 propiedades de la cartera de Molins
+   codigo, direccion, barrio, tipo, operacion, moneda, precio,
+   dorm, banos, m2, ficha, cartera, estado, agente
+   ============================================================ */
+var CRUDO = [
+  ['MOL-225748','Luis Burela y Luis','Centro','Galpón','Alquiler','ARS',3000000,0,2,450,100,'alquileres','alquilada','FM'],
+  ['MOL-224226','Córdoba 269','Centro','Local comercial','Venta','USD',680000,0,3,150,100,'propia','activa','FM'],
+  ['MOL-224219','Pueyrredon 1469','Centro','Departamento','Venta','USD',65000,1,1,40,100,'propia','activa','FM'],
+  ['MOL-224081','Del Milagro 694','Centro','Casa','Venta','USD',220000,8,2,265,100,'propia','activa','FM'],
+  ['MOL-224074','Avenida Yirigoyen 63','El Portezuelo','Casa','Alquiler','ARS',2500000,5,2,230,100,'alquileres','alquilada','FM'],
+  ['MOL-224063','Cerrillos','Salta','Finca','Venta','USD',700000,0,0,0,57,'propia','activa','FM'],
+  ['MOL-222982','avenida Sarmiento 769','Centro','Departamento','Venta','USD',93500,2,2,75,100,'propia','activa','FM'],
+  ['MOL-222622','25 de Mayo 630','Centro','Departamento','Alquiler','ARS',600000,1,1,60,100,'alquileres','alquilada','FM'],
+  ['MOL-222619','Gorriti 4','Centro','Departamento','Alquiler','ARS',700000,2,1,90,100,'alquileres','alquilada','FM'],
+  ['MOL-221953','Pedernera 223','Centro','Departamento','Venta','USD',89000,1,1,65,100,'propia','activa','FM'],
+  ['MOL-221842','Teniente Coronel Santiago Morales 702','Centro','Departamento','Venta','USD',75000,1,1,55,100,'propia','activa','FM'],
+  ['MOL-220991','San Luis','Salta','Terreno','Venta','USD',45000,0,0,0,74,'propia','activa','FM'],
+  ['MOL-220984','Coronel vidt y corrie','Centro','Terreno','Venta','USD',95000,0,0,0,82,'propia','activa','FM'],
+  ['MOL-220887','General Guemes 1768','Centro','Departamento','Venta','USD',100000,1,1,52,100,'propia','activa','FM'],
+  ['MOL-220883','Avenida Independencia 56','San Antonio','Casa','Venta','USD',110000,2,2,90,100,'propia','activa','FM'],
+  ['MOL-220876','Avenida Belgrano 2380','Centro','Casa','Venta','USD',150000,5,3,145,100,'propia','activa','FM'],
+  ['MOL-219927','Calle sin nombre','Otros Barrios','Casa','Venta','USD',155000,3,3,130,91,'propia','activa','FM'],
+  ['MOL-218328','General Paz 18','Centro','Departamento','Venta','USD',120000,3,2,86,100,'propia','activa','FM'],
+  ['MOL-218326','Alvarez Jonte 864','Sa','Dúplex','Venta','USD',100000,2,2,94,100,'propia','activa','FM'],
+  ['MOL-215246','Dean Funes 343','Centro','Oficina','Alquiler','USD',600,0,1,60,91,'alquileres','alquilada','FM'],
+  ['MOL-215236','El Encon','Rosario de Lerma','Terreno','Venta','USD',75000,0,0,0,74,'propia','activa','FM'],
+  ['MOL-215232','El Encon','Rosario de Lerma','Finca','Alquiler','USD',2500,0,0,0,74,'alquileres','activa','FM'],
+  ['MOL-214601','El Encón','El Encon','Casa','Venta','USD',340000,0,0,0,65,'propia','activa','FM'],
+  ['MOL-214075','Juramento 1569','Centro','Departamento','Venta','USD',85000,1,1,42,100,'propia','activa','FM'],
+  ['MOL-214073','Dean Funes y Belgrano','Centro','Local comercial','Venta','USD',115000,0,1,75,100,'propia','activa','FM'],
+  ['MOL-213883','Santiago del Estero 789','Centro','Departamento','Venta','USD',75000,1,1,35,100,'propia','activa','FM'],
+  ['MOL-213879','Maipu 517','Centro','Departamento','Venta','USD',88000,1,2,59,100,'propia','activa','FM'],
+  ['MOL-213170','Belisario Roldan & Costanera','San Lorenzo','Terreno','Venta','USD',290000,0,0,0,74,'propia','activa','FM'],
+  ['MOL-213136','Chicoana','Salta','Terreno','Venta','ARS',13400000,0,0,0,74,'propia','activa','FM'],
+  ['MOL-209940','Leopoldo Lugones 250','Villa San Lorenz','Casa','Venta','USD',550000,5,4,494,100,'propia','activa','FM'],
+  ['MOL-208531','Aniceto Latorre 1658','Centro','Casa','Venta','USD',100000,6,2,480,91,'propia','activa','FM'],
+  ['MOL-208481','Córdoba 777','salt','Casa','Venta','USD',95000,3,2,184,91,'propia','activa','FM'],
+  ['MOL-204339','Ricardo Ibazeta & Pablo A','Centro','Terreno','Venta','USD',42000,0,0,0,82,'propia','activa','FM'],
+  ['MOL-204329','VAQUEROS','La Caldera','Casa','Venta','USD',225000,4,3,202,100,'propia','activa','FM'],
+  ['MOL-200065','Club de campo El Enc','El Encon','Terreno','Venta','USD',35000,0,0,0,82,'propia','activa','FM']
+];
+var CAMPOS = ['codigo','direccion','barrio','tipo','operacion','moneda','precio','dorm','banos','m2','ficha','cartera','estado','agente'];
+
+/* zona normalizada — el campo barrio del sistema viene truncado o inconsistente */
+var ZONA = {
+  'MOL-224074':'El Portezuelo','MOL-224063':'Cerrillos','MOL-220991':'Otras zonas de Salta',
+  'MOL-220883':'San Antonio','MOL-219927':'Otras zonas de Salta','MOL-218326':'Otras zonas de Salta',
+  'MOL-215236':'El Encón · Rosario de Lerma','MOL-215232':'El Encón · Rosario de Lerma',
+  'MOL-214601':'El Encón · Rosario de Lerma','MOL-200065':'El Encón · Rosario de Lerma',
+  'MOL-213170':'San Lorenzo','MOL-213136':'Chicoana','MOL-209940':'San Lorenzo',
+  'MOL-208481':'Centro','MOL-204329':'Vaqueros'
+};
+var ZONA_DESC = {
+  'Centro':'El casco céntrico de Salta. Departamentos para vivir o alquilar, locales sobre calle y casas antiguas de buena superficie.',
+  'El Encón · Rosario de Lerma':'Al oeste, camino a Campo Quijano. Club de campo, fincas y lotes grandes con parque.',
+  'San Lorenzo':'La zona verde de la ciudad, a unos 11 km del centro. Casas con terreno y clima de quebrada.',
+  'Vaqueros':'Al norte, sobre la ruta 9. Barrio abierto a pocos minutos del centro.',
+  'Cerrillos':'Valle de Lerma, al sur. Superficies grandes y suelo productivo.',
+  'Chicoana':'Valle de Lerma, camino a Cafayate. Terreno en zona de fincas.',
+  'El Portezuelo':'Sobre la ladera del cerro, con vista alta a la ciudad.',
+  'San Antonio':'Barrio residencial consolidado, cerca de las avenidas de acceso.',
+  'Otras zonas de Salta':'Casas y terrenos en distintos puntos de la ciudad. Consultá por ubicación exacta.'
+};
+var ZONA_ORDEN = ['Centro','El Encón · Rosario de Lerma','San Lorenzo','Vaqueros','Cerrillos','Chicoana','El Portezuelo','San Antonio','Otras zonas de Salta'];
+var NFOTOS = {'MOL-208531':2};
+var TEL_WA = '5493874153669';
+
+function tidy(s){
+  if(!s) return s;
+  if(s === s.toUpperCase()) s = s.toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function intencion(p){
+  if(p.operacion === 'Alquiler') return ['alquiler'];
+  if(p.tipo === 'Terreno') return ['terreno','invertir'];
+  if(p.tipo === 'Casa' || p.tipo === 'Departamento' || p.tipo === 'Dúplex') return ['vivir'];
+  return ['invertir'];
+}
+var PROPS = CRUDO.map(function(r){
+  var p = {};
+  CAMPOS.forEach(function(k,i){ p[k] = r[i]; });
+  p.zona = ZONA[p.codigo] || (p.barrio === 'Centro' ? 'Centro' : 'Otras zonas de Salta');
+  p.titulo = tidy(p.direccion);
+  p.nf = NFOTOS[p.codigo] || 3;
+  p.tags = intencion(p);
+  return p;
+});
+
+/* ---------- formato ---------- */
+function num(n){ return Math.round(n).toLocaleString('es-AR'); }
+function money(moneda, v){ return (moneda === 'USD' ? 'USD ' : '$ ') + num(v); }
+function foto(codigo, n, thumb){ return 'fotos/' + (thumb ? 'thumbs/' : '') + codigo + '-' + (n||1) + '.jpg'; }
+function estadoTxt(p){
+  if(p.operacion === 'Alquiler') return p.estado === 'alquilada' ? {t:'Alquilada', c:'taken'} : {t:'En alquiler', c:'rent'};
+  return {t:'Disponible', c:''};
+}
+function cuotaRef(p){
+  if(p.operacion !== 'Venta' || p.tipo !== 'Terreno') return null;
+  return money(p.moneda, p.precio * 0.7 / 60);
+}
+
+/* ---------- iconos ---------- */
+var IC = {
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+  cama:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9V4M2 13h20v6M2 13a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3M22 13v-2a2 2 0 0 0-2-2h-3"/></svg>',
+  bano:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12V5a2 2 0 0 1 3.4-1.4L9 5M2 12h20v3a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5zM7 20l-1 2M18 20l1 2"/></svg>',
+  m2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg>',
+  cuota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+  flecha:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>'
+};
+function waLink(p){
+  var t = 'Hola, quiero consultar por ' + p.titulo + ' (' + p.codigo + ').';
+  return 'https://wa.me/' + TEL_WA + '?text=' + encodeURIComponent(t);
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function specsHtml(p){
+  var out = '';
+  if(p.dorm > 0) out += '<span>' + IC.cama + p.dorm + ' dorm.</span>';
+  if(p.banos > 0) out += '<span>' + IC.bano + p.banos + (p.banos === 1 ? ' baño' : ' baños') + '</span>';
+  if(p.m2 > 0) out += '<span>' + IC.m2 + num(p.m2) + ' m²</span>';
+  if(!out) out = '<span>' + IC.m2 + 'Consultar medidas</span>';
+  return out;
+}
+
+/* ---------- catálogo ---------- */
+var grid = document.getElementById('grid');
+function cardHtml(p){
+  var st = estadoTxt(p);
+  var cuota = cuotaRef(p);
+  return '<article class="card reveal" data-cod="' + p.codigo + '" data-tags="' + p.tags.join(' ') + '" data-tipo="' + esc(p.tipo) + '" data-zona="' + esc(p.zona) + '" tabindex="0" role="button" aria-label="Ver ' + esc(p.titulo) + '">' +
+    '<div class="ph">' +
+      '<img src="' + foto(p.codigo,1,true) + '" alt="' + esc(p.tipo + ' en ' + p.titulo + ', ' + p.zona) + '" loading="lazy" />' +
+      '<span class="badge ' + st.c + '">' + st.t + '</span>' +
+      '<span class="op">' + p.operacion + '</span>' +
+      '<span class="cod">' + p.codigo + '</span>' +
+    '</div>' +
+    '<div class="body">' +
+      '<span class="zona">' + IC.pin + esc(p.zona) + '</span>' +
+      '<h3>' + esc(p.titulo) + '</h3>' +
+      '<p class="tipo">' + esc(p.tipo) + '</p>' +
+      '<div class="specs">' + specsHtml(p) + '</div>' +
+      '<div class="price"><span class="v">' + money(p.moneda, p.precio) + '</span>' +
+        (p.operacion === 'Alquiler' ? ' <span class="per">por mes</span>' : '') +
+        (cuota ? '<br /><span class="mo">' + IC.cuota + 'desde ' + cuota + '/mes</span>' : '') +
+      '</div>' +
+      '<div class="foot"><span class="see">Ver detalle' + IC.flecha + '</span>' +
+        '<a class="wa" href="' + waLink(p) + '" target="_blank" rel="noopener" aria-label="Consultar por WhatsApp">' + IC.wa + '</a>' +
+      '</div>' +
+    '</div></article>';
+}
+grid.innerHTML = PROPS.map(cardHtml).join('');
+
+/* ---------- terrenos ---------- */
+var terrenos = PROPS.filter(function(p){ return p.tipo === 'Terreno'; });
+document.getElementById('gridLotes').innerHTML = terrenos.map(function(p){
+  var cuota = cuotaRef(p);
+  return '<article class="lote reveal" data-cod="' + p.codigo + '" tabindex="0" role="button" aria-label="Ver ' + esc(p.titulo) + '">' +
+    '<div class="ph"><img src="' + foto(p.codigo,1,true) + '" alt="Terreno en ' + esc(p.titulo) + ', ' + esc(p.zona) + '" loading="lazy" /></div>' +
+    '<div class="bd">' +
+      '<span class="zona">' + IC.pin + esc(p.zona) + '</span>' +
+      '<h3>' + esc(p.titulo) + '</h3>' +
+      '<span class="v">' + money(p.moneda, p.precio) + '</span>' +
+      (cuota ? '<span class="mo">' + IC.cuota + 'referencia ' + cuota + '/mes</span>' : '') +
+      '<span class="cod">' + p.codigo + ' · ' + p.operacion + '</span>' +
+    '</div></article>';
+}).join('');
+
+/* ---------- zonas ---------- */
+var conteo = {};
+PROPS.forEach(function(p){ conteo[p.zona] = (conteo[p.zona] || 0) + 1; });
+document.getElementById('zonaGrid').innerHTML = ZONA_ORDEN.filter(function(z){ return conteo[z]; }).map(function(z){
+  var n = conteo[z];
+  return '<div class="zona-item"><span class="zn">' + n + '<em>' + (n === 1 ? 'propiedad' : 'propiedades') + '</em></span>' +
+    '<div class="zt"><b>' + esc(z) + '</b><p>' + esc(ZONA_DESC[z] || '') + '</p></div></div>';
+}).join('');
+
+/* ---------- filtros ---------- */
+var CHIPS = [
+  {k:'all', t:'Todas'}, {k:'vivir', t:'Para vivir'}, {k:'invertir', t:'Para invertir'},
+  {k:'alquiler', t:'En alquiler'}, {k:'terreno', t:'Terrenos'}
+];
+var chipsEl = document.getElementById('chips');
+chipsEl.innerHTML = CHIPS.map(function(c){
+  var n = c.k === 'all' ? PROPS.length : PROPS.filter(function(p){ return p.tags.indexOf(c.k) >= 0; }).length;
+  return '<button class="chip' + (c.k === 'all' ? ' on' : '') + '" type="button" data-f="' + c.k + '">' + c.t + ' <span class="n">' + n + '</span></button>';
+}).join('');
+
+function uniq(arr){ return arr.filter(function(v,i,a){ return a.indexOf(v) === i; }).sort(function(a,b){ return a.localeCompare(b,'es'); }); }
+var selTipo = document.getElementById('fTipo'), selZona = document.getElementById('fZona');
+selTipo.innerHTML = '<option value="">Todos los tipos</option>' + uniq(PROPS.map(function(p){ return p.tipo; })).map(function(t){ return '<option value="' + esc(t) + '">' + esc(t) + '</option>'; }).join('');
+selZona.innerHTML = '<option value="">Todas las zonas</option>' + ZONA_ORDEN.filter(function(z){ return conteo[z]; }).map(function(z){ return '<option value="' + esc(z) + '">' + esc(z) + ' (' + conteo[z] + ')</option>'; }).join('');
+
+var estado = {f:'all', tipo:'', zona:''};
+var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+var emptyEl = document.getElementById('empty'), resEl = document.getElementById('fRes');
+function aplicar(){
+  var n = 0;
+  cards.forEach(function(el){
+    var ok = (estado.f === 'all' || el.getAttribute('data-tags').split(' ').indexOf(estado.f) >= 0) &&
+             (!estado.tipo || el.getAttribute('data-tipo') === estado.tipo) &&
+             (!estado.zona || el.getAttribute('data-zona') === estado.zona);
+    el.classList.toggle('hide', !ok);
+    if(ok) n++;
+  });
+  emptyEl.classList.toggle('show', n === 0);
+  resEl.textContent = n === 1 ? '1 propiedad' : n + ' propiedades';
+}
+chipsEl.addEventListener('click', function(ev){
+  var b = ev.target.closest('.chip'); if(!b) return;
+  chipsEl.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
+  b.classList.add('on');
+  estado.f = b.getAttribute('data-f');
+  aplicar();
+});
+selTipo.addEventListener('change', function(){ estado.tipo = selTipo.value; aplicar(); });
+selZona.addEventListener('change', function(){ estado.zona = selZona.value; aplicar(); });
+document.getElementById('fClear').addEventListener('click', function(){
+  estado = {f:'all', tipo:'', zona:''};
+  selTipo.value = ''; selZona.value = '';
+  chipsEl.querySelectorAll('.chip').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-f') === 'all'); });
+  aplicar();
+});
+aplicar();
+
+/* ---------- modal ---------- */
+var modal = document.getElementById('modal'), mImg = document.getElementById('mImg'), mThumbs = document.getElementById('mThumbs');
+var actual = null;
+function abrir(cod){
+  var p = PROPS.filter(function(x){ return x.codigo === cod; })[0];
+  if(!p) return;
+  actual = p;
+  var st = estadoTxt(p), cuota = cuotaRef(p);
+  mImg.src = foto(p.codigo,1,false);
+  mImg.alt = p.tipo + ' en ' + p.titulo;
+  var ths = '';
+  for(var i = 1; i <= p.nf; i++){
+    ths += '<button type="button" class="' + (i === 1 ? 'on' : '') + '" data-n="' + i + '" aria-label="Foto ' + i + '"><img src="' + foto(p.codigo,i,true) + '" alt="" /></button>';
+  }
+  mThumbs.innerHTML = p.nf > 1 ? ths : '';
+  document.getElementById('mZona').innerHTML = IC.pin + ' ' + esc(p.zona);
+  document.getElementById('mTitulo').textContent = p.titulo;
+  document.getElementById('mTipo').textContent = p.tipo + ' · ' + p.operacion + ' · ' + st.t;
+  document.getElementById('mPrecio').innerHTML = money(p.moneda, p.precio) + (p.operacion === 'Alquiler' ? ' <small>por mes</small>' : '') +
+    (cuota ? '<br /><span class="mo" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--terra-700);background:var(--terra-50);padding:5px 11px;border-radius:7px;font-family:var(--fs)">' + IC.cuota + 'referencia ' + cuota + '/mes con 30% de anticipo</span>' : '');
+  document.getElementById('mSpecs').innerHTML = specsHtml(p);
+  document.getElementById('mMeta').innerHTML = '<span>Código ' + p.codigo + '</span><span>Zona ' + esc(p.zona) + '</span><span>Cartera ' + (p.cartera === 'propia' ? 'propia' : 'alquileres') + '</span>';
+  document.getElementById('mActs').innerHTML =
+    '<a class="btn btn-wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' + IC.wa + ' Consultar por WhatsApp</a>' +
+    '<button class="btn btn-out" type="button" id="mForm">Dejar mis datos</button>';
+  document.getElementById('mForm').addEventListener('click', function(){ cerrar(); consultarPor(p); });
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalClose').focus();
+}
+function cerrar(){ modal.classList.remove('open'); document.body.style.overflow = ''; }
+mThumbs.addEventListener('click', function(ev){
+  var b = ev.target.closest('button'); if(!b || !actual) return;
+  mThumbs.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+  b.classList.add('on');
+  mImg.src = foto(actual.codigo, +b.getAttribute('data-n'), false);
+});
+document.getElementById('modalClose').addEventListener('click', cerrar);
+modal.addEventListener('click', function(ev){ if(ev.target === modal) cerrar(); });
+document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && modal.classList.contains('open')) cerrar(); });
+
+function bindAbrir(root){
+  root.addEventListener('click', function(ev){
+    if(ev.target.closest('a')) return;
+    var c = ev.target.closest('[data-cod]'); if(!c) return;
+    abrir(c.getAttribute('data-cod'));
+  });
+  root.addEventListener('keydown', function(ev){
+    if(ev.key !== 'Enter' && ev.key !== ' ') return;
+    var c = ev.target.closest('[data-cod]'); if(!c) return;
+    ev.preventDefault(); abrir(c.getAttribute('data-cod'));
+  });
+}
+bindAbrir(grid);
+bindAbrir(document.getElementById('gridLotes'));
+
+/* ---------- consultar por una propiedad ---------- */
+var ctxProp = null, ctxEl = document.getElementById('formCtx');
+function consultarPor(p){
+  ctxProp = p;
+  ctxEl.textContent = 'Consulta por ' + p.codigo + ' — ' + p.titulo + ' (' + p.tipo + ', ' + p.zona + ')';
+  ctxEl.classList.add('show');
+  var sel = document.getElementById('fBusca');
+  sel.value = p.tipo === 'Terreno' ? 'Un terreno' : (p.operacion === 'Alquiler' ? 'Alquilar' : 'Para vivir');
+  document.getElementById('contacto').scrollIntoView({behavior: rm ? 'auto' : 'smooth'});
+  setTimeout(function(){ try{ document.getElementById('fNombre').focus(); }catch(e){} }, rm ? 0 : 550);
+}
+document.getElementById('airesForm').addEventListener('click', function(){
+  ctxProp = null;
+  ctxEl.textContent = 'Consulta por Aires de San Lorenzo — plan de pago y unidades disponibles';
+  ctxEl.classList.add('show');
+  document.getElementById('fBusca').value = 'Aires de San Lorenzo';
+  document.getElementById('contacto').scrollIntoView({behavior: rm ? 'auto' : 'smooth'});
+});
+
+/* ---------- calculadora ---------- */
+var cPrecio = document.getElementById('cPrecio'), cAnt = document.getElementById('cAnt'), cCuotas = document.getElementById('cCuotas');
+function calc(){
+  var precio = +cPrecio.value, ant = +cAnt.value, cuotas = +cCuotas.value;
+  var anticipo = precio * ant / 100, saldo = precio - anticipo, mes = saldo / cuotas;
+  document.getElementById('vPrecio').textContent = 'USD ' + num(precio);
+  document.getElementById('vAnt').textContent = ant + '%';
+  document.getElementById('vCuotas').textContent = cuotas + ' meses';
+  document.getElementById('oCuota').textContent = num(mes);
+  document.getElementById('oAnticipo').textContent = num(anticipo);
+  document.getElementById('oSaldo').textContent = num(saldo);
+  document.getElementById('lblAnt').textContent = 'Anticipo (' + ant + '%)';
+  document.getElementById('lblSaldo').textContent = 'Saldo en ' + cuotas + ' cuotas';
+}
+[cPrecio, cAnt, cCuotas].forEach(function(el){ el.addEventListener('input', calc); });
+calc();
+
+/* ---------- formulario ---------- */
+var KEY = 'molins_consultas_demo';
+document.getElementById('leadForm').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var n = document.getElementById('fNombre'), w = document.getElementById('fWa'), m = document.getElementById('fMail');
+  var ok = true;
+  [n, w, m].forEach(function(f){
+    var bad = !f.value.trim();
+    if(f === m && f.value.trim() && f.value.indexOf('@') < 0) bad = true;
+    f.classList.toggle('err', bad);
+    if(bad) ok = false;
+  });
+  if(!ok){ return; }
+  var reg = {
+    id: 'C' + Date.now(),
+    nombre: n.value.trim(),
+    whatsapp: w.value.trim(),
+    email: m.value.trim(),
+    busca: document.getElementById('fBusca').value,
+    propiedad: ctxProp ? ctxProp.codigo : (ctxEl.classList.contains('show') ? 'AIRES' : ''),
+    origen: 'portal-web',
+    fecha: new Date().toISOString()
+  };
+  try{
+    var prev = JSON.parse(localStorage.getItem(KEY) || '[]');
+    if(!Array.isArray(prev)) prev = [];
+    prev.push(reg);
+    localStorage.setItem(KEY, JSON.stringify(prev));
+  }catch(e){}
+  document.getElementById('okMsg').textContent = 'Gracias, ' + reg.nombre.split(' ')[0] + '. Te escribimos al ' + reg.whatsapp + ' a la brevedad.';
+  document.getElementById('formFields').style.display = 'none';
+  document.getElementById('formOk').classList.add('show');
+});
+
+/* ---------- nav / reveal / varios ---------- */
+var nav = document.getElementById('nav'), heroEl = document.querySelector('.hero');
+function navScroll(){
+  var y = window.scrollY, hb = heroEl ? heroEl.offsetHeight - 100 : 400, over = y < hb;
+  nav.classList.toggle('over', over);
+  nav.classList.toggle('scrolled', !over);
+}
+window.addEventListener('scroll', navScroll, {passive:true});
+navScroll();
+
+var burger = document.getElementById('burger'), links = document.getElementById('navlinks');
+burger.addEventListener('click', function(){
+  var o = links.classList.toggle('open');
+  burger.classList.toggle('open', o);
+  burger.setAttribute('aria-expanded', o);
+});
+links.querySelectorAll('a').forEach(function(a){
+  a.addEventListener('click', function(){ links.classList.remove('open'); burger.classList.remove('open'); burger.setAttribute('aria-expanded', false); });
+});
+
+var revs = document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window && !rm){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target;
+      var sib = Array.prototype.slice.call(el.parentElement.children).filter(function(c){ return c.classList.contains('reveal'); });
+      el.style.transitionDelay = (Math.min(sib.indexOf(el), 5) * 0.06) + 's';
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  }, {threshold:.08, rootMargin:'0px 0px -30px 0px'});
+  revs.forEach(function(el){ io.observe(el); });
+} else {
+  revs.forEach(function(el){ el.classList.add('in'); });
+}
+
+document.getElementById('anio').textContent = new Date().getFullYear();
+
+document.getElementById('backCrm').addEventListener('click', function(){
+  if(window.parent !== window){ window.parent.postMessage('volver-crm','*'); }
+  else { location.href = 'CRM Molins v2.dc.html'; }
+});
+})();
+</script>
+</body>
+</html>
