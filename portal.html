@@ -409,36 +409,143 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
 .wafab:hover{transform:scale(1.07)}
 .wafab svg{width:28px;height:28px}
 
-/* ---- modal ---- */
+/* ---- modal · ficha de propiedad ---- */
 .modal{position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;padding:20px;background:var(--a-70)}
 .modal.open{display:flex}
-.modal-box{background:var(--white);border-radius:var(--r-lg);max-width:900px;width:100%;max-height:92vh;overflow-y:auto;
-  box-shadow:var(--sh-lg);position:relative}
-.modal-close{position:absolute;top:12px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;border:none;
-  background:var(--w-90);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:var(--sh-sm)}
+.modal-box{background:var(--white);border-radius:var(--r-lg);max-width:980px;width:100%;max-height:92vh;overflow-y:auto;
+  box-shadow:var(--sh-lg);position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.modal-close{position:absolute;top:12px;right:12px;z-index:6;width:38px;height:38px;border-radius:50%;border:none;
+  background:var(--w-90);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:var(--sh-sm);transition:.2s}
+.modal-close:hover{background:var(--white);transform:scale(1.06)}
 .modal-close svg{width:17px;height:17px}
-.m-ph{position:relative;aspect-ratio:16/10;max-height:46vh;background:var(--navy-50);overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0}
+
+/* galería */
+.m-gal{position:relative;background:var(--navy-900);border-radius:var(--r-lg) var(--r-lg) 0 0;overflow:hidden}
+.m-ph{position:relative;width:100%;height:clamp(260px,46vh,440px);background:var(--navy-800);overflow:hidden}
 .m-ph img{width:100%;height:100%;object-fit:cover}
-.m-thumbs{display:flex;gap:8px;padding:12px 22px 0}
-.m-thumbs button{width:72px;height:52px;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;
-  cursor:pointer;background:none;transition:.2s}
-.m-thumbs button.on{border-color:var(--navy-700)}
+.m-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:42px;height:42px;border-radius:50%;
+  border:none;background:var(--w-90);color:var(--navy-900);cursor:pointer;display:grid;place-items:center;
+  box-shadow:var(--sh-sm);opacity:.92;transition:opacity .2s,background .2s,transform .2s}
+.m-arrow:hover{opacity:1;background:var(--white);transform:translateY(-50%) scale(1.07)}
+.m-arrow svg{width:19px;height:19px}
+.m-arrow.prev{left:12px}
+.m-arrow.next{right:12px}
+.m-arrow[hidden]{display:none}
+.m-count{position:absolute;left:12px;bottom:12px;z-index:4;font-size:12px;font-weight:600;color:var(--w-90);
+  background:var(--a-70);padding:5px 11px;border-radius:100px;font-variant-numeric:tabular-nums}
+.m-flag{position:absolute;right:12px;bottom:12px;z-index:4;font-size:11.5px;font-weight:700;color:var(--white);
+  background:var(--ok);padding:5px 11px;border-radius:100px}
+.m-flag.rent{background:var(--navy-600)}
+.m-flag.taken{background:var(--a-70)}
+.m-thumbs{display:flex;gap:8px;padding:10px 12px;overflow-x:auto;background:var(--navy-900)}
+.m-thumbs:empty{display:none}
+.m-thumbs button{width:78px;height:56px;flex:none;border-radius:8px;overflow:hidden;border:2px solid transparent;
+  padding:0;cursor:pointer;background:none;opacity:.6;transition:opacity .2s,border-color .2s}
+.m-thumbs button:hover{opacity:.88}
+.m-thumbs button.on{border-color:var(--gold);opacity:1}
 .m-thumbs img{width:100%;height:100%;object-fit:cover}
-.m-body{padding:18px 22px 24px}
+
+/* encabezado */
+.m-body{padding:22px 26px 30px}
 .m-body .zona{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--navy-600)}
 .m-body .zona svg{width:14px;height:14px}
-.m-body h3{font-size:clamp(21px,3vw,28px);margin:6px 0 4px}
-.m-body .tipo{font-size:14px;color:var(--muted)}
-.m-price{font-family:var(--fd);font-size:30px;font-weight:600;margin:16px 0 4px}
-.m-price small{font-size:15px;color:var(--muted);font-family:var(--fs)}
-.m-specs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-.m-specs span{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--slate);background:var(--bg-soft);
-  border:1px solid var(--line);padding:7px 12px;border-radius:9px}
-.m-specs svg{width:14px;height:14px;color:var(--navy-600)}
-.m-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);
-  padding-top:14px;margin-top:6px}
+.m-body h3{font-size:clamp(22px,3vw,30px);margin:7px 0 0}
+.m-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.m-tags span{font-size:12px;font-weight:600;color:var(--slate);background:var(--bg-soft);border:1px solid var(--line);
+  padding:4px 11px;border-radius:100px}
+.m-tags span.op{background:var(--navy-700);border-color:var(--navy-700);color:var(--white)}
+.m-tags span.ok{background:var(--ok-50);border-color:var(--ok-50);color:var(--ok)}
+.m-tags span.no{color:var(--muted)}
+.m-price{font-family:var(--fd);font-size:clamp(27px,4vw,34px);font-weight:600;line-height:1.1;margin-top:15px}
+.m-price small{font-size:15px;color:var(--muted);font-family:var(--fs);font-weight:500}
+.m-mo{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;font-weight:600;
+  color:var(--terra-700);background:var(--terra-50);padding:5px 11px;border-radius:7px}
+.m-mo svg{width:14px;height:14px}
+.m-mo:empty{display:none}
 .m-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-@media(max-width:600px){.m-body{padding:16px 16px 22px}.m-thumbs{padding:12px 16px 0}}
+
+/* ficha rápida */
+.m-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
+.m-quick div{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 13px}
+.m-quick svg{width:16px;height:16px;color:var(--navy-600)}
+.m-quick b{display:block;font-size:16px;font-weight:600;margin-top:7px;line-height:1.25;word-break:break-word}
+.m-quick span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* secciones */
+.m-sec{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.m-sec[hidden]{display:none}
+.m-sec>h4{font-family:var(--fd);font-size:19px;font-weight:600;margin-bottom:14px}
+.m-note{font-size:12.5px;color:var(--muted);line-height:1.55;margin-top:11px;display:flex;gap:8px;align-items:flex-start}
+.m-note svg{width:15px;height:15px;color:var(--navy-600);flex:none;margin-top:2px}
+
+/* ubicación */
+.m-map{height:280px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--line);background:var(--bg-soft)}
+.m-map[hidden]{display:none}
+.pin-prop{display:grid;place-items:center;background:var(--terra-600);border:3px solid var(--white);border-radius:50%;
+  box-shadow:0 3px 10px var(--a-20)}
+.m-zdesc{font-size:13.5px;color:var(--slate);line-height:1.6;margin-top:14px;padding-left:14px;
+  border-left:2px solid var(--line-2)}
+
+/* características y detalles */
+.m-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:0}
+.m-dl div{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:10px 0;
+  border-bottom:1px solid var(--line);min-width:0}
+.m-dl dt{font-size:13.5px;color:var(--muted);flex:none}
+.m-dl dd{font-size:13.5px;font-weight:600;text-align:right;margin:0;min-width:0}
+
+/* descripción */
+.m-desc p{font-size:14.5px;line-height:1.7;color:var(--slate);max-width:70ch}
+.m-desc p+p{margin-top:12px}
+
+/* financiación */
+.m-fin{background:var(--navy-50);border:1px solid var(--navy-100);border-radius:var(--r-sm);padding:18px 20px}
+.m-fin-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.m-fin-g b{display:block;font-family:var(--fd);font-size:21px;font-weight:600;color:var(--navy-800);line-height:1.2}
+.m-fin-g span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* similares */
+.m-sim{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.m-sim button{display:flex;flex-direction:column;text-align:left;background:var(--white);border:1px solid var(--line);
+  border-radius:var(--r-sm);overflow:hidden;padding:0;cursor:pointer;
+  transition:transform .25s var(--e),box-shadow .25s var(--e),border-color .2s}
+.m-sim button:hover{border-color:var(--navy-500);box-shadow:var(--sh-sm);transform:translateY(-3px)}
+.m-sim .sph{aspect-ratio:4/3;overflow:hidden;background:var(--navy-50)}
+.m-sim .sph img{width:100%;height:100%;object-fit:cover}
+.m-sim .sbd{padding:11px 12px 13px;min-width:0}
+.m-sim .sz{display:block;font-size:11px;font-weight:600;color:var(--navy-600)}
+.m-sim .st{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  font-size:13.5px;font-weight:600;line-height:1.3;margin:4px 0 6px}
+.m-sim .sp{display:block;font-family:var(--fd);font-size:16.5px;font-weight:600}
+.m-sim .sq{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* contacto */
+.m-cont{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.m-cont .cb{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 14px}
+.m-cont .cb .ic{width:38px;height:38px;border-radius:10px;background:var(--navy-50);display:grid;place-items:center;flex:none}
+.m-cont .cb .ic svg{width:17px;height:17px;color:var(--navy-700)}
+.m-cont .cb b{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.m-cont .cb p{font-size:14.5px;font-weight:500;margin-top:1px;line-height:1.35}
+
+@media(max-width:820px){.m-cont{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .modal{padding:0;align-items:stretch}
+  .modal-box{max-height:100%;height:100%;border-radius:0}
+  .modal-close{position:fixed;top:10px;right:10px}
+  .m-gal{border-radius:0}
+  .m-ph{height:clamp(210px,34vh,300px)}
+  .m-body{padding:18px 16px 34px}
+  .m-quick{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .m-dl{grid-template-columns:1fr}
+  .m-fin-g{grid-template-columns:1fr;gap:12px}
+  .m-sim{grid-template-columns:1fr;gap:10px}
+  .m-sim button{flex-direction:row;align-items:stretch;min-height:104px}
+  .m-sim .sph{width:108px;flex:none;aspect-ratio:auto}
+  .m-sim .sbd{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .m-acts .btn{flex:1 1 100%}
+  .m-map{height:220px}
+  .m-arrow{width:38px;height:38px}
+  .m-thumbs button{width:66px;height:50px}
+}
 
 /* ---- reveal ---- */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .7s var(--e),transform .7s var(--e)}
@@ -817,22 +924,94 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>
 </a>
 
-<!-- MODAL -->
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Detalle de la propiedad">
+<!-- MODAL · ficha de propiedad -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitulo">
   <div class="modal-box" id="modalBox">
-    <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar">
+    <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar la ficha">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
-    <div class="m-ph"><img id="mImg" src="" alt="" /></div>
-    <div class="m-thumbs" id="mThumbs"></div>
+
+    <div class="m-gal">
+      <div class="m-ph">
+        <img id="mImg" src="" alt="" />
+        <button class="m-arrow prev" id="mPrev" type="button" aria-label="Foto anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="m-arrow next" id="mNext" type="button" aria-label="Foto siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <span class="m-count" id="mCount" aria-live="polite"></span>
+        <span class="m-flag" id="mFlag"></span>
+      </div>
+      <div class="m-thumbs" id="mThumbs"></div>
+    </div>
+
     <div class="m-body">
       <span class="zona" id="mZona"></span>
       <h3 id="mTitulo"></h3>
-      <p class="tipo" id="mTipo"></p>
+      <div class="m-tags" id="mTags"></div>
       <div class="m-price" id="mPrecio"></div>
-      <div class="m-specs" id="mSpecs"></div>
-      <div class="m-meta" id="mMeta"></div>
+      <div class="m-mo" id="mMo"></div>
       <div class="m-acts" id="mActs"></div>
+      <div class="m-quick" id="mQuick"></div>
+
+      <section class="m-sec">
+        <h4>Ubicación</h4>
+        <div class="m-map" id="mMap"></div>
+        <p class="m-note" id="mMapNote"></p>
+        <p class="m-zdesc" id="mZonaDesc"></p>
+      </section>
+
+      <section class="m-sec">
+        <h4>Características</h4>
+        <dl class="m-dl" id="mCarac"></dl>
+        <p class="m-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Los datos salen de la ficha de la propiedad. Las superficies y las medidas se verifican contra el plano y la partida antes de firmar.
+        </p>
+      </section>
+
+      <section class="m-sec">
+        <h4>Descripción</h4>
+        <div class="m-desc" id="mDesc"></div>
+      </section>
+
+      <section class="m-sec">
+        <h4>Detalles</h4>
+        <dl class="m-dl" id="mDet"></dl>
+      </section>
+
+      <section class="m-sec" id="mSecFin">
+        <h4>Financiación</h4>
+        <div id="mFin"></div>
+      </section>
+
+      <section class="m-sec">
+        <h4>Propiedades similares</h4>
+        <div class="m-sim" id="mSim"></div>
+      </section>
+
+      <section class="m-sec">
+        <h4>Información de contacto</h4>
+        <div class="m-cont">
+          <div class="cb">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+            <div><b>Corredor a cargo</b><p>Francisco Molins</p></div>
+          </div>
+          <div class="cb">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92"/></svg></span>
+            <div><b>Teléfono y WhatsApp</b><p><a href="tel:+543874153669">387 415 3669</a></p></div>
+          </div>
+          <div class="cb">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div><b>Oficina</b><p>20 de Febrero 1705, Oficina 7 — Salta</p></div>
+          </div>
+          <div class="cb">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <div><b>Matrícula</b><p>CUCIS MP 251 — LPZ Grupo y Molins</p></div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </div>
@@ -935,8 +1114,16 @@ var PROPS = CRUDO.map(function(r){
 function num(n){ return Math.round(n).toLocaleString('es-AR'); }
 function money(moneda, v){ return (moneda === 'USD' ? 'USD ' : '$ ') + num(v); }
 function foto(codigo, n, thumb){ return 'fotos/' + (thumb ? 'thumbs/' : '') + codigo + '-' + (n||1) + '.jpg'; }
+/* el género del tipo, para que el texto concuerde: un departamento alquilado, una casa alquilada */
+var GEN_F = {'Casa':1, 'Finca':1, 'Oficina':1};
+function esFem(p){ return !!GEN_F[p.tipo]; }
+var ES_VIVIENDA = {'Casa':1, 'Departamento':1, 'Dúplex':1};
+
 function estadoTxt(p){
-  if(p.operacion === 'Alquiler') return p.estado === 'alquilada' ? {t:'Alquilada', c:'taken'} : {t:'En alquiler', c:'rent'};
+  if(p.operacion === 'Alquiler')
+    return p.estado === 'alquilada'
+      ? {t: esFem(p) ? 'Alquilada' : 'Alquilado', c:'taken'}
+      : {t:'En alquiler', c:'rent'};
   return {t:'Disponible', c:''};
 }
 function cuotaRef(p){
@@ -951,6 +1138,8 @@ var IC = {
   bano:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12V5a2 2 0 0 1 3.4-1.4L9 5M2 12h20v3a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5zM7 20l-1 2M18 20l1 2"/></svg>',
   m2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/></svg>',
   cuota:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+  codigo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M12 8v8M16 8v8"/></svg>',
+  etiqueta:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.8 8.8a2 2 0 0 0 2.8 0l7.2-7.2a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
   flecha:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>'
 };
@@ -1134,46 +1323,343 @@ document.getElementById('fClear').addEventListener('click', function(){
 });
 aplicar();
 
-/* ---------- modal ---------- */
-var modal = document.getElementById('modal'), mImg = document.getElementById('mImg'), mThumbs = document.getElementById('mThumbs');
-var actual = null;
+/* ============================================================
+   FICHA DE PROPIEDAD (modal)
+   Todo lo que se muestra sale de los datos de la cartera.
+   Nada de amenities, plusvalía ni superficies inventadas.
+   ============================================================ */
+var modal = document.getElementById('modal'), modalBox = document.getElementById('modalBox');
+var mImg = document.getElementById('mImg'), mThumbs = document.getElementById('mThumbs');
+var mPrev = document.getElementById('mPrev'), mNext = document.getElementById('mNext'), mCount = document.getElementById('mCount');
+var actual = null, fotoN = 1, volverA = null;
+
+var AGENTES = { FM:'Francisco Molins', LL:'Luis López' };
+var CARTERA_TXT = { propia:'Cartera propia', alquileres:'Alquileres', aires:'Aires de San Lorenzo' };
+
+function h32(s){ var h = 0; for(var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0x7fffffff; return h; }
+function lista(a){
+  if(a.length === 0) return '';
+  if(a.length === 1) return a[0];
+  return a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1];
+}
+function zonaCorta(p){ return p.zona === 'Otras zonas de Salta' ? 'Salta' : p.zona; }
+
+/* ---------- galería ---------- */
+function verFoto(n){
+  if(!actual) return;
+  var total = actual.nf;
+  fotoN = ((n - 1) % total + total) % total + 1;
+  mImg.src = foto(actual.codigo, fotoN, false);
+  mImg.alt = actual.tipo + ' en ' + actual.titulo + ' — foto ' + fotoN + ' de ' + total;
+  mCount.textContent = fotoN + ' de ' + total;
+  mThumbs.querySelectorAll('button').forEach(function(b){
+    b.classList.toggle('on', +b.getAttribute('data-n') === fotoN);
+  });
+}
+mPrev.addEventListener('click', function(){ verFoto(fotoN - 1); });
+mNext.addEventListener('click', function(){ verFoto(fotoN + 1); });
+mThumbs.addEventListener('click', function(ev){
+  var b = ev.target.closest('button'); if(!b) return;
+  verFoto(+b.getAttribute('data-n'));
+});
+mImg.addEventListener('error', function(){ mImg.style.visibility = 'hidden'; });
+mImg.addEventListener('load', function(){ mImg.style.visibility = ''; });
+/* deslizar en celular */
+(function(){
+  var x0 = null, y0 = null;
+  var ph = mImg.parentNode;
+  ph.addEventListener('touchstart', function(ev){
+    if(ev.touches.length !== 1) return;
+    x0 = ev.touches[0].clientX; y0 = ev.touches[0].clientY;
+  }, {passive:true});
+  ph.addEventListener('touchend', function(ev){
+    if(x0 === null) return;
+    var t = ev.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = null;
+    if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) verFoto(fotoN + (dx < 0 ? 1 : -1));
+  }, {passive:true});
+})();
+
+/* ---------- descripción, redactada con los datos de la ficha ---------- */
+function ubicFrase(p){
+  var t = p.titulo;
+  if(/sin nombre/i.test(t)) return '';
+  if(/\s(y|&)\s/i.test(t)) return 'en la esquina de ' + t;
+  if(/\d/.test(t)) return 'sobre ' + t;
+  var d = t.toLowerCase(), z = p.zona.toLowerCase();
+  if(z.indexOf(d) >= 0 || d.indexOf(z) >= 0) return '';
+  return 'en ' + t;
+}
+function paraQuien(p){
+  if(p.operacion === 'Alquiler' && p.estado === 'alquilada')
+    return 'Hoy está ' + (esFem(p) ? 'alquilada' : 'alquilado') + '. Si buscás algo parecido en la zona, escribinos y te avisamos cuando se libere.';
+  if(p.tipo === 'Terreno')
+    return 'Es de lo que mejor se acomoda a un plan de pago: se aparta con una entrega y el saldo se conversa en cada caso.';
+  if(p.tipo === 'Finca')
+    return 'Superficie de campo. Antes de avanzar conviene mirar el estado del título, la partida y los derechos de agua.';
+  if(p.tipo === 'Local comercial')
+    return 'Uso comercial. Conviene verificar en el municipio el rubro habilitado antes de decidir.';
+  if(p.tipo === 'Oficina')
+    return 'Para uso profesional o administrativo, con la habilitación que corresponda al rubro.';
+  if(p.tipo === 'Galpón')
+    return 'Sirve para depósito o logística liviana. El acceso y la altura libre se ven en la visita.';
+  if(p.tipo === 'Casa' || p.tipo === 'Dúplex'){
+    if(p.dorm >= 4) return 'Por cantidad de dormitorios da para familia grande, o para dividir en unidades si la normativa del sector lo permite.';
+    if(p.dorm >= 2) return 'Entra para una familia que quiera quedarse en la zona.';
+    return 'Se puede mirar para vivir o para poner en alquiler, según lo que estés buscando.';
+  }
+  if(p.dorm <= 1) return 'Por tamaño y ubicación entra tanto para vivir como para poner en alquiler.';
+  return 'Entra para una pareja o una familia chica.';
+}
+var CIERRES = [
+  'Se muestra con turno coordinado. Escribinos con el código y vemos qué día te queda cómodo.',
+  'Antes de firmar cualquier papel se revisa la documentación de la propiedad, punto por punto.',
+  'Si querés el resto de las fotos y la información completa, pedila por WhatsApp con el código.',
+  'La operación se hace con corredor matriculado, y con escribano en la escritura.'
+];
+function descripcion(p){
+  var u = ubicFrase(p), z = zonaCorta(p);
+  var s1 = u ? p.tipo + ' ' + u + ', ' + z + '.' : p.tipo + ' en ' + z + '.';
+  var comp = [];
+  if(p.m2 > 0) comp.push(num(p.m2) + ' m²');
+  if(p.dorm > 0) comp.push(p.dorm + (p.dorm === 1 ? ' dormitorio' : ' dormitorios'));
+  if(p.banos > 0) comp.push(p.banos + (p.banos === 1 ? ' baño' : ' baños'));
+  var s2 = comp.length
+    ? 'Tiene ' + lista(comp) + '.'
+    : 'La superficie y la composición se confirman con el plano y la partida: en la ficha están sin cargar.';
+  var op = p.operacion === 'Alquiler'
+    ? 'Se ofrece en alquiler, a ' + money(p.moneda, p.precio) + ' por mes.'
+    : 'Se ofrece en venta, a ' + money(p.moneda, p.precio) + '.';
+  /* si ya está alquilada, paraQuien() cierra solo: no corresponde invitar a visitarla */
+  var tomada = p.operacion === 'Alquiler' && p.estado === 'alquilada';
+  var n = h32(p.codigo) % (p.operacion === 'Alquiler' ? 3 : CIERRES.length);
+  var s3 = paraQuien(p) + (tomada ? '' : ' ' + CIERRES[n]);
+  return '<p>' + esc(s1 + ' ' + s2 + ' ' + op) + '</p><p>' + esc(s3) + '</p>';
+}
+
+/* ---------- propiedades similares: zona, tipo, operación y rango de precio ---------- */
+function similares(p, n){
+  return PROPS.filter(function(x){ return x.codigo !== p.codigo; }).map(function(x){
+    var s = 0, r = 99;
+    if(x.zona === p.zona) s += 3.5;
+    if(x.tipo === p.tipo) s += 2.5;
+    if(x.operacion === p.operacion) s += 2;
+    if(x.moneda === p.moneda && p.precio > 0 && x.precio > 0){
+      r = Math.max(p.precio, x.precio) / Math.min(p.precio, x.precio);
+      s += r <= 1.25 ? 3 : r <= 1.6 ? 2 : r <= 2.5 ? 1 : 0;
+    }
+    return {p:x, s:s, r:r};
+  }).sort(function(a, b){ return (b.s - a.s) || (a.r - b.r) || a.p.codigo.localeCompare(b.p.codigo); })
+    .slice(0, n).map(function(o){ return o.p; });
+}
+
+/* ---------- mapa de la ficha ---------- */
+var mapaFicha = null, marcaFicha = null;
+function pintarMapa(p){
+  var cont = document.getElementById('mMap'), nota = document.getElementById('mMapNote');
+  var geo = ZONA_GEO[p.zona];
+  var ico = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>';
+  if(!window.L || !geo){
+    cont.hidden = true;
+    if(mapaFicha){ mapaFicha.remove(); mapaFicha = null; marcaFicha = null; }
+    nota.innerHTML = ico + 'La zona de esta propiedad no está cargada con precisión en la ficha, así que no publicamos un punto en el mapa. Te la ubicamos exactamente cuando consultes.';
+    return;
+  }
+  cont.hidden = false;
+  nota.innerHTML = ico + 'El punto marca la zona, no la dirección exacta. Las direcciones de la cartera no están geolocalizadas y no las inventamos: la ubicación precisa se pasa al coordinar la visita.';
+  if(!mapaFicha){
+    mapaFicha = L.map(cont, { scrollWheelZoom:false, zoomControl:true, attributionControl:true }).setView(geo, 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:18, attribution:'© OpenStreetMap' }).addTo(mapaFicha);
+    marcaFicha = L.marker(geo, {
+      icon: L.divIcon({ className:'', html:'<div class="pin-prop" style="width:26px;height:26px"></div>', iconSize:[26,26], iconAnchor:[13,13] }),
+      keyboard:false
+    }).addTo(mapaFicha);
+  } else {
+    marcaFicha.setLatLng(geo);
+    mapaFicha.setView(geo, 14, {animate:false});
+  }
+  marcaFicha.bindPopup('<b>' + esc(p.zona) + '</b>' + esc(p.tipo + ' · ' + p.codigo));
+  /* dentro de un modal el contenedor todavía no tiene medida cuando se crea el mapa */
+  setTimeout(function(){ if(mapaFicha) mapaFicha.invalidateSize(); }, 60);
+  setTimeout(function(){ if(mapaFicha) mapaFicha.invalidateSize(); }, 320);
+}
+
+/* ---------- armado de la ficha ---------- */
+function fila(dt, dd){ return '<div><dt>' + dt + '</dt><dd>' + dd + '</dd></div>'; }
+
 function abrir(cod){
   var p = PROPS.filter(function(x){ return x.codigo === cod; })[0];
   if(!p) return;
+  var yaAbierto = modal.classList.contains('open');
   actual = p;
-  var st = estadoTxt(p), cuota = cuotaRef(p);
-  mImg.src = foto(p.codigo,1,false);
-  mImg.alt = p.tipo + ' en ' + p.titulo;
+  var st = estadoTxt(p), cuota = cuotaRef(p), esAlq = p.operacion === 'Alquiler';
+
+  /* galería */
   var ths = '';
   for(var i = 1; i <= p.nf; i++){
-    ths += '<button type="button" class="' + (i === 1 ? 'on' : '') + '" data-n="' + i + '" aria-label="Foto ' + i + '"><img src="' + foto(p.codigo,i,true) + '" alt="" /></button>';
+    ths += '<button type="button" data-n="' + i + '" aria-label="Ver la foto ' + i + '"><img src="' + foto(p.codigo, i, true) + '" alt="" /></button>';
   }
   mThumbs.innerHTML = p.nf > 1 ? ths : '';
+  mPrev.hidden = mNext.hidden = p.nf < 2;
+  mCount.style.display = p.nf < 2 ? 'none' : '';
+  verFoto(1);
+  var flag = document.getElementById('mFlag');
+  flag.textContent = st.t;
+  flag.className = 'm-flag ' + st.c;
+
+  /* encabezado */
   document.getElementById('mZona').innerHTML = IC.pin + ' ' + esc(p.zona);
   document.getElementById('mTitulo').textContent = p.titulo;
-  document.getElementById('mTipo').textContent = p.tipo + ' · ' + p.operacion + ' · ' + st.t;
-  document.getElementById('mPrecio').innerHTML = money(p.moneda, p.precio) + (p.operacion === 'Alquiler' ? ' <small>por mes</small>' : '') +
-    (cuota ? '<br /><span class="mo" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--terra-700);background:var(--terra-50);padding:5px 11px;border-radius:7px;font-family:var(--fs)">' + IC.cuota + 'referencia ' + cuota + '/mes con 30% de anticipo</span>' : '');
-  document.getElementById('mSpecs').innerHTML = specsHtml(p);
-  document.getElementById('mMeta').innerHTML = '<span>Código ' + p.codigo + '</span><span>Zona ' + esc(p.zona) + '</span><span>Cartera ' + (p.cartera === 'propia' ? 'propia' : 'alquileres') + '</span>';
-  document.getElementById('mActs').innerHTML =
-    '<a class="btn btn-wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' + IC.wa + ' Consultar por WhatsApp</a>' +
-    '<button class="btn btn-out" type="button" id="mForm">Dejar mis datos</button>';
+  document.getElementById('mTags').innerHTML =
+    '<span class="op">' + esc(p.operacion) + '</span>' +
+    '<span>' + esc(p.tipo) + '</span>' +
+    '<span class="' + (p.estado === 'activa' ? 'ok' : 'no') + '">' + esc(st.t) + '</span>' +
+    '<span>' + esc(p.codigo) + '</span>';
+  document.getElementById('mPrecio').innerHTML = money(p.moneda, p.precio) + (esAlq ? ' <small>por mes</small>' : '');
+  document.getElementById('mMo').innerHTML = cuota ? IC.cuota + 'Referencia ' + cuota + ' por mes con 30% de anticipo' : '';
+
+  /* acciones */
+  var acts = '<a class="btn btn-wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' + IC.wa + ' Consultar por WhatsApp</a>' +
+             '<button class="btn btn-out" type="button" id="mForm">Dejar mis datos</button>';
+  if(p.operacion === 'Venta' && p.moneda === 'USD' && !cuota)
+    acts += '<button class="btn btn-out" type="button" id="mCalc">Calcular la cuota</button>';
+  var actsEl = document.getElementById('mActs');
+  actsEl.innerHTML = acts;
   document.getElementById('mForm').addEventListener('click', function(){ cerrar(); consultarPor(p); });
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  document.getElementById('modalClose').focus();
+  var bCalc = document.getElementById('mCalc');
+  if(bCalc) bCalc.addEventListener('click', function(){ cerrar(); calcularPara(p); });
+
+  /* ficha rápida: un terreno no tiene dormitorios, así que ese lugar lo ocupa otro dato real */
+  var q = [];
+  if(ES_VIVIENDA[p.tipo])
+    q.push([IC.cama, p.dorm > 0 ? String(p.dorm) : 'A consultar', p.dorm === 1 ? 'Dormitorio' : 'Dormitorios']);
+  else
+    q.push([IC.pin, zonaCorta(p), 'Zona']);
+  if(p.banos > 0) q.push([IC.bano, String(p.banos), p.banos === 1 ? 'Baño' : 'Baños']);
+  else q.push([IC.etiqueta, p.operacion, 'Operación']);
+  q.push([IC.m2, p.m2 > 0 ? num(p.m2) + ' m²' : 'A confirmar', 'Superficie']);
+  q.push([IC.codigo, p.codigo, 'Código de ficha']);
+  document.getElementById('mQuick').innerHTML = q.map(function(c){
+    return '<div>' + c[0] + '<b>' + esc(c[1]) + '</b><span>' + esc(c[2]) + '</span></div>';
+  }).join('');
+
+  /* ubicación */
+  pintarMapa(p);
+  var zd = document.getElementById('mZonaDesc');
+  zd.textContent = ZONA_DESC[p.zona] || '';
+  zd.style.display = ZONA_DESC[p.zona] ? '' : 'none';
+
+  /* características */
+  var car = fila('Tipo de propiedad', esc(p.tipo)) + fila('Operación', esc(p.operacion));
+  car += fila('Superficie', p.m2 > 0 ? num(p.m2) + ' m²' : 'A confirmar con el plano');
+  if(p.dorm > 0) car += fila('Dormitorios', p.dorm);
+  if(p.banos > 0) car += fila('Baños', p.banos);
+  car += fila('Zona', esc(p.zona));
+  car += fila('Estado', esc(st.t));
+  document.getElementById('mCarac').innerHTML = car;
+
+  /* descripción */
+  document.getElementById('mDesc').innerHTML = descripcion(p);
+
+  /* detalles */
+  document.getElementById('mDet').innerHTML =
+    fila('Código', esc(p.codigo)) +
+    fila('Precio', money(p.moneda, p.precio) + (esAlq ? ' por mes' : '')) +
+    fila('Moneda', p.moneda === 'USD' ? 'Dólares' : 'Pesos') +
+    fila('Cartera', esc(CARTERA_TXT[p.cartera] || p.cartera)) +
+    fila('Corredor a cargo', esc(AGENTES[p.agente] || 'Francisco Molins')) +
+    fila('Matrícula', 'CUCIS MP 251');
+
+  /* financiación */
+  var secFin = document.getElementById('mSecFin');
+  if(cuota){
+    var ant = p.precio * 0.3, saldo = p.precio - ant;
+    secFin.hidden = false;
+    document.getElementById('mFin').innerHTML =
+      '<div class="m-fin"><div class="m-fin-g">' +
+        '<div><b>' + money(p.moneda, ant) + '</b><span>Anticipo del 30%</span></div>' +
+        '<div><b>' + money(p.moneda, saldo) + '</b><span>Saldo a financiar</span></div>' +
+        '<div><b>' + cuota + '</b><span>Cuota estimada en 60 meses</span></div>' +
+      '</div></div>' +
+      '<p class="m-note">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>' +
+      'Son números de referencia, calculados sin interés sobre el saldo, para que veas el orden de magnitud. El plan real se arma en cada caso: depende de la propiedad, del vendedor y de tu situación. Esto no es una cotización ni una oferta.</p>';
+  } else {
+    secFin.hidden = true;
+    document.getElementById('mFin').innerHTML = '';
+  }
+
+  /* similares */
+  document.getElementById('mSim').innerHTML = similares(p, 3).map(function(x){
+    var esp = [];
+    if(x.dorm > 0) esp.push(x.dorm + ' dorm.');
+    if(x.banos > 0) esp.push(x.banos + (x.banos === 1 ? ' baño' : ' baños'));
+    if(x.m2 > 0) esp.push(num(x.m2) + ' m²');
+    return '<button type="button" data-sim="' + x.codigo + '" aria-label="Ver ' + esc(x.titulo) + '">' +
+      '<span class="sph"><img src="' + foto(x.codigo, 1, true) + '" alt="' + esc(x.tipo + ' en ' + x.zona) + '" loading="lazy" /></span>' +
+      '<span class="sbd">' +
+        '<span class="sz">' + esc(x.zona) + '</span>' +
+        '<span class="st">' + esc(x.titulo) + '</span>' +
+        '<span class="sp">' + money(x.moneda, x.precio) + '</span>' +
+        '<span class="sq">' + esc(x.tipo + (esp.length ? ' · ' + esp.join(' · ') : '')) + '</span>' +
+      '</span></button>';
+  }).join('');
+
+  if(!yaAbierto){
+    volverA = document.activeElement;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modalClose').focus();
+  }
+  modalBox.scrollTop = 0;
+  urlFicha(p.codigo);
 }
-function cerrar(){ modal.classList.remove('open'); document.body.style.overflow = ''; }
-mThumbs.addEventListener('click', function(ev){
-  var b = ev.target.closest('button'); if(!b || !actual) return;
-  mThumbs.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
-  b.classList.add('on');
-  mImg.src = foto(actual.codigo, +b.getAttribute('data-n'), false);
+
+function cerrar(){
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  urlFicha(null);
+  if(volverA && volverA.focus){ try{ volverA.focus(); }catch(e){} }
+  volverA = null;
+}
+
+/* la ficha abierta queda en la URL, así se puede pasar el link de una propiedad */
+function urlFicha(cod){
+  if(!window.history || !history.replaceState) return;
+  var u = location.pathname + (cod ? '?ficha=' + encodeURIComponent(cod) : '') + location.hash;
+  try{ history.replaceState(null, '', u); }catch(e){}
+}
+
+/* saltar a otra ficha desde "propiedades similares": no se cierra, se recarga */
+document.getElementById('mSim').addEventListener('click', function(ev){
+  var b = ev.target.closest('[data-sim]'); if(!b) return;
+  abrir(b.getAttribute('data-sim'));
 });
+
 document.getElementById('modalClose').addEventListener('click', cerrar);
 modal.addEventListener('click', function(ev){ if(ev.target === modal) cerrar(); });
-document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && modal.classList.contains('open')) cerrar(); });
+document.addEventListener('keydown', function(ev){
+  if(!modal.classList.contains('open')) return;
+  if(ev.key === 'Escape'){ cerrar(); return; }
+  if(ev.key === 'ArrowLeft'){ ev.preventDefault(); verFoto(fotoN - 1); return; }
+  if(ev.key === 'ArrowRight'){ ev.preventDefault(); verFoto(fotoN + 1); return; }
+  if(ev.key !== 'Tab') return;
+  /* el foco no se sale de la ficha mientras está abierta */
+  var f = modalBox.querySelectorAll('a[href],button:not([hidden]),input,select,[tabindex]:not([tabindex="-1"])');
+  f = Array.prototype.filter.call(f, function(el){ return el.offsetParent !== null || el === document.activeElement; });
+  if(!f.length) return;
+  var pri = f[0], ult = f[f.length - 1];
+  if(ev.shiftKey && document.activeElement === pri){ ev.preventDefault(); ult.focus(); }
+  else if(!ev.shiftKey && document.activeElement === ult){ ev.preventDefault(); pri.focus(); }
+});
+
+/* llevar el precio de la propiedad a la calculadora de la página */
+function calcularPara(p){
+  var v = Math.min(700000, Math.max(20000, Math.round(p.precio / 5000) * 5000));
+  cPrecio.value = v;
+  calc();
+  document.getElementById('financiacion').scrollIntoView({behavior: rm ? 'auto' : 'smooth'});
+}
 
 function bindAbrir(root){
   root.addEventListener('click', function(ev){
@@ -1299,11 +1785,797 @@ if('IntersectionObserver' in window && !rm){
 
 document.getElementById('anio').textContent = new Date().getFullYear();
 
+/* si el link trae una propiedad, se abre su ficha directamente */
+(function(){
+  var m = /[?&]ficha=([^&#]+)/.exec(location.search);
+  if(!m) return;
+  var cod = decodeURIComponent(m[1]);
+  if(PROPS.some(function(p){ return p.codigo === cod; })) abrir(cod);
+  else urlFicha(null);
+})();
+
 document.getElementById('backCrm').addEventListener('click', function(){
-  if(window.parent !== window){ window.parent.postMessage('volver-crm','*'); }
-  else { location.href = 'CRM Molins v2.dc.html'; }
+  if(window.parent !== window){ window.parent.postMessage('volver-crm','*'); return; }
+  // Publicado el CRM se llama index.html; en la carpeta de trabajo conserva su nombre largo.
+  // Se prueba el publicado y, si no existe, se cae al otro: así el botón nunca da 404.
+  var pub = 'index.html', local = 'CRM Molins v2.dc.html';
+  fetch(pub, { method: 'HEAD' })
+    .then(function(r){ location.href = r.ok ? pub : local; })
+    .catch(function(){ location.href = local; });
 });
 })();
 </script>
+
+<!-- ===========================================================================
+     Recorrido guiado del portal. Se agrega al final, por fuera del script del
+     sitio: opera sobre el DOM ya renderizado y navega despachando clics sobre
+     los controles reales (chips, tarjetas, filas de zona, deslizadores).
+     Basado en el tour de BF Studio: los pasos apuntan a data-tour y, si el
+     objetivo no existe o no se ve, el paso cae a una tarjeta centrada — el
+     recorrido no se rompe.
+     No es para el que busca casa: es para que Francisco vea qué hace su web.
+     =========================================================================== -->
+<style>
+:root{
+  --tour-velo:var(--a-70);
+  --tour-acento:var(--navy-700);
+  --tour-acento-fuerte:var(--navy-800);
+  --tour-acento-tenue:var(--navy-50);
+}
+
+#tour-capa{position:fixed;inset:0;z-index:900;display:none}
+#tour-capa[data-abierto="1"]{display:block}
+
+#tour-hueco{
+  position:fixed;top:0;left:0;width:0;height:0;border-radius:12px;pointer-events:none;
+  box-shadow:0 0 0 2px var(--tour-acento),0 0 0 9999px var(--tour-velo);
+  transition:top .34s var(--e),left .34s var(--e),width .34s var(--e),height .34s var(--e),border-radius .34s var(--e);
+}
+#tour-hueco[data-foco="0"]{box-shadow:0 0 0 0 transparent,0 0 0 9999px var(--tour-velo)}
+
+#tour-cartel{
+  position:fixed;z-index:903;width:min(360px,calc(100vw - 28px));
+  background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh-lg);padding:16px 17px 14px;color:var(--ink);
+  opacity:0;transform:translateY(6px);
+  transition:opacity .22s ease,transform .22s var(--e),top .34s var(--e),left .34s var(--e);
+}
+#tour-cartel[data-visible="1"]{opacity:1;transform:none}
+#tour-cartel[data-centrado="1"]{
+  top:50%;left:50%;width:min(430px,calc(100vw - 28px));transform:translate(-50%,-50%);
+  transition:opacity .22s ease;
+}
+#tour-cartel[data-centrado="1"][data-visible="0"]{opacity:0}
+
+.tour-cab{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px}
+#tour-titulo{flex:1 1 auto;margin:0;font-family:var(--fd);font-size:20px;font-weight:600;line-height:1.18;letter-spacing:-.015em}
+#tour-conteo{flex:0 0 auto;margin-top:4px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#tour-cuerpo{margin:0;font-size:13.5px;line-height:1.6;color:var(--slate)}
+#tour-nota{
+  margin-top:11px;padding:9px 12px;font-size:12.5px;line-height:1.55;
+  background:var(--tour-acento-tenue);border-left:2px solid var(--tour-acento);
+  border-radius:0 8px 8px 0;color:var(--ink);
+}
+#tour-nota[hidden]{display:none}
+
+.tour-puntos{display:flex;align-items:center;justify-content:center;gap:5px;margin:14px 0 12px}
+.tour-punto{width:5px;height:5px;border-radius:99px;background:var(--line);transition:width .2s var(--e),background .2s}
+.tour-punto[data-on="1"]{width:16px;background:var(--tour-acento)}
+.tour-punto[data-visto="1"]{background:var(--navy-100)}
+
+.tour-pie{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tour-acciones{display:flex;align-items:center;gap:8px}
+#tour-capa button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+#tour-saltar{font-size:12.5px;color:var(--muted);padding:6px 2px;border-radius:7px;transition:color .15s}
+#tour-saltar:hover{color:var(--ink)}
+#tour-atras{
+  height:33px;padding:0 13px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);
+  font-size:12.5px;font-weight:600;color:var(--navy-800);transition:border-color .15s,background .15s;
+}
+#tour-atras:hover{border-color:var(--navy-500);background:var(--bg-soft)}
+#tour-atras[hidden]{display:none}
+#tour-siguiente{
+  height:33px;padding:0 15px;border-radius:var(--r-sm);
+  background:var(--tour-acento);color:var(--white);font-size:12.5px;font-weight:600;
+  transition:background .15s,transform .15s;
+}
+#tour-siguiente:hover{background:var(--tour-acento-fuerte)}
+#tour-siguiente:active{transform:scale(.985)}
+
+#tour-cursor{
+  position:fixed;top:0;left:0;z-index:906;pointer-events:none;
+  opacity:0;transform:translate3d(-60px,-60px,0);
+  transition:transform .5s var(--e),opacity .2s ease;
+}
+#tour-cursor svg{display:block;filter:drop-shadow(0 2px 5px var(--a-20))}
+#tour-cursor::after{
+  content:'';position:absolute;top:-3px;left:-3px;width:28px;height:28px;
+  border-radius:99px;border:2px solid var(--white);opacity:0;transform:scale(.35);
+}
+#tour-cursor[data-clic="1"]::after{animation:tourClic .42s var(--e) both}
+@keyframes tourClic{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.5)}}
+
+/* disparador, en la barra de navegación */
+#tour-abrir{
+  display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;
+  height:38px;padding:0 13px;white-space:nowrap;
+  border:1.5px solid var(--line-2);background:var(--white);color:var(--navy-800);
+  border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;
+  transition:border-color .2s,color .2s,background .2s;
+}
+#tour-abrir:hover{border-color:var(--navy-500);color:var(--navy-700)}
+#tour-abrir svg{width:16px;height:16px;flex:0 0 auto}
+header.nav.over #tour-abrir{background:var(--w-10);border-color:var(--w-55);color:var(--white)}
+header.nav.over #tour-abrir:hover{background:var(--w-22);border-color:var(--w-55);color:var(--white)}
+
+@media(max-width:1000px){
+  #tour-abrir{padding:0 10px;height:36px}
+  #tour-abrir .tour-abrir-txt{display:none}
+}
+@media(max-width:640px){
+  #tour-cursor{display:none}
+  #tour-cartel,#tour-cartel[data-centrado="1"]{
+    top:auto !important;bottom:10px;left:10px !important;right:10px;
+    width:auto !important;transform:translateY(8px);
+    transition:opacity .22s ease,transform .22s var(--e);
+  }
+  #tour-cartel[data-visible="1"],#tour-cartel[data-centrado="1"][data-visible="1"]{transform:none}
+  #tour-titulo{font-size:18px}
+  .tour-puntos{margin:12px 0 11px}
+}
+
+/* el menú mobile arranca cerrado: durante el recorrido no hace falta abrirlo,
+   pero si quedó abierto se cierra para no tapar el foco */
+body.tour-activo .navlinks.open{opacity:0;visibility:hidden}
+
+@media(prefers-reduced-motion:reduce){
+  #tour-hueco,#tour-cartel,#tour-cursor,.tour-punto{transition:none !important}
+  #tour-cursor{display:none}
+  #tour-cursor[data-clic="1"]::after{animation:none}
+}
+</style>
+
+<script>
+(function(){
+  'use strict';
+
+  var CLAVE = 'molins-portal-recorrido_v1';   // con versión: al subirla, todos lo vuelven a ver
+  var EVENTO = 'molins:abrir-recorrido';      // se puede reabrir despachando este evento
+  var MARGEN = 12;
+  var FICHA_DEMO = 'MOL-220876';              // Avenida Belgrano 2380 — Centro, con mapa y similares
+
+  function q(sel, raiz){ return (raiz || document).querySelector(sel); }
+  function qq(sel, raiz){ return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); }
+  function limitar(v, min, max){ return Math.max(min, Math.min(v, max)); }
+  function dormir(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function reducido(){
+    try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }
+  }
+  function esAngosto(){ return window.innerWidth <= 640; }
+  function modalAbierto(){ var m = q('#modal'); return !!(m && m.classList.contains('open')); }
+  function fichaEnUrl(){ var m = /[?&]ficha=([^&#]+)/.exec(location.search); return m ? decodeURIComponent(m[1]) : null; }
+  function texto(v){ return typeof v === 'function' ? v() : v; }
+
+  /* ------------------------------------------------------------- los pasos */
+  var PASOS = [
+    {
+      clave: 'bienvenida',
+      titulo: 'Esta es tu web',
+      cuerpo: 'El sitio público de Molins Negocios Inmobiliarios. Todo lo que se ve acá sale del sistema: cargás la propiedad una sola vez y el sitio se publica con esa ficha, sus fotos y su precio.',
+      nota: 'Dura menos de dos minutos. Con las flechas del teclado avanzás y volvés, con Escape lo cortás.'
+    },
+    {
+      clave: 'filtros',
+      titulo: 'El catálogo se ordena por intención',
+      cuerpo: 'Arriba del listado no hay categorías inmobiliarias, hay intenciones: para vivir, para invertir, en alquiler, terrenos. Recién después se afina por tipo y por zona. El que entra no tiene que saber cómo clasificás vos la cartera.',
+      antes: function(){
+        var b = q('#chips .chip[data-f="vivir"]');
+        if(!b || b.classList.contains('on')) return Promise.resolve();
+        return cursorHacia(b).then(gestoClic).then(function(){ b.click(); return dormir(200); });
+      },
+      /* se ilumina la barra de filtros sola: incluye el contador de resultados,
+         que es lo que cambia al tocar una pastilla. Iluminar además la primera
+         fila de tarjetas dejaba un hueco de 665px y el cuadrito sin dónde ir. */
+      objetivo: function(){ return [q('#propiedades .filters')]; },
+      nota: function(){
+        var res = q('#fRes'), total = qq('#grid .card').length;
+        var quedan = res ? res.textContent.trim() : '';
+        return quedan
+          ? 'Con “Para vivir” quedan ' + quedan + ' de las ' + total + ' publicadas. El listado ya estaba en la página: filtrar no recarga nada.'
+          : 'El listado ya está en la página: filtrar no recarga nada.';
+      }
+    },
+    {
+      clave: 'ficha',
+      titulo: 'La ficha de una propiedad',
+      cuerpo: 'Se abre sin salir de la página. Trae la galería, el precio, la ficha rápida y el mapa de la zona. Más abajo están las características completas, la descripción y tres propiedades parecidas, para que la visita siga en vez de terminar acá.',
+      modal: true,
+      antes: function(){ return abrirFicha(FICHA_DEMO); },
+      objetivo: function(){ return [q('#mQuick'), q('#mMap')]; },
+      nota: function(){
+        var t = q('#mTitulo'), z = q('#mZona');
+        var nombre = t ? t.textContent.trim() : '';
+        var zona = z ? z.textContent.trim() : '';
+        return nombre
+          ? nombre + (zona ? ', ' + zona : '') + '. Las fotos, el precio y los metros salen de la misma ficha que cargás en el sistema: si ahí cambia el precio, acá cambia solo.'
+          : 'Las fotos, el precio y los metros salen de la misma ficha que cargás en el sistema.';
+      }
+    },
+    {
+      clave: 'terrenos',
+      titulo: 'Los terrenos, con su cuota a la vista',
+      cuerpo: 'Es lo que mejor se acomoda a un plan de pago, así que tiene sección propia. Cada lote muestra una cuota de referencia calculada sobre su precio, con 30 por ciento de anticipo en 60 meses. No es una promesa de plan: es el orden de magnitud, para que la consulta llegue con el número ya conversado.',
+      objetivo: function(){
+        return [q('#terrenos .sec-head'), q('#gridLotes .lote')];
+      },
+      nota: function(){
+        var n = qq('#gridLotes .lote').length;
+        var ref = q('#gridLotes .lote .mo');
+        var txt = ref ? ref.textContent.replace(/\s+/g, ' ').trim() : '';
+        var monto = txt.match(/((?:USD|\$)\s?[\d.,]+)\s*\/\s*mes/);
+        return n
+          ? 'Hoy hay ' + n + ' terrenos publicados' +
+            (monto ? ', y el primero se muestra en ' + monto[1] + ' por mes' : '') +
+            '. La cuenta se hace sola sobre el precio cargado.'
+          : 'La cuota de referencia se calcula sola sobre el precio cargado.';
+      }
+    },
+    {
+      clave: 'zonas',
+      titulo: 'Dónde está concentrada la cartera',
+      cuerpo: 'El mapa cuenta las propiedades por zona: el número va adentro del punto y el punto crece con la cantidad. Tocás una zona de la lista y el mapa va hasta ahí. Los números salen del listado de arriba, no se escriben a mano.',
+      antes: function(){
+        var f = q('.zona-fila');
+        if(!f) return Promise.resolve();
+        return cursorHacia(f).then(gestoClic).then(function(){ f.click(); return dormir(420); });
+      },
+      objetivo: function(){ return [q('.mapa-wrap')]; },
+      nota: function(){
+        var filas = qq('.zona-fila');
+        if(!filas.length) return 'El punto marca la zona, no la dirección exacta.';
+        var pri = filas[0];
+        var n = q('.n', pri), t = q('.t', pri);
+        var total = qq('#grid .card').length;
+        return (n && t)
+          ? t.textContent.trim() + ' concentra ' + n.textContent.trim() + ' de las ' + total + ' propiedades, repartidas en ' + filas.length + ' zonas. El punto marca la zona, no la puerta.'
+          : 'El punto marca la zona, no la dirección exacta.';
+      }
+    },
+    {
+      clave: 'calculadora',
+      titulo: 'La cuota, contestada por el sitio',
+      cuerpo: 'La pregunta que más repite el que busca primera vivienda es cuánto paga por mes. En vez de contestarla por WhatsApp una por una, la contesta la página: la persona mueve el precio, el anticipo y los meses, y ve el número antes de escribirte.',
+      antes: function(){
+        var p = q('#cPrecio'), c = q('#cCuotas');
+        if(!p || !c) return Promise.resolve();
+        return cursorHacia(p).then(function(){
+          p.value = 45000; p.dispatchEvent(new Event('input', {bubbles:true}));
+          return dormir(260);
+        }).then(function(){
+          return cursorHacia(c);
+        }).then(function(){
+          c.value = 84; c.dispatchEvent(new Event('input', {bubbles:true}));
+          return dormir(260);
+        });
+      },
+      objetivo: function(){ return [q('.calc-card'), q('.calc-out')]; },
+      nota: function(){
+        var cuota = q('#oCuota'), pre = q('#vPrecio'), ant = q('#vAnt'), cu = q('#vCuotas');
+        return (cuota && pre && ant && cu)
+          ? 'Un terreno de ' + pre.textContent.trim() + ' con ' + ant.textContent.trim() + ' de anticipo en ' + cu.textContent.trim() + ' queda en USD ' + cuota.textContent.trim() + ' por mes. El cálculo es a valor constante, sin interés, y así lo aclara la página.'
+          : 'El cálculo es a valor constante, sin interés, y así lo aclara la página.';
+      }
+    },
+    {
+      clave: 'formulario',
+      titulo: 'Cada consulta cae en el sistema',
+      cuerpo: 'Este formulario es el punto donde la web se conecta con el sistema. Lo que la persona deja acá entra a la bandeja de consultas con el origen identificado: de qué página vino, qué propiedad estaba mirando y por qué campaña llegó. Nadie tiene que preguntarle cómo nos encontró.',
+      antes: function(){
+        var b = q('#formFields');
+        if(b) b.style.display = '';
+        var ok = q('#formOk');
+        if(ok) ok.classList.remove('show');
+        return Promise.resolve();
+      },
+      objetivo: function(){ return [q('#contacto .form')]; },
+      nota: 'En esta demostración la consulta queda guardada en el navegador. En el sistema real entra a la bandeja, se asigna a vos o a Luis y arranca el reloj de las 24 horas.',
+      cta: { texto: 'Ver la cartera', ir: '#propiedades' }
+    }
+  ];
+
+  /* ---------------------------------------------------------- la interfaz */
+  var capa, hueco, cartel, tituloEl, conteoEl, cuerpoEl, notaEl, puntosEl,
+      btnSaltar, btnAtras, btnSiguiente, cursor, disparador;
+  var pasos = [], i = 0, abierto = false, ficha = 0, cajaActual = null;
+
+  function construir(){
+    if(capa) return;
+
+    capa = document.createElement('div');
+    capa.id = 'tour-capa';
+    capa.setAttribute('data-abierto', '0');
+
+    hueco = document.createElement('div');
+    hueco.id = 'tour-hueco';
+    hueco.setAttribute('data-foco', '0');
+
+    cartel = document.createElement('div');
+    cartel.id = 'tour-cartel';
+    cartel.setAttribute('role', 'dialog');
+    cartel.setAttribute('aria-modal', 'true');
+    cartel.setAttribute('aria-labelledby', 'tour-titulo');
+    cartel.setAttribute('data-visible', '0');
+    cartel.innerHTML =
+      '<div class="tour-cab">' +
+        '<h2 id="tour-titulo"></h2>' +
+        '<span id="tour-conteo"></span>' +
+      '</div>' +
+      '<p id="tour-cuerpo"></p>' +
+      '<div id="tour-nota" hidden></div>' +
+      '<div class="tour-puntos" aria-hidden="true"></div>' +
+      '<div class="tour-pie">' +
+        '<button type="button" id="tour-saltar">Saltar</button>' +
+        '<div class="tour-acciones">' +
+          '<button type="button" id="tour-atras">Atrás</button>' +
+          '<button type="button" id="tour-siguiente">Siguiente</button>' +
+        '</div>' +
+      '</div>';
+
+    cursor = document.createElement('div');
+    cursor.id = 'tour-cursor';
+    cursor.setAttribute('aria-hidden', 'true');
+    cursor.innerHTML =
+      '<svg width="21" height="25" viewBox="0 0 21 25" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2.5 1.6 2.5 19.4 7.2 15.1 10.6 22.4 13.8 20.9 10.4 13.9 17 13.9Z" ' +
+      'fill="var(--navy-900)" stroke="var(--white)" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+
+    capa.appendChild(hueco);
+    capa.appendChild(cartel);
+    document.body.appendChild(capa);
+    document.body.appendChild(cursor);
+
+    tituloEl = q('#tour-titulo'); conteoEl = q('#tour-conteo');
+    cuerpoEl = q('#tour-cuerpo'); notaEl = q('#tour-nota');
+    puntosEl = q('.tour-puntos', cartel);
+    btnSaltar = q('#tour-saltar'); btnAtras = q('#tour-atras'); btnSiguiente = q('#tour-siguiente');
+
+    btnSaltar.addEventListener('click', function(){ cerrar(); });
+    btnAtras.addEventListener('click', function(){ mover(-1); });
+    btnSiguiente.addEventListener('click', function(){
+      var p = pasos[i];
+      if(i >= pasos.length - 1){ cerrar(p && p.cta); return; }
+      mover(1);
+    });
+    /* un clic en el velo no rompe nada: avanza */
+    capa.addEventListener('click', function(e){ if(e.target === capa) mover(1); });
+  }
+
+  /* --------------------------------------------------------- el disparador */
+  function ponerDisparador(){
+    var caja = q('.nav-cta');
+    if(!caja || disparador) return;
+    disparador = document.createElement('button');
+    disparador.type = 'button';
+    disparador.id = 'tour-abrir';
+    disparador.title = 'Ver el recorrido guiado del sitio';
+    disparador.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>' +
+      '<span class="tour-abrir-txt">Ver el recorrido</span>';
+    disparador.addEventListener('click', function(){ abrir(); });
+    caja.insertBefore(disparador, caja.firstChild);
+  }
+
+  /* -------------------------------------------------------------- medición */
+  function comoLista(v){
+    if(!v) return [];
+    return (Object.prototype.toString.call(v) === '[object Array]' ? v : [v]).filter(Boolean);
+  }
+
+  function union(els){
+    var r = null;
+    comoLista(els).forEach(function(el){
+      if(!el || !el.getBoundingClientRect) return;
+      var b = el.getBoundingClientRect();
+      if(b.width <= 0 || b.height <= 0) return;
+      if(!r) r = {top:b.top, left:b.left, right:b.right, bottom:b.bottom};
+      else{
+        r.top = Math.min(r.top, b.top); r.left = Math.min(r.left, b.left);
+        r.right = Math.max(r.right, b.right); r.bottom = Math.max(r.bottom, b.bottom);
+      }
+    });
+    return r;
+  }
+
+  /* el elemento puede vivir dentro de la ficha, que scrollea por su cuenta */
+  function contenedor(el){
+    var box = q('#modalBox');
+    return (box && el && box.contains(el)) ? box : null;
+  }
+
+  /* Los bloques de la página aparecen con scroll. Durante el recorrido se los
+     muestra de una: nunca se ilumina un hueco sobre algo todavía invisible. */
+  function revelarTodo(){
+    qq('.reveal').forEach(function(el){ el.style.transitionDelay = '0s'; el.classList.add('in'); });
+  }
+
+  /* El desplazamiento va instantáneo a propósito: la página declara
+     scroll-behavior:smooth, y con scroll suave la medición se toma mientras
+     todavía se está moviendo. El movimiento visible lo aporta la transición del
+     propio hueco, que sí es suave. */
+  function desplazar(els){
+    var r = union(els);
+    if(!r) return;
+    var alto = r.bottom - r.top;
+    var cont = contenedor(comoLista(els)[0]);
+    if(cont){
+      var rc = cont.getBoundingClientRect();
+      var margen = Math.max(12, (rc.height - Math.min(alto, rc.height - 24)) / 2);
+      cont.scrollTop += (r.top - rc.top - margen);
+      return;
+    }
+    var vh = window.innerHeight;
+    var libre = Math.max(14, (vh - Math.min(alto, vh - 28)) / 2);
+    var y = Math.max(0, window.scrollY + r.top - libre);
+    try{ window.scrollTo({top:y, left:0, behavior:'instant'}); }
+    catch(e){ window.scrollTo(0, y); }
+    if(Math.abs(window.scrollY - y) > 2 && document.scrollingElement) document.scrollingElement.scrollTop = y;
+  }
+
+  /* Espera a que el objetivo deje de moverse. Se sondea con setTimeout y no con
+     requestAnimationFrame: si el usuario se cambia de pestaña, rAF se congela y
+     el recorrido quedaría trabado a mitad de un paso. */
+  function quieto(el){
+    return new Promise(function(res){
+      if(!el) return res();
+      var t0 = Date.now(), ant = null, iguales = 0;
+      (function tic(){
+        var r = el.getBoundingClientRect();
+        var clave = Math.round(r.top) + ':' + Math.round(r.left) + ':' + Math.round(r.width);
+        if(clave === ant) iguales++; else iguales = 0;
+        ant = clave;
+        if(iguales >= 3 || Date.now() - t0 > 900) return res();
+        setTimeout(tic, 32);
+      })();
+    });
+  }
+
+  function esperar(fn, ms){
+    return new Promise(function(res){
+      var t0 = Date.now();
+      (function tic(){
+        var r = fn();
+        if(r) return res(r);
+        if(Date.now() - t0 > (ms || 1400)) return res(null);
+        setTimeout(tic, 32);
+      })();
+    });
+  }
+
+  function medir(els){
+    var r = union(els);
+    if(!r) return null;
+    /* Un objetivo aplastado o fuera de pantalla no se puede señalar: antes que
+       abrir un hueco de dos píxeles sobre nada, el paso cae a la tarjeta centrada. */
+    var ancho = r.right - r.left, alto = r.bottom - r.top;
+    if(ancho < 24 || alto < 12) return null;
+    if(r.bottom < 0 || r.top > window.innerHeight) return null;
+    var pad = (alto > 90 || ancho > 460) ? 6 : 8;
+    var izq = Math.max(2, r.left - pad);
+    var arr = Math.max(2, r.top - pad);
+    return {
+      top: arr,
+      left: izq,
+      ancho: Math.max(2, Math.min(ancho + pad * 2, window.innerWidth - izq - 2)),
+      alto: Math.max(2, Math.min(alto + pad * 2, window.innerHeight - arr - 2))
+    };
+  }
+
+  function pintarHueco(caja){
+    cajaActual = caja;
+    if(!caja){
+      hueco.setAttribute('data-foco', '0');
+      hueco.style.top = (window.innerHeight / 2) + 'px';
+      hueco.style.left = (window.innerWidth / 2) + 'px';
+      hueco.style.width = '0px';
+      hueco.style.height = '0px';
+      return;
+    }
+    hueco.setAttribute('data-foco', '1');
+    hueco.style.top = caja.top + 'px';
+    hueco.style.left = caja.left + 'px';
+    hueco.style.width = caja.ancho + 'px';
+    hueco.style.height = caja.alto + 'px';
+    hueco.style.borderRadius = (caja.alto < 44 ? 10 : 14) + 'px';
+  }
+
+  function colocarCartel(caja){
+    if(esAngosto()){ cartel.setAttribute('data-centrado', caja ? '0' : '1'); return; }
+    if(!caja){ cartel.setAttribute('data-centrado', '1'); cartel.style.top = ''; cartel.style.left = ''; return; }
+
+    cartel.setAttribute('data-centrado', '0');
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var cw = cartel.offsetWidth, ch = cartel.offsetHeight;
+    var abajo = caja.top + caja.alto + MARGEN;
+    var arriba = caja.top - MARGEN - ch;
+    var top, left;
+
+    if(abajo + ch <= vh - MARGEN){
+      top = abajo; left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+    } else if(arriba >= MARGEN){
+      top = arriba; left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+    } else {
+      var der = caja.left + caja.ancho + MARGEN;
+      var izq = caja.left - MARGEN - cw;
+      if(der + cw <= vw - MARGEN){
+        left = der;
+        top = limitar(caja.top + caja.alto / 2 - ch / 2, MARGEN, Math.max(MARGEN, vh - ch - MARGEN));
+      } else if(izq >= MARGEN){
+        left = izq;
+        top = limitar(caja.top + caja.alto / 2 - ch / 2, MARGEN, Math.max(MARGEN, vh - ch - MARGEN));
+      } else if(caja.alto > ch + MARGEN * 2){
+        /* No entra en ningún costado y lo iluminado es más alto que el cuadrito:
+           se apoya en la esquina de abajo a la derecha, adentro del hueco. Esa
+           esquina y no el centro porque lo que se señala —el encabezado, las
+           pastillas de filtro, la ficha rápida— vive arriba a la izquierda. */
+        left = limitar(caja.left + caja.ancho - cw - MARGEN, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+        top = limitar(caja.top + caja.alto - ch - MARGEN, MARGEN, Math.max(MARGEN, vh - ch - MARGEN));
+      } else {
+        left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+        top = limitar(caja.top + caja.alto / 2 - ch / 2, MARGEN, Math.max(MARGEN, vh - ch - MARGEN));
+      }
+    }
+    cartel.style.top = Math.round(top) + 'px';
+    cartel.style.left = Math.round(left) + 'px';
+  }
+
+  /* en celular el cartel ocupa la franja de abajo: si el objetivo quedó tapado,
+     se corre el scroll para subirlo */
+  function acomodarEnAngosto(els){
+    if(!esAngosto()) return;
+    var r = union(els);
+    if(!r) return;
+    var zona = window.innerHeight - cartel.offsetHeight - 22;
+    if(r.bottom <= zona) return;
+    var delta = Math.min(r.bottom - zona + 12, Math.max(0, r.top - 12));
+    if(delta <= 0) return;
+    var cont = contenedor(comoLista(els)[0]);
+    if(cont) cont.scrollTop += delta; else window.scrollBy(0, delta);
+  }
+
+  var pendiente = 0;
+  function remedir(){
+    if(!abierto || pendiente) return;
+    pendiente = setTimeout(function(){
+      pendiente = 0;
+      if(!abierto) return;
+      var p = pasos[i];
+      var els = p && p.objetivo ? p.objetivo() : null;
+      pintarHueco(medir(els));
+      colocarCartel(cajaActual);
+    }, 24);
+  }
+
+  /* ----------------------------------------------------- el cursor simulado */
+  function hayCursor(){ return !esAngosto() && !reducido(); }
+
+  function cursorHacia(el){
+    if(!hayCursor() || !cursor) return Promise.resolve();
+    var x, y;
+    if(el){
+      var r = el.getBoundingClientRect();
+      x = r.left + Math.min(r.width / 2, 92);
+      y = r.top + Math.min(r.height / 2, 46);
+    } else {
+      x = window.innerWidth / 2; y = window.innerHeight / 2 + 120;
+    }
+    cursor.style.opacity = '1';
+    cursor.style.transform = 'translate3d(' +
+      Math.round(limitar(x, 14, window.innerWidth - 14)) + 'px,' +
+      Math.round(limitar(y, 14, window.innerHeight - 14)) + 'px,0)';
+    return dormir(520);
+  }
+
+  function gestoClic(){
+    if(!hayCursor() || !cursor) return Promise.resolve();
+    cursor.setAttribute('data-clic', '1');
+    return dormir(230).then(function(){ cursor.removeAttribute('data-clic'); return dormir(120); });
+  }
+
+  /* ------------------------------------------------------- la ficha (modal) */
+  function abrirFicha(cod){
+    if(modalAbierto() && fichaEnUrl() === cod) return Promise.resolve(true);
+    var card = q('#grid .card[data-cod="' + cod + '"]');
+    if(!card) return Promise.resolve(false);
+    card.classList.add('in');
+    desplazar([card]);
+    return quieto(card)
+      .then(function(){ return cursorHacia(card); })
+      .then(gestoClic)
+      .then(function(){
+        card.click();
+        return esperar(function(){ return modalAbierto() && q('#mQuick') && q('#mQuick').children.length ? true : null; }, 1800);
+      })
+      .then(function(){ return dormir(260); });
+  }
+
+  function cerrarFicha(){
+    if(!modalAbierto()) return Promise.resolve(true);
+    var b = q('#modalClose');
+    if(b) b.click();
+    return esperar(function(){ return modalAbierto() ? null : true; }, 800);
+  }
+
+  /* -------------------------------------------------------------- el paso */
+  /* Primero se trae el objetivo a la pantalla y recién después corre la acción
+     del paso: si no, el cursor simulado viaja hacia un botón que todavía está
+     mil píxeles más abajo y el gesto no se entiende. */
+  function preparar(p){
+    var t = p.modal ? Promise.resolve() : cerrarFicha();
+    t = t.then(function(){
+      var els = comoLista(p.objetivo ? p.objetivo() : null);
+      if(!els.length) return;
+      desplazar(els);
+      return quieto(els[0]);
+    });
+    if(p.antes) t = t.then(function(){ return p.antes(); });
+    return t.then(function(){ return dormir(60); });
+  }
+
+  function pintarPuntos(){
+    puntosEl.innerHTML = '';
+    for(var k = 0; k < pasos.length; k++){
+      var d = document.createElement('span');
+      d.className = 'tour-punto';
+      if(k === i) d.setAttribute('data-on', '1');
+      else if(k < i) d.setAttribute('data-visto', '1');
+      puntosEl.appendChild(d);
+    }
+  }
+
+  function pintarTexto(p){
+    tituloEl.textContent = p.titulo;
+    conteoEl.textContent = (i + 1) + ' de ' + pasos.length;
+    cuerpoEl.textContent = texto(p.cuerpo);
+    var n = texto(p.nota);
+    if(n){ notaEl.textContent = n; notaEl.hidden = false; } else { notaEl.hidden = true; }
+    btnAtras.hidden = i === 0;
+    btnSiguiente.textContent = i >= pasos.length - 1 ? (p.cta ? p.cta.texto : 'Terminar') : 'Siguiente';
+    pintarPuntos();
+  }
+
+  function mostrar(){
+    var mio = ++ficha;
+    var p = pasos[i];
+    if(!p) return cerrar();
+
+    cartel.setAttribute('data-visible', '0');
+    pintarTexto(p);
+
+    preparar(p).then(function(){
+      if(mio !== ficha) return;
+      var els = comoLista(p.objetivo ? p.objetivo() : null);
+      if(els.length) desplazar(els);
+      return quieto(els[0]).then(function(){
+        if(mio !== ficha) return;
+        if(!els.length){ cursor.style.opacity = '0'; return; }
+        return cursorHacia(els[0]).then(function(){
+          if(mio !== ficha) return;
+          return gestoClic();
+        });
+      }).then(function(){
+        if(mio !== ficha) return;
+        var vivos = comoLista(p.objetivo ? p.objetivo() : null);
+        /* el elemento queda etiquetado en el DOM real, como en el tour de BF Studio */
+        qq('[data-tour]').forEach(function(n){ n.removeAttribute('data-tour'); });
+        if(vivos[0]) vivos[0].setAttribute('data-tour', p.clave);
+        /* los ejemplos que se leen de la pantalla recién existen ahora */
+        pintarTexto(p);
+        pintarHueco(medir(vivos));
+        cartel.setAttribute('data-visible', '1');
+        colocarCartel(cajaActual);
+        acomodarEnAngosto(vivos);
+        setTimeout(remedir, 160);
+        setTimeout(remedir, 380);
+        setTimeout(remedir, 720);
+        try{ btnSiguiente.focus({preventScroll:true}); }catch(e){}
+      });
+    });
+  }
+
+  function mover(d){
+    var n = i + d;
+    if(n < 0) return;
+    if(n >= pasos.length) return cerrar(pasos[pasos.length - 1] && pasos[pasos.length - 1].cta);
+    i = n;
+    mostrar();
+  }
+
+  /* ------------------------------------------------------- abrir / cerrar */
+  function abrir(desde){
+    if(abierto) return;
+    if(!q('#grid')) return;
+    construir();
+    ponerDisparador();
+    /* ningún paso se descarta: si el objetivo no existe, cae a tarjeta centrada */
+    pasos = PASOS;
+    if(!pasos.length) return;
+    i = limitar((desde || 1) - 1, 0, pasos.length - 1);
+    abierto = true;
+    document.body.classList.add('tour-activo');
+    capa.setAttribute('data-abierto', '1');
+    /* la página scrollea suave: durante el recorrido se apaga para poder medir */
+    document.documentElement.style.scrollBehavior = 'auto';
+    revelarTodo();
+    var links = q('#navlinks');
+    if(links) links.classList.remove('open');
+    window.addEventListener('resize', remedir);
+    window.addEventListener('scroll', remedir, true);
+    window.addEventListener('keydown', teclado, true);
+    mostrar();
+  }
+
+  function cerrar(cta){
+    if(!abierto) return;
+    abierto = false; ficha++;
+    try{ localStorage.setItem(CLAVE, '1'); }catch(e){}
+    capa.setAttribute('data-abierto', '0');
+    cartel.setAttribute('data-visible', '0');
+    cursor.style.opacity = '0';
+    cursor.removeAttribute('data-clic');
+    document.body.classList.remove('tour-activo');
+    document.documentElement.style.scrollBehavior = '';
+    qq('[data-tour]').forEach(function(n){ n.removeAttribute('data-tour'); });
+    window.removeEventListener('resize', remedir);
+    window.removeEventListener('scroll', remedir, true);
+    window.removeEventListener('keydown', teclado, true);
+    cerrarFicha().then(function(){
+      /* se devuelve la página como estaba: sin filtro y sin ficha abierta */
+      var limpiar = q('#fClear');
+      if(limpiar) limpiar.click();
+      if(cta && cta.ir){
+        var destino = q(cta.ir);
+        if(destino) destino.scrollIntoView({behavior: reducido() ? 'auto' : 'smooth'});
+      }
+    });
+  }
+
+  function teclado(e){
+    if(!abierto) return;
+    var k = (e.key || '').toLowerCase();
+    if(k === 'tab') return;                  // se deja pasar por accesibilidad
+    e.preventDefault();
+    e.stopImmediatePropagation();            // la ficha también escucha el teclado
+    if(k === 'escape') cerrar();
+    else if(k === 'arrowright' || k === 'enter' || k === ' ') mover(1);
+    else if(k === 'arrowleft') mover(-1);
+  }
+
+  /* ------------------------------------------------------------ el arranque */
+  function visto(){
+    try{ return !!localStorage.getItem(CLAVE); }catch(e){ return true; }
+  }
+
+  /* Para la demo y para tomar capturas: ?recorrido=0 lo apaga, =1 lo fuerza
+     desde el principio, =5 lo abre en ese paso. */
+  var arranqueEn = 1;
+  try{
+    var qs = new URLSearchParams(location.search).get('recorrido');
+    if(qs === '0') localStorage.setItem(CLAVE, '1');
+    else if(qs !== null && /^\d+$/.test(qs)){ localStorage.removeItem(CLAVE); arranqueEn = Math.max(1, parseInt(qs, 10)); }
+  }catch(e){}
+
+  function iniciar(){
+    ponerDisparador();
+    window.addEventListener(EVENTO, function(){ abrir(); });
+    if(visto()) return;
+    setTimeout(function(){ if(!abierto && !visto()) abrir(arranqueEn); }, 1100);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(iniciar, 60); });
+  else setTimeout(iniciar, 60);
+})();
+</script>
+
 </body>
 </html>

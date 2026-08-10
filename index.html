@@ -2932,5 +2932,815 @@ class Component extends DCLogic {
 }
 
 </script>
+<!-- ===========================================================================
+     Recorrido guiado (onboarding). Se agrega por fuera de la plantilla <x-dc>:
+     opera sobre el DOM ya renderizado y navega despachando clics sobre los
+     botones reales del menú. No toca support.js ni la lógica del prototipo.
+     Basado en el tour de BF Studio: los pasos apuntan a data-tour, y si el
+     objetivo no existe el paso cae a una tarjeta centrada — el tour no se rompe.
+     =========================================================================== -->
+<style>
+:root{
+  --tour-tinta:#1c2733;
+  --tour-tenue:#5b6b7b;
+  --tour-suave:#8795a5;
+  --tour-linea:#e4e9ef;
+  --tour-linea-2:#eef1f5;
+  --tour-papel:#ffffff;
+  --tour-acento:#2C4A6E;
+  --tour-acento-fuerte:#24405f;
+  --tour-acento-tenue:#e9eff6;
+  --tour-fondo:#f0f3f7;
+  --tour-noche:#16263c;
+  --tour-velo:rgba(16,26,41,.68);
+  --tour-radio:14px;
+  --tour-radio-2:9px;
+  --tour-sombra:0 24px 64px -14px rgba(16,24,40,.45);
+  --tour-curva:cubic-bezier(.2,.7,.3,1);
+  --tour-paso:.34s;
+}
+
+#tour-capa{position:fixed; inset:0; z-index:900; display:none}
+#tour-capa[data-abierto="1"]{display:block}
+
+#tour-hueco{
+  position:fixed; top:0; left:0; width:0; height:0; border-radius:12px;
+  pointer-events:none;
+  box-shadow:0 0 0 2px var(--tour-acento), 0 0 0 9999px var(--tour-velo);
+  transition:top var(--tour-paso) var(--tour-curva), left var(--tour-paso) var(--tour-curva),
+             width var(--tour-paso) var(--tour-curva), height var(--tour-paso) var(--tour-curva),
+             border-radius var(--tour-paso) var(--tour-curva);
+}
+#tour-hueco[data-foco="0"]{box-shadow:0 0 0 0 transparent, 0 0 0 9999px var(--tour-velo)}
+
+#tour-cartel{
+  position:fixed; z-index:903; width:min(360px, calc(100vw - 28px));
+  background:var(--tour-papel); border:1px solid var(--tour-linea);
+  border-radius:var(--tour-radio); box-shadow:var(--tour-sombra);
+  padding:15px 16px 13px; color:var(--tour-tinta);
+  opacity:0; transform:translateY(6px);
+  transition:opacity .22s ease, transform .22s var(--tour-curva),
+             top var(--tour-paso) var(--tour-curva), left var(--tour-paso) var(--tour-curva);
+}
+#tour-cartel[data-visible="1"]{opacity:1; transform:none}
+#tour-cartel[data-centrado="1"]{
+  top:50%; left:50%; width:min(430px, calc(100vw - 28px));
+  transform:translate(-50%,-50%);
+  transition:opacity .22s ease;
+}
+#tour-cartel[data-centrado="1"][data-visible="0"]{opacity:0}
+
+.tour-cab{display:flex; align-items:flex-start; gap:10px; margin-bottom:6px}
+#tour-titulo{flex:1 1 auto; margin:0; font-size:15.5px; font-weight:800; letter-spacing:-.018em; line-height:1.25}
+#tour-conteo{flex:0 0 auto; margin-top:2px; font-size:11px; font-weight:700; color:var(--tour-suave); font-variant-numeric:tabular-nums; white-space:nowrap}
+#tour-cuerpo{margin:0; font-size:13px; line-height:1.55; color:var(--tour-tenue)}
+#tour-nota{
+  margin-top:10px; padding:8px 11px; font-size:12.5px; line-height:1.5;
+  background:var(--tour-acento-tenue); border-left:2px solid var(--tour-acento);
+  border-radius:0 8px 8px 0; color:var(--tour-tinta);
+}
+#tour-nota[hidden]{display:none}
+
+.tour-puntos{display:flex; align-items:center; justify-content:center; gap:5px; margin:13px 0 12px}
+.tour-punto{width:5px; height:5px; border-radius:99px; background:var(--tour-linea); transition:width .2s var(--tour-curva), background .2s}
+.tour-punto[data-on="1"]{width:16px; background:var(--tour-acento)}
+.tour-punto[data-visto="1"]{background:#b9c7d6}
+
+.tour-pie{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.tour-acciones{display:flex; align-items:center; gap:7px}
+#tour-capa button{font:inherit; cursor:pointer; border:0; background:none; color:inherit}
+#tour-saltar{font-size:12.5px; color:var(--tour-suave); padding:6px 2px; border-radius:7px; transition:color .14s}
+#tour-saltar:hover{color:var(--tour-tinta)}
+#tour-atras{
+  height:31px; padding:0 12px; border:1px solid var(--tour-linea); border-radius:var(--tour-radio-2);
+  font-size:12.5px; font-weight:700; transition:border-color .14s, background .14s;
+}
+#tour-atras:hover{border-color:var(--tour-acento); background:var(--tour-fondo)}
+#tour-atras[hidden]{display:none}
+#tour-siguiente{
+  height:31px; padding:0 14px; border-radius:var(--tour-radio-2);
+  background:var(--tour-acento); color:var(--tour-papel);
+  font-size:12.5px; font-weight:700; transition:background .14s, transform .14s;
+}
+#tour-siguiente:hover{background:var(--tour-acento-fuerte)}
+#tour-siguiente:active{transform:scale(.985)}
+
+#tour-cursor{
+  position:fixed; top:0; left:0; z-index:906; pointer-events:none;
+  opacity:0; transform:translate3d(-60px,-60px,0);
+  transition:transform .5s var(--tour-curva), opacity .2s ease;
+}
+#tour-cursor svg{display:block; filter:drop-shadow(0 2px 5px rgba(16,24,40,.45))}
+#tour-cursor::after{
+  content:''; position:absolute; top:-3px; left:-3px; width:28px; height:28px;
+  border-radius:99px; border:2px solid var(--tour-papel); opacity:0; transform:scale(.35);
+}
+#tour-cursor[data-clic="1"]::after{animation:tourClic .42s var(--tour-curva) both}
+@keyframes tourClic{
+  0%{opacity:.9; transform:scale(.3)}
+  100%{opacity:0; transform:scale(1.5)}
+}
+
+/* Disparador en la barra superior */
+#tour-abrir{
+  display:flex; align-items:center; gap:7px; flex:0 0 auto;
+  height:34px; padding:0 12px; white-space:nowrap;
+  border:1px solid var(--tour-linea); background:var(--tour-papel); color:var(--tour-tinta);
+  border-radius:var(--tour-radio-2); font-size:12.5px; font-weight:700;
+  box-shadow:0 1px 2px rgba(16,24,40,.05);
+  transition:border-color .14s, box-shadow .14s, color .14s;
+}
+#tour-abrir:hover{border-color:var(--tour-acento); color:var(--tour-acento); box-shadow:0 3px 10px -2px rgba(16,24,40,.12)}
+#tour-abrir svg{flex:0 0 auto}
+
+body.tour-activo{cursor:default}
+
+@media (max-width: 900px){
+  #tour-abrir{padding:0 9px}
+  #tour-abrir .tour-abrir-txt{display:none}
+}
+@media (max-width: 640px){
+  #tour-cursor{display:none}
+  #tour-cartel,
+  #tour-cartel[data-centrado="1"]{
+    top:auto !important; bottom:10px; left:10px !important; right:10px;
+    width:auto !important; transform:translateY(8px);
+    transition:opacity .22s ease, transform .22s var(--tour-curva);
+  }
+  #tour-cartel[data-visible="1"],
+  #tour-cartel[data-centrado="1"][data-visible="1"]{transform:none}
+  #tour-titulo{font-size:15px}
+  .tour-puntos{margin:11px 0 10px}
+}
+
+/* La barra lateral arranca contraída abajo de 900px: durante el tour se
+   expande para poder señalar el menú, y se restituye al terminar. */
+body.tour-activo nav{width:224px !important; transition:none !important}
+@media (max-width: 640px){
+  body.tour-activo nav{width:56px !important}
+}
+
+@media (prefers-reduced-motion: reduce){
+  #tour-hueco, #tour-cartel, #tour-cursor, .tour-punto{transition:none !important}
+  #tour-cursor{display:none}
+  #tour-cursor[data-clic="1"]::after{animation:none}
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  var CLAVE = 'crm-molins-tutorial_v1';   // con versión: al subirla, todos lo vuelven a ver
+  var EVENTO = 'molins:abrir-tutorial';   // se puede reabrir despachando este evento
+  var MARGEN = 12;
+
+  function q(sel, raiz) { return (raiz || document).querySelector(sel); }
+  function qq(sel, raiz) { return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); }
+  function pantalla(nombre) { return q('[data-screen-label="' + nombre + '"]'); }
+  function itemMenu(etiqueta) { return q('nav button[title="' + etiqueta + '"]'); }
+  function limitar(v, min, max) { return Math.max(min, Math.min(v, max)); }
+  function dormir(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function reducido() {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+  function esAngosto() { return window.innerWidth <= 640; }
+
+  // Filas de una tabla del prototipo: se reconocen por su min-width, que la
+  // plantilla escribe en el style y React conserva tal cual. La primera es el
+  // encabezado, por eso se descarta.
+  function filas(nombrePantalla, anchoMinimo) {
+    return qq('[data-screen-label="' + nombrePantalla + '"] div[style*="' + anchoMinimo + '"]').slice(1);
+  }
+  function filaCon(nombrePantalla, anchoMinimo, texto) {
+    var f = filas(nombrePantalla, anchoMinimo);
+    for (var i = 0; i < f.length; i++) if (f[i].textContent.indexOf(texto) >= 0) return f[i];
+    return f[0] || null;
+  }
+
+  // ---------------------------------------------------------------- los pasos
+  var PASOS = [
+    {
+      clave: 'bienvenida',
+      titulo: 'Este es tu sistema',
+      cuerpo: 'Un recorrido corto por lo que vas a usar todos los días: de dónde vienen las consultas, cómo está tu cartera y qué le falta a cada ficha. Dura menos de dos minutos y lo cortás cuando quieras.',
+      nota: 'El sistema se mueve solo mientras dura el recorrido. Con las flechas del teclado también avanzás y volvés.'
+    },
+    {
+      clave: 'menu',
+      buscar: function () { return q('nav'); },
+      titulo: 'El menú de la izquierda',
+      cuerpo: 'Todo entra por acá y siempre está en el mismo lugar, mires la pantalla que mires. El número rojo sobre Consultas cuenta las que todavía nadie atendió.',
+      nota: function () {
+        var b = itemMenu('Consultas');
+        var n = b ? (b.textContent.match(/(\d+)\s*$/) || [])[1] : null;
+        return n
+          ? 'Ahora mismo hay ' + n + ' consultas esperando respuesta. Ese número baja solo a medida que las atienden.'
+          : 'Ese número baja solo a medida que las consultas se van atendiendo.';
+      }
+    },
+    {
+      clave: 'cartera',
+      buscar: function () { var h = q('header.barra-app'); return h ? h.querySelector('button') : null; },
+      titulo: 'El selector de cartera',
+      cuerpo: 'Es el eje del sistema. Elegís mirar todo junto o una cartera sola, y el resto se acomoda con vos: las consultas, las propiedades, el mapa y los números.',
+      nota: 'Si elegís Aires de San Lorenzo, tu cartera propia y los alquileres desaparecen de la pantalla y queda solo el emprendimiento.'
+    },
+    {
+      clave: 'consultas',
+      menu: 'Consultas', vista: 'Consultas',
+      buscar: function () { var s = pantalla('Consultas'); return s ? s.children[1] : null; },
+      titulo: 'Las consultas, con su origen pegado',
+      cuerpo: 'Cada consulta entra sola y trae de dónde salió: la campaña, el anuncio, la página. Se reparten alternadas entre vos y Luis, y si nadie contesta en 24 horas la fila queda marcada.',
+      nota: 'Una consulta del anuncio “Financiación 84 cuotas” llega con ese nombre puesto. No hay que preguntarle al cliente cómo llegó.'
+    },
+    {
+      clave: 'fila-consulta',
+      menu: 'Consultas', vista: 'Consultas',
+      buscar: function () { return filaCon('Consultas', '1180px', 'Sofía Guaymás'); },
+      titulo: 'Qué dice cada fila',
+      cuerpo: 'De izquierda a derecha: quién es y por dónde entró, qué estuvo mirando, cuánto hace que espera y en qué estado quedó. La inicial del final es quién la atiende.',
+      nota: 'Sofía Guaymás entró por la campaña Lanzamiento de Aires, quedó a cargo de Luis y lleva 26 horas sin respuesta. Por eso el reloj está en rojo.'
+    },
+    {
+      clave: 'propiedades',
+      menu: 'Propiedades', vista: 'Propiedades',
+      buscar: function () { var s = pantalla('Propiedades'); return s ? s.children[1] : null; },
+      titulo: 'Tus propiedades, separadas por estado',
+      cuerpo: 'Las solapas parten el listado por estado y el número de al lado dice cuántas hay en cada una. Abajo filtrás por tipo, operación, barrio o precio, y el buscador va directo por dirección o código.',
+      nota: 'Las activas, las reservadas y las alquiladas se cuentan solas. No hay que llevar la cuenta aparte en una planilla.'
+    },
+    {
+      clave: 'anillo',
+      menu: 'Propiedades', vista: 'Propiedades',
+      buscar: function () {
+        var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
+        if (!f) return null;
+        var svg = f.querySelector('svg[width="36"]');
+        return svg ? svg.parentElement : (f.children[3] || null);
+      },
+      titulo: 'El anillo: qué le falta a la ficha',
+      cuerpo: 'Ese número no es una nota, es cuánto está cargado. Y cuenta también lo interno, lo que no ve el público: partida catastral, estado del título, deudas, dónde están las llaves. Por eso ninguna llega a 100.',
+      nota: function () {
+        var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
+        var cel = f && (f.querySelector('svg[width="36"]') || {}).parentElement;
+        var falta = cel && cel.getAttribute('title');
+        return falta && falta.indexOf('Falta') === 0
+          ? 'Córdoba 269 está en 76. ' + falta.replace('Falta:', 'Le faltan') + '. Pasando el mouse por el anillo te dice cuáles, sin abrir la ficha.'
+          : 'Pasando el mouse por el anillo te dice qué papeles faltan, sin abrir la ficha.';
+      }
+    },
+    {
+      clave: 'interesados',
+      menu: 'Propiedades', vista: 'Propiedades',
+      buscar: function () {
+        var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
+        return f ? (f.children[7] || null) : null;
+      },
+      titulo: 'Cuántos interesados tiene cada propiedad',
+      cuerpo: 'Al lado de cada una ves cuánta gente preguntó por ella y hace cuánto que nadie los llama. Es la columna que muestra dónde se está enfriando una venta.',
+      nota: function () {
+        var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
+        var c = f ? f.children[7] : null;
+        var cuantos = c && c.children[0] ? c.children[0].textContent.trim().toLowerCase() : '';
+        var desde = c && c.children[1] ? c.children[1].textContent.trim().toLowerCase() : '';
+        return cuantos && desde
+          ? 'Córdoba 269 tiene ' + cuantos + ' y ' + desde + '. Con eso sabés a quién llamar hoy.'
+          : 'Con esta columna sabés a quién llamar hoy sin revisar propiedad por propiedad.';
+      }
+    },
+    {
+      clave: 'mapa',
+      menu: 'Mapa', vista: 'Mapa',
+      buscar: function () { return q('#mapa-crm'); },
+      titulo: 'Todo ubicado en el mapa',
+      cuerpo: 'Las propiedades con dirección aparecen en el mapa con su precio. Tocás una etiqueta y se abre la ficha al costado, con el estado, el anillo y el agente que la lleva.',
+      nota: 'Sirve para contestar en el momento: alguien pregunta qué tenés cerca de San Lorenzo y lo ves sin abrir nada más.'
+    },
+    {
+      clave: 'portal',
+      menu: 'Mi portal web', vista: 'Portal',
+      buscar: function () { var s = pantalla('Portal'); return s ? s.children[0] : null; },
+      titulo: 'Tu web se publica sola',
+      cuerpo: 'El sitio sale de acá. Cargás la propiedad una vez en el sistema y aparece publicada, con sus fotos y su precio. No hay que volver a escribirla en otro lado.',
+      nota: 'Si cambiás un precio, el aviso de arriba te avisa que hay cambios sin publicar. Publicás y el sitio queda al día.'
+    },
+    {
+      clave: 'usuarios',
+      menu: 'Usuarios', vista: 'Usuarios',
+      buscar: function () {
+        var s = pantalla('Usuarios');
+        if (!s) return null;
+        var grilla = s.children[1];
+        var tabla = grilla ? grilla.children[0] : null;
+        // En pantalla angosta la grilla de esta pantalla deja la tabla sin
+        // ancho: ahí se señala el encabezado, que dice lo mismo y sí se ve.
+        if (tabla && tabla.getBoundingClientRect().width >= 120) return tabla;
+        return s.children[0] || null;
+      },
+      titulo: 'Quién ve qué',
+      cuerpo: 'Cada usuario tiene sus carteras asignadas y ve únicamente eso, en todas las pantallas. No es un cartel de advertencia: los datos de las otras carteras directamente no le llegan.',
+      nota: 'Vos ves todo. Luis entra a Aires de San Lorenzo y nada más: tu cartera propia y los alquileres no le aparecen ni en el buscador.'
+    },
+    {
+      clave: 'cierre',
+      buscar: function () {
+        var f = q('.franja-demo');
+        if (!f) return null;
+        var b = qq('button', f).filter(function (x) { return /Francisco/.test(x.textContent); })[0];
+        return b ? b.parentElement : null;
+      },
+      titulo: 'Probalo vos',
+      cuerpo: 'Arriba a la derecha cambiás entre Francisco y Luis para ver el sistema con los permisos de cada uno. Es la forma más rápida de entender hasta dónde llega cada usuario.',
+      nota: 'Este recorrido lo volvés a ver cuando quieras desde el botón “Ver el tutorial”, al lado del buscador.',
+      cta: { texto: 'Ir a Consultas', menu: 'Consultas' }
+    }
+  ];
+
+  // -------------------------------------------------------------- la interfaz
+  var capa, hueco, cartel, tituloEl, conteoEl, cuerpoEl, notaEl, puntosEl,
+      btnSaltar, btnAtras, btnSiguiente, cursor, disparador;
+  var pasos = [], i = 0, abierto = false, ficha = 0, cajaActual = null;
+  var expandiBarra = false;
+
+  function construir() {
+    if (capa) return;
+
+    capa = document.createElement('div');
+    capa.id = 'tour-capa';
+    capa.setAttribute('data-abierto', '0');
+
+    hueco = document.createElement('div');
+    hueco.id = 'tour-hueco';
+    hueco.setAttribute('data-foco', '0');
+
+    cartel = document.createElement('div');
+    cartel.id = 'tour-cartel';
+    cartel.setAttribute('role', 'dialog');
+    cartel.setAttribute('aria-modal', 'true');
+    cartel.setAttribute('aria-labelledby', 'tour-titulo');
+    cartel.setAttribute('data-visible', '0');
+    cartel.innerHTML =
+      '<div class="tour-cab">' +
+        '<h2 id="tour-titulo"></h2>' +
+        '<span id="tour-conteo"></span>' +
+      '</div>' +
+      '<p id="tour-cuerpo"></p>' +
+      '<div id="tour-nota" hidden></div>' +
+      '<div class="tour-puntos" aria-hidden="true"></div>' +
+      '<div class="tour-pie">' +
+        '<button type="button" id="tour-saltar">Saltar</button>' +
+        '<div class="tour-acciones">' +
+          '<button type="button" id="tour-atras">Atrás</button>' +
+          '<button type="button" id="tour-siguiente">Siguiente</button>' +
+        '</div>' +
+      '</div>';
+
+    cursor = document.createElement('div');
+    cursor.id = 'tour-cursor';
+    cursor.setAttribute('aria-hidden', 'true');
+    cursor.innerHTML =
+      '<svg width="21" height="25" viewBox="0 0 21 25" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2.5 1.6 2.5 19.4 7.2 15.1 10.6 22.4 13.8 20.9 10.4 13.9 17 13.9Z" ' +
+      'fill="var(--tour-noche)" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+
+    capa.appendChild(hueco);
+    capa.appendChild(cartel);
+    document.body.appendChild(capa);
+    document.body.appendChild(cursor);
+
+    tituloEl = q('#tour-titulo'); conteoEl = q('#tour-conteo');
+    cuerpoEl = q('#tour-cuerpo'); notaEl = q('#tour-nota');
+    puntosEl = q('.tour-puntos', cartel);
+    btnSaltar = q('#tour-saltar'); btnAtras = q('#tour-atras'); btnSiguiente = q('#tour-siguiente');
+
+    btnSaltar.addEventListener('click', cerrar);
+    btnAtras.addEventListener('click', function () { mover(-1); });
+    btnSiguiente.addEventListener('click', function () {
+      var p = pasos[i];
+      if (i >= pasos.length - 1) { cerrar(p && p.cta); return; }
+      mover(1);
+    });
+    // Un clic en el velo no rompe nada: avanza.
+    capa.addEventListener('click', function (e) { if (e.target === capa) mover(1); });
+  }
+
+  // ------------------------------------------------------------- el disparador
+  function iconoAyuda() {
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="12" cy="12" r="10"></circle>' +
+      '<path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>';
+  }
+
+  function ponerDisparador() {
+    var barra = q('header.barra-app');
+    if (!barra) return;
+    if (disparador && disparador.parentNode === barra) return;
+
+    disparador = document.createElement('button');
+    disparador.type = 'button';
+    disparador.id = 'tour-abrir';
+    disparador.title = 'Volver a ver el recorrido guiado';
+    disparador.innerHTML = iconoAyuda() + '<span class="tour-abrir-txt">Ver el tutorial</span>';
+    disparador.addEventListener('click', function () { abrir(); });
+
+    // Entre el buscador y la campana de avisos.
+    var antes = barra.children[3] || null;
+    barra.insertBefore(disparador, antes);
+  }
+
+  // ------------------------------------------------------------------ medición
+  function esVisible(el) {
+    if (!el || !el.getBoundingClientRect) return false;
+    var r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight;
+  }
+
+  function contenedorScroll(el) {
+    var n = el.parentElement;
+    while (n && n !== document.body) {
+      var s = getComputedStyle(n);
+      if (/(auto|scroll)/.test(s.overflowY) && n.scrollHeight > n.clientHeight + 2) return n;
+      n = n.parentElement;
+    }
+    return null;
+  }
+
+  // El desplazamiento va instantáneo a propósito: con scroll suave la medición
+  // del hueco puede tomarse mientras la lista todavía se está moviendo y el foco
+  // termina una fila más abajo. El movimiento visible lo aporta la transición
+  // del propio hueco, que sí es suave.
+  function desplazar(el) {
+    var r = el.getBoundingClientRect();
+    // Una fila de tabla mide más de 1000px: centrarla en un celular deja a la
+    // vista las columnas del medio y esconde el nombre. En ese caso, al ras.
+    var op = {
+      block: r.height > window.innerHeight * 0.8 ? 'start' : 'center',
+      inline: r.width > window.innerWidth * 0.9 ? 'start' : 'center',
+      behavior: 'auto'
+    };
+    try { el.scrollIntoView(op); }
+    catch (e) { try { el.scrollIntoView(); } catch (e2) {} }
+  }
+
+  // Espera a que el elemento deje de moverse (la animación de scroll y la de
+  // expandir la barra lateral corren en paralelo). Se sondea con setTimeout y no
+  // con requestAnimationFrame: si el usuario se cambia de pestaña, rAF se
+  // congela y el recorrido quedaría trabado a mitad de un paso.
+  function quieto(el) {
+    return new Promise(function (res) {
+      var t0 = Date.now(), ant = null, iguales = 0;
+      (function tic() {
+        var r = el.getBoundingClientRect();
+        var clave = Math.round(r.top) + ':' + Math.round(r.left) + ':' + Math.round(r.width);
+        if (clave === ant) iguales++; else iguales = 0;
+        ant = clave;
+        if (iguales >= 3 || Date.now() - t0 > 900) return res();
+        setTimeout(tic, 32);
+      })();
+    });
+  }
+
+  function esperar(fn, ms) {
+    return new Promise(function (res) {
+      var t0 = Date.now();
+      (function tic() {
+        var r = fn();
+        if (r) return res(r);
+        if (Date.now() - t0 > (ms || 1400)) return res(null);
+        setTimeout(tic, 32);
+      })();
+    });
+  }
+
+  function medir(el) {
+    if (!el || !esVisible(el)) return null;
+    var r = el.getBoundingClientRect();
+    // Un objetivo aplastado —una columna de grilla que colapsó en pantalla
+    // angosta, un contenedor sin ancho— no se puede señalar. Antes que abrir un
+    // hueco de dos píxeles sobre nada, el paso cae a la tarjeta centrada.
+    if (r.width < 24 || r.height < 12) return null;
+    var pad = r.height > 90 || r.width > 460 ? 6 : 8;
+    var izq = Math.max(2, r.left - pad);
+    var arr = Math.max(2, r.top - pad);
+    return {
+      top: arr,
+      left: izq,
+      // Se recorta contra el borde de la ventana desde la esquina ya corrida:
+      // si no, un objetivo más ancho que la pantalla deja el marco afuera.
+      ancho: Math.max(2, Math.min(r.width + pad * 2, window.innerWidth - izq - 2)),
+      alto: Math.max(2, Math.min(r.height + pad * 2, window.innerHeight - arr - 2))
+    };
+  }
+
+  function pintarHueco(caja) {
+    cajaActual = caja;
+    if (!caja) {
+      hueco.setAttribute('data-foco', '0');
+      hueco.style.top = (window.innerHeight / 2) + 'px';
+      hueco.style.left = (window.innerWidth / 2) + 'px';
+      hueco.style.width = '0px';
+      hueco.style.height = '0px';
+      return;
+    }
+    hueco.setAttribute('data-foco', '1');
+    hueco.style.top = caja.top + 'px';
+    hueco.style.left = caja.left + 'px';
+    hueco.style.width = caja.ancho + 'px';
+    hueco.style.height = caja.alto + 'px';
+    hueco.style.borderRadius = (caja.alto < 44 ? 10 : 13) + 'px';
+  }
+
+  function colocarCartel(caja) {
+    if (esAngosto()) { cartel.setAttribute('data-centrado', caja ? '0' : '1'); return; }
+    if (!caja) { cartel.setAttribute('data-centrado', '1'); cartel.style.top = ''; cartel.style.left = ''; return; }
+
+    cartel.setAttribute('data-centrado', '0');
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var cw = cartel.offsetWidth, ch = cartel.offsetHeight;
+    var abajo = caja.top + caja.alto + MARGEN;
+    var arriba = caja.top - MARGEN - ch;
+    var top, left;
+
+    if (abajo + ch <= vh - MARGEN) {
+      top = abajo; left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+    } else if (arriba >= MARGEN) {
+      top = arriba; left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+    } else {
+      var der = caja.left + caja.ancho + MARGEN;
+      var izq = caja.left - MARGEN - cw;
+      if (der + cw <= vw - MARGEN) left = der;
+      else if (izq >= MARGEN) left = izq;
+      else left = limitar(caja.left, MARGEN, Math.max(MARGEN, vw - cw - MARGEN));
+      top = limitar(caja.top + caja.alto / 2 - ch / 2, MARGEN, Math.max(MARGEN, vh - ch - MARGEN));
+    }
+    cartel.style.top = Math.round(top) + 'px';
+    cartel.style.left = Math.round(left) + 'px';
+  }
+
+  // En celular el cartel ocupa la franja de abajo: si el objetivo quedó tapado,
+  // se corre el contenedor para subirlo.
+  function acomodarEnAngosto(el) {
+    if (!esAngosto() || !el) return;
+    var zona = window.innerHeight - cartel.offsetHeight - 24;
+    var r = el.getBoundingClientRect();
+    if (r.bottom <= zona) return;
+    var cont = contenedorScroll(el);
+    if (cont) cont.scrollTop += (r.bottom - zona + 14);
+  }
+
+  var pendiente = 0;
+  function remedir() {
+    if (!abierto || pendiente) return;
+    pendiente = setTimeout(function () {
+      pendiente = 0;
+      if (!abierto) return;
+      var p = pasos[i];
+      var el = p && p.buscar ? p.buscar() : null;
+      pintarHueco(medir(el));
+      colocarCartel(cajaActual);
+    }, 24);
+  }
+
+  // -------------------------------------------------------- el cursor simulado
+  function hayCursor() { return !esAngosto() && !reducido(); }
+
+  function cursorHacia(el) {
+    if (!hayCursor()) return Promise.resolve();
+    var x, y;
+    if (el) {
+      var r = el.getBoundingClientRect();
+      x = r.left + Math.min(r.width / 2, 92);
+      y = r.top + Math.min(r.height / 2, 46);
+    } else {
+      x = window.innerWidth / 2; y = window.innerHeight / 2 + 120;
+    }
+    x = limitar(x, 14, window.innerWidth - 14);
+    y = limitar(y, 14, window.innerHeight - 14);
+    cursor.style.opacity = '1';
+    cursor.style.transform = 'translate3d(' + Math.round(x) + 'px,' + Math.round(y) + 'px,0)';
+    return dormir(520);
+  }
+
+  function gestoClic() {
+    if (!hayCursor()) return Promise.resolve();
+    cursor.setAttribute('data-clic', '1');
+    return dormir(230).then(function () { cursor.removeAttribute('data-clic'); return dormir(120); });
+  }
+
+  // ------------------------------------------------------------- la navegación
+  // Se mira si el ítem del menú muestra su etiqueta y no el ancho del <nav>: el
+  // ancho lo pisa el CSS del recorrido, la etiqueta la decide el prototipo.
+  function barraExpandida() {
+    var b = itemMenu('Inicio');
+    if (!b) return true;
+    return b.textContent.trim().length > 0;
+  }
+
+  // Se toca una sola vez: el ancho de la barra se anima en .18s, así que medirla
+  // enseguida después de abrirla devuelve el valor viejo y se volvería a cerrar.
+  function forzarBarra() {
+    if (esAngosto() || expandiBarra) return;
+    if (barraExpandida()) return;
+    var nav = q('nav');
+    if (!nav) return;
+    var pie = nav.lastElementChild;
+    var b = pie ? pie.querySelector('button') : null;
+    if (b) { b.click(); expandiBarra = true; }
+  }
+
+  function restituirBarra() {
+    if (!expandiBarra) return;
+    expandiBarra = false;
+    var nav = q('nav');
+    var pie = nav ? nav.lastElementChild : null;
+    var b = pie ? pie.querySelector('button') : null;
+    if (b) b.click();
+  }
+
+  function irAPantalla(p) {
+    if (!p.vista) return Promise.resolve(true);
+    if (pantalla(p.vista)) return Promise.resolve(true);
+    var b = p.menu ? itemMenu(p.menu) : null;
+    if (!b) return Promise.resolve(false);
+    return cursorHacia(b)
+      .then(gestoClic)
+      .then(function () { b.click(); return esperar(function () { return pantalla(p.vista); }, 1600); })
+      .then(function (el) { return !!el; });
+  }
+
+  // ------------------------------------------------------------------ el paso
+  function texto(v) { return typeof v === 'function' ? v() : v; }
+
+  function pintarPuntos() {
+    puntosEl.innerHTML = '';
+    for (var k = 0; k < pasos.length; k++) {
+      var d = document.createElement('span');
+      d.className = 'tour-punto';
+      if (k === i) d.setAttribute('data-on', '1');
+      else if (k < i) d.setAttribute('data-visto', '1');
+      puntosEl.appendChild(d);
+    }
+  }
+
+  function pintarTexto(p) {
+    tituloEl.textContent = p.titulo;
+    conteoEl.textContent = (i + 1) + ' de ' + pasos.length;
+    cuerpoEl.textContent = texto(p.cuerpo);
+    var n = texto(p.nota);
+    if (n) { notaEl.textContent = n; notaEl.hidden = false; } else { notaEl.hidden = true; }
+    btnAtras.hidden = i === 0;
+    btnSiguiente.textContent = i >= pasos.length - 1 ? (p.cta ? p.cta.texto : 'Terminar') : 'Siguiente';
+    pintarPuntos();
+  }
+
+  function mostrar() {
+    var mio = ++ficha;
+    var p = pasos[i];
+    if (!p) return cerrar();
+
+    cartel.setAttribute('data-visible', '0');
+    pintarTexto(p);
+
+    irAPantalla(p).then(function () {
+      if (mio !== ficha) return;
+      forzarBarra();
+      var el = p.buscar ? p.buscar() : null;
+      if (el && el.getBoundingClientRect().height > 0) desplazar(el);
+      return (el ? quieto(el) : dormir(120)).then(function () {
+        if (mio !== ficha) return;
+        if (!el) { cursor.style.opacity = '0'; return; }
+        return cursorHacia(el).then(function () {
+          if (mio !== ficha) return;
+          return gestoClic();
+        });
+      }).then(function () {
+        if (mio !== ficha) return;
+        var vivo = p.buscar ? p.buscar() : null;
+        // El elemento queda etiquetado en el DOM real, como en el tour de BF Studio.
+        qq('[data-tour]').forEach(function (n) { if (n !== vivo) n.removeAttribute('data-tour'); });
+        if (vivo) vivo.setAttribute('data-tour', p.clave);
+        var objetivo = vivo ? q('[data-tour="' + p.clave + '"]') : null;
+        // Los ejemplos que se leen de la pantalla recién existen ahora, con la
+        // pantalla ya abierta: se vuelve a escribir el texto antes de medir.
+        pintarTexto(p);
+        pintarHueco(medir(objetivo));
+        cartel.setAttribute('data-visible', '1');
+        colocarCartel(cajaActual);
+        acomodarEnAngosto(objetivo);
+        // Re-medición tras las transiciones (barra lateral, scroll, altura del cartel).
+        setTimeout(remedir, 160);
+        setTimeout(remedir, 380);
+        setTimeout(remedir, 720);
+        try { btnSiguiente.focus({ preventScroll: true }); } catch (e) {}
+      });
+    });
+  }
+
+  function mover(d) {
+    var n = i + d;
+    if (n < 0) return;
+    if (n >= pasos.length) return cerrar(pasos[pasos.length - 1] && pasos[pasos.length - 1].cta);
+    i = n;
+    mostrar();
+  }
+
+  // ------------------------------------------------------------ abrir / cerrar
+  function disponible(p) {
+    if (p.menu && !itemMenu(p.menu) && !(p.vista && pantalla(p.vista))) return false;
+    return true;
+  }
+
+  function abrir(desde) {
+    if (abierto) return;
+    if (!q('header.barra-app')) return;   // todavía en el login
+    construir();
+    pasos = PASOS.filter(disponible);
+    if (!pasos.length) return;
+    i = limitar((desde || 1) - 1, 0, pasos.length - 1);
+    abierto = true;
+    document.body.classList.add('tour-activo');
+    capa.setAttribute('data-abierto', '1');
+    forzarBarra();
+    window.addEventListener('resize', remedir);
+    window.addEventListener('scroll', remedir, true);
+    window.addEventListener('keydown', teclado, true);
+    mostrar();
+  }
+
+  function cerrar(cta) {
+    if (!abierto) return;
+    abierto = false; ficha++;
+    try { localStorage.setItem(CLAVE, '1'); } catch (e) {}
+    capa.setAttribute('data-abierto', '0');
+    cartel.setAttribute('data-visible', '0');
+    cursor.style.opacity = '0';
+    cursor.removeAttribute('data-clic');
+    document.body.classList.remove('tour-activo');
+    qq('[data-tour]').forEach(function (n) { n.removeAttribute('data-tour'); });
+    window.removeEventListener('resize', remedir);
+    window.removeEventListener('scroll', remedir, true);
+    window.removeEventListener('keydown', teclado, true);
+    restituirBarra();
+    if (cta && cta.menu) { var b = itemMenu(cta.menu); if (b) b.click(); }
+  }
+
+  function teclado(e) {
+    if (!abierto) return;
+    var k = (e.key || '').toLowerCase();
+    if (k === 'tab') return;                       // se deja pasar por accesibilidad
+    e.preventDefault();
+    e.stopImmediatePropagation();                  // el prototipo también escucha el teclado
+    if (k === 'escape') cerrar();
+    else if (k === 'arrowright' || k === 'enter' || k === ' ') mover(1);
+    else if (k === 'arrowleft') mover(-1);
+  }
+
+  // ---------------------------------------------------------------- el arranque
+  function vigilar() {
+    var obs = new MutationObserver(function () {
+      ponerDisparador();
+      if (!abierto && !visto()) intentarArranque();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function visto() {
+    try { return !!localStorage.getItem(CLAVE); } catch (e) { return true; }
+  }
+
+  // Para la demo y para tomar capturas, igual que ?u= y ?p= del prototipo:
+  // ?tour=0 lo apaga, ?tour=1 lo fuerza desde el principio, ?tour=7 abre en ese paso.
+  var arranqueEn = 1;
+  try {
+    var qs = new URLSearchParams(location.search).get('tour');
+    if (qs === '0') localStorage.setItem(CLAVE, '1');
+    else if (qs !== null && /^\d+$/.test(qs)) { localStorage.removeItem(CLAVE); arranqueEn = Math.max(1, parseInt(qs, 10)); }
+  } catch (e) {}
+
+  var arrancando = false;
+  function intentarArranque() {
+    if (arrancando || abierto || visto()) return;
+    if (!q('header.barra-app') || !q('[data-screen-label]')) return;
+    arrancando = true;
+    setTimeout(function () {
+      arrancando = false;
+      if (!abierto && !visto() && q('header.barra-app')) abrir(arranqueEn);
+    }, 900);
+  }
+
+  function iniciar() {
+    ponerDisparador();
+    vigilar();
+    intentarArranque();
+    window.addEventListener(EVENTO, function () { abrir(); });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 60); });
+  else setTimeout(iniciar, 60);
+})();
+</script>
+
 </body>
 </html>
