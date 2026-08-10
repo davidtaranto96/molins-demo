@@ -1783,10 +1783,13 @@ const IDS_TARJETAS = ['indices','canal','sinresponder','agenda','cartera'];
 
 class Component extends DCLogic {
   state = {
-    sesion: null,
-    usuario: 'francisco',
-    cartera: 'todas',
-    pantalla: 'inicio',
+    // ?u=francisco o ?u=luis entra directo, y ?p=propiedades abre una pantalla puntual.
+    // Sirve para mandar un enlace que caiga ya adentro, y para tomar capturas.
+    sesion: (function(){ try { const u=new URLSearchParams(location.search).get('u');
+      return (u==='francisco'||u==='luis') ? u : null; } catch(e){ return null; } })(),
+    usuario: (function(){ try { return new URLSearchParams(location.search).get('u')==='luis' ? 'luis' : 'francisco'; } catch(e){ return 'francisco'; } })(),
+    cartera: (function(){ try { return new URLSearchParams(location.search).get('u')==='luis' ? 'aires' : 'todas'; } catch(e){ return 'todas'; } })(),
+    pantalla: (function(){ try { return new URLSearchParams(location.search).get('p') || 'inicio'; } catch(e){ return 'inicio'; } })(),
     barraAbierta: typeof window === 'undefined' || !(window.innerWidth > 0 && window.innerWidth <= 900),
     selectorAbierto: false, notisAbiertas: false, buscadorAbierto: false, busqueda: '',
     loginMail: '', loginClave: '',
@@ -2173,7 +2176,7 @@ class Component extends DCLogic {
       if (p.m2) a.push(p.m2 + ' m²');
       return a.length ? a.join(' · ') : 'sin medidas cargadas';
     };
-    const anillo = function(f){ return f >= 90 ? '#2e7d54' : (f >= 70 ? '#a16207' : '#b42318'); };
+    const anillo = function(f){ return f >= 70 ? '#2e7d54' : (f >= 52 ? '#a16207' : '#b42318'); };
 
     // ---- Consultas
     const fq = st.filtroQ;
