@@ -3183,7 +3183,13 @@ body.tour-activo nav{width:224px !important; transition:none !important}
       menu: 'Consultas', vista: 'Consultas',
       buscar: function () { return filaCon('Consultas', '1180px', 'Sofía Guaymás'); },
       titulo: 'Qué dice cada fila',
-      cuerpo: 'De izquierda a derecha: quién es y por dónde entró, qué estuvo mirando, cuánto hace que espera y en qué estado quedó. La inicial del final es quién la atiende.',
+      // En celular la fila es una tarjeta y el mismo orden se lee hacia abajo:
+      // el cartel no puede decir "de izquierda a derecha" mirando eso.
+      cuerpo: function () {
+        var orden = window.innerWidth <= 900 ? 'De arriba abajo' : 'De izquierda a derecha';
+        var cierre = window.innerWidth <= 900 ? 'La inicial del pie es quién la atiende.' : 'La inicial del final es quién la atiende.';
+        return orden + ': quién es y por dónde entró, qué estuvo mirando, cuánto hace que espera y en qué estado quedó. ' + cierre;
+      },
       nota: 'Sofía Guaymás entró por la campaña Lanzamiento de Aires, quedó a cargo de Luis y lleva 26 horas sin respuesta. Por eso el reloj está en rojo.'
     },
     {
@@ -3206,15 +3212,21 @@ body.tour-activo nav{width:224px !important; transition:none !important}
       titulo: 'El anillo: qué le falta a la ficha',
       cuerpo: 'Ese número no es una nota, es cuánto está cargado. Y cuenta también lo interno, lo que no ve el público: partida catastral, estado del título, deudas, dónde están las llaves. Por eso ninguna llega a 100.',
       nota: function () {
-        var generico = 'Pasando el mouse por el anillo te dice qué papeles faltan, sin abrir la ficha.';
+        // El detalle del anillo vive en un title: en un celular no hay mouse
+        // que lo revele, así que ahí el cartel no lo promete.
+        var conMouse = window.innerWidth > 900;
+        var generico = conMouse
+          ? 'Pasando el mouse por el anillo te dice qué papeles faltan, sin abrir la ficha.'
+          : 'El anillo dice cuánto está cargada la ficha sin abrirla, y adentro está el detalle.';
         var f = filaCon('Propiedades', '1060px', 'Córdoba 269');
         if (!f) return generico;
         var cel = (f.querySelector('svg[width="36"]') || {}).parentElement;
         var falta = cel && cel.getAttribute('title');
         var pct = cel ? (cel.textContent.match(/\d+/) || [])[0] : null;
         var nom = nombreFila(f);
+        var cola = conMouse ? ' Pasando el mouse por el anillo te dice cuáles, sin abrir la ficha.' : '';
         return nom && pct && falta && falta.indexOf('Falta') === 0
-          ? nom + ' está en ' + pct + '. ' + falta.replace('Falta:', 'Le faltan') + '. Pasando el mouse por el anillo te dice cuáles, sin abrir la ficha.'
+          ? nom + ' está en ' + pct + '. ' + falta.replace('Falta:', 'Le faltan') + '.' + cola
           : generico;
       }
     },
@@ -3282,7 +3294,14 @@ body.tour-activo nav{width:224px !important; transition:none !important}
       },
       titulo: 'Probalo vos',
       cuerpo: 'Arriba a la derecha cambiás entre Francisco y Luis para ver el sistema con los permisos de cada uno. Es la forma más rápida de entender hasta dónde llega cada usuario.',
-      nota: 'Este recorrido lo volvés a ver cuando quieras desde el botón “Ver el tutorial”, al lado del buscador.',
+      // En celular el botón no está en la barra: está al pie del menú. De 700px
+      // para arriba vuelve a la barra junto al buscador, así que el corte de la
+      // nota es el mismo que el del repaso de tablet.
+      nota: function () {
+        return window.innerWidth < 700
+          ? 'Este recorrido lo volvés a ver cuando quieras desde “Ver el tutorial”, al pie del menú.'
+          : 'Este recorrido lo volvés a ver cuando quieras desde el botón “Ver el tutorial”, al lado del buscador.';
+      },
       cta: { texto: 'Ir a Consultas', menu: 'Consultas' }
     }
   ];
@@ -3776,6 +3795,2020 @@ body.tour-activo nav{width:224px !important; transition:none !important}
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 60); });
   else setTimeout(iniciar, 60);
+})();
+</script>
+
+<!-- ===========================================================================
+     Armazón en celular y tablet (hasta 900px).
+
+     El riel de 56px se saca de la circulación: la barra lateral pasa a ser un
+     cajón de 260px que entra desde la izquierda con una hamburguesa, y el
+     contenido usa todo el ancho. Igual que el recorrido guiado, todo esto va por
+     fuera de la plantilla <x-dc>: es CSS con @media y JavaScript que opera sobre
+     el DOM ya renderizado. No toca support.js ni la lógica del prototipo, y de
+     901px para arriba no cambia absolutamente nada.
+
+     Las piezas nuevas (hamburguesa, lupa) se insertan en la barra superior con
+     el mismo patrón que usa el tour para su disparador —un MutationObserver que
+     las repone si el render las barre—, y el velo y la cruz cuelgan del <body>,
+     fuera del árbol que maneja el runtime.
+     =========================================================================== -->
+<style>
+:root{
+  --cajon-ancho:260px;
+  --cajon-curva:cubic-bezier(.2,.7,.3,1);
+  --cajon-paso:.24s;
+  /* Colores: los mismos que ya usa el prototipo, nombrados una sola vez acá para
+     no repetir literales sueltos por las reglas. Los que ya tienen token propio
+     —velo y sombra— se toman prestados del recorrido guiado. */
+  --cajon-icono:#43536a;          /* gris de los iconos de la barra superior */
+  --cajon-tenue:#9db1c9;          /* gris claro sobre fondo oscuro, como en el login */
+  --cajon-claro:rgba(255,255,255,.12);
+  --cajon-blanco:#fff;
+  --toque:44px;                   /* objetivo táctil mínimo */
+}
+
+/* En escritorio ninguna de las piezas nuevas existe. */
+#btn-menu, #btn-buscar, #cerrar-menu, #velo-menu{ display:none }
+
+#btn-menu, #btn-buscar{
+  align-items:center; justify-content:center; flex:0 0 auto;
+  border-radius:10px; color:var(--cajon-icono);
+  transition:background .14s, color .14s;
+}
+#btn-menu:hover, #btn-buscar:hover{ background:var(--tour-fondo); color:var(--tour-tinta) }
+#btn-menu svg, #btn-buscar svg, #cerrar-menu svg{ display:block }
+#btn-buscar .ico-cerrar{ display:none }
+
+#cerrar-menu{
+  align-items:center; justify-content:center;
+  border-radius:99px; color:var(--cajon-tenue);
+  transition:background .14s, color .14s;
+}
+#cerrar-menu:hover{ background:var(--cajon-claro); color:var(--cajon-blanco) }
+
+@media (max-width: 900px){
+
+  /* --- El marco -----------------------------------------------------------
+     100vh en un celular incluye la barra del navegador: el alto real es menor y
+     por eso la barra lateral terminaba desbordando hacia abajo, repitiéndose
+     contra el borde. Con dvh el armazón mide lo que se ve. */
+  .molins-marco{ min-height:100vh }
+  .molins-shell{ height:100vh }
+  @supports (height: 100dvh){
+    .molins-marco{ min-height:100dvh !important }
+    .molins-shell{ height:100dvh !important }
+  }
+
+  /* --- La franja de demostración -----------------------------------------
+     El conmutador Francisco / Luis es lo que más se toca en la demo: entra
+     entero a 320px y con altura suficiente para el dedo. */
+  .franja-demo{
+    height:auto !important; min-height:var(--toque);
+    padding:5px 10px !important; gap:10px !important;
+  }
+  .franja-demo > div:last-child{ gap:7px !important }
+  .franja-demo button{
+    min-height:32px; padding:0 10px !important; font-size:12px !important;
+    position:relative;
+  }
+  /* El pastillón visible mide 32px porque la franja tiene que seguir siendo una
+     franja. La zona que responde al dedo se estira hasta los 44px por arriba y
+     por abajo, sin mover nada de lo que se ve. */
+  .franja-demo button::after{
+    content:''; position:absolute; left:0; right:0;
+    top:50%; height:var(--toque); transform:translateY(-50%);
+  }
+
+  /* --- El menú: de riel fijo a cajón lateral ------------------------------
+     position:fixed lo saca del flujo, así el contenido recupera los 56px. */
+  nav,
+  body.tour-activo nav{
+    position:fixed !important; top:0; left:0; bottom:0;
+    width:var(--cajon-ancho) !important;
+    z-index:310;
+    transform:translateX(-100%);
+    visibility:hidden;
+    transition:transform var(--cajon-paso) var(--cajon-curva),
+               visibility 0s linear var(--cajon-paso) !important;
+  }
+  body.menu-abierto nav,
+  body.menu-abierto.tour-activo nav{
+    transform:none; visibility:visible;
+    box-shadow:var(--tour-sombra);
+    transition:transform var(--cajon-paso) var(--cajon-curva) !important;
+  }
+
+  /* Dentro del cajón el menú se lee como en escritorio expandido. */
+  nav > div:first-child{ height:58px !important; padding:0 54px 0 14px !important }
+  nav > div:nth-child(2){
+    padding:8px 10px 16px !important; gap:3px !important;
+    overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+  }
+  nav > div:nth-child(2) button{
+    height:46px !important; padding:0 12px !important;
+    font-size:14.5px !important; border-radius:11px !important;
+  }
+  nav > div:nth-child(2) button > span:first-of-type svg{ width:19px; height:19px }
+  /* "Contraer menú" no tiene sentido en un cajón: cierra la cruz. */
+  nav > div:last-child{ display:none !important }
+
+  #velo-menu{
+    display:block; position:fixed; inset:0; z-index:300;
+    background:var(--tour-velo);
+    opacity:0; pointer-events:none;
+    transition:opacity var(--cajon-paso) ease;
+  }
+  body.menu-abierto #velo-menu{ opacity:1; pointer-events:auto }
+
+  #cerrar-menu{
+    position:fixed; top:7px; left:206px;
+    width:var(--toque); height:var(--toque); z-index:320;
+  }
+  body.menu-abierto #cerrar-menu{ display:flex }
+
+  /* --- La barra superior --------------------------------------------------
+     hamburguesa · cartera · (lupa) · tutorial · campana · avatar */
+  .barra-app{ padding:0 8px !important; gap:5px !important }
+
+  #btn-menu{ display:flex; order:-1; width:var(--toque); height:var(--toque) }
+
+  /* El selector de cartera es lo único elástico: cede ancho con puntos
+     suspensivos para que campana y avatar no se caigan de la pantalla. */
+  .barra-app > div:first-child{ flex:0 1 auto !important; min-width:0 }
+  .barra-app > div:first-child > button{
+    max-width:100%; height:42px !important; padding:0 9px !important; gap:7px !important;
+  }
+  .barra-app > div:first-child > button > span:nth-child(2){
+    min-width:0; overflow:hidden; flex:1 1 auto;
+  }
+  .barra-app > div:first-child > button > span:nth-child(2) > span{
+    display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .barra-app > div:first-child > button > svg{ margin-left:0 !important; flex:0 0 auto }
+
+  /* El buscador ancho no entra: queda una lupa que lo abre a todo lo ancho. */
+  .barra-app > div:nth-child(2){ display:none !important }
+  #btn-buscar{ display:flex; width:var(--toque); height:var(--toque) }
+
+  #tour-abrir{ width:38px; height:38px; padding:0 !important; justify-content:center }
+
+  /* Campana y avatar, con el dedo en mente. */
+  .barra-app button[style*="width: 37px"]{ width:40px !important; height:40px !important }
+  .tb-usuario{ padding-left:7px !important; gap:0 !important }
+
+  /* Los redondos de la barra se ven de 38 y 40 px —más grandes desentonan en una
+     barra de 56— pero responden en los 44 de alto que pide el dedo. */
+  #tour-abrir, .barra-app button[style*="width: 37px"]{ position:relative }
+  #tour-abrir::after,
+  .barra-app button[style*="width: 37px"]::after{
+    content:''; position:absolute; left:-2px; right:-2px;
+    top:50%; height:var(--toque); transform:translateY(-50%);
+  }
+
+  /* Los desplegables de la barra están cotizados en px sobre un escritorio.
+     Colgaban de su propio botón con un retroceso fijo —left:-49, right:-52— y
+     ese número dependía de cuántos botones hubiera al lado: al mudarse la ayuda
+     al cajón, la campana se corrió y el panel de avisos quedó pegado al borde
+     derecho. Se deja de medir contra el botón: el ancla pasa a ser la barra
+     entera, que siempre ocupa el ancho de la pantalla, y los dos paneles caen a
+     8px de cada costado pase lo que pase con la botonera.
+
+     El ancla se apaga en la envoltura del botón, no con :has(> …): el panel se
+     crea recién cuando se toca la campana y Chrome no vuelve a evaluar el :has()
+     del padre con ese hijo nuevo, así que la envoltura seguía en relative y el
+     panel quedaba de 24px de ancho —los 40 del botón menos los 8+8— corriendo a
+     lo largo de toda la pantalla. Las dos envolturas se reconocen por su propio
+     style, que la plantilla escribe siempre igual. */
+  .barra-app > div[style*="flex: 0 0 auto"]{ position:static !important }
+  .barra-app [style*="width: 310px"],
+  .barra-app [style*="width: 340px"]{
+    top:calc(100% + 6px) !important;
+    left:8px !important; right:8px !important;
+    width:auto !important; max-width:none !important;
+  }
+  /* En un teléfono el panel toma el ancho entero, que es donde menos se parten
+     los renglones. En tablet sobra lugar: cada uno vuelve a su ancho de diseño
+     y se cuelga del lado que le corresponde —la cartera a la izquierda, los
+     avisos a la derecha—, siempre a 8px del borde. */
+  @media (min-width: 561px){
+    .barra-app [style*="width: 310px"]{ right:auto !important; width:310px !important }
+    .barra-app [style*="width: 340px"]{ left:auto !important; width:340px !important }
+  }
+
+  /* Buscador a todo lo ancho: la lupa lo abre y se vuelve cruz. El prototipo
+     trae la posición en el atributo style, así que acá va con !important. */
+  body.buscando .barra-app > *{ visibility:hidden }
+  body.buscando .barra-app > div:nth-child(2),
+  body.buscando #btn-buscar{ visibility:visible }
+  body.buscando .barra-app > div:nth-child(2){
+    display:block !important; position:absolute !important; z-index:70;
+    left:8px !important; right:56px !important; top:6px !important;
+    max-width:none !important;
+  }
+  /* El campo llega a los 44 del dedo; la lupa de adentro se recentra sola. */
+  body.buscando .barra-app > div:nth-child(2) > input{
+    height:var(--toque) !important; font-size:14px !important;
+  }
+  body.buscando .barra-app > div:nth-child(2) > svg{
+    top:50% !important; transform:translateY(-50%);
+  }
+  body.buscando #btn-buscar{ position:absolute; right:6px; top:6px; z-index:71 }
+  body.buscando #btn-buscar .ico-lupa{ display:none }
+  body.buscando #btn-buscar .ico-cerrar{ display:block }
+
+  /* Cada resultado es una fila de tres columnas armada para un escritorio:
+     rótulo fijo, nombre elástico y descripción en una sola línea. La
+     descripción no se achica —es nowrap— así que el único que cedía ancho era
+     el nombre, que es justamente el dato que se está buscando: quedaba en
+     "M…". La descripción baja de renglón, alineada bajo el nombre, y arriba el
+     nombre se queda con todo el ancho. De paso la fila llega a los 44px. */
+  .barra-app > div:nth-child(2) > div > button{
+    flex-wrap:wrap; row-gap:2px;
+  }
+  .barra-app > div:nth-child(2) > div > button > span:nth-child(2){
+    flex:1 1 auto;
+  }
+  .barra-app > div:nth-child(2) > div > button > span:nth-child(3){
+    flex:1 1 100%; min-width:0;
+    padding-left:75px;                 /* 66 del rótulo + 9 de separación */
+    overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* --- El contenido -------------------------------------------------------- */
+  [data-screen-label]:not([data-screen-label="Login"]){
+    padding-left:14px !important; padding-right:14px !important;
+  }
+  [data-screen-label]:not([data-screen-label="Login"]) > div:first-child[style*="space-between"]{
+    align-items:flex-start !important;
+  }
+
+  /* --- El login -----------------------------------------------------------
+     Las dos columnas ya se apilan solas, pero el panel oscuro trae
+     min-height:100vh: en un celular eso son 700px de presentación antes de
+     llegar a los usuarios, que es lo único que hay que tocar para entrar. Acá
+     el panel mide lo que ocupa su contenido y el formulario queda a la vista.
+     El panel es a sangre: no lleva el margen del resto de las pantallas. */
+  [data-screen-label="Login"]{
+    min-height:0 !important;
+    padding-left:0 !important; padding-right:0 !important;
+  }
+  [data-screen-label="Login"] > div:first-child{
+    min-height:0 !important; gap:20px;
+    padding:20px 16px 22px !important;
+  }
+  [data-screen-label="Login"] > div:first-child > div:nth-child(2){ max-width:none }
+  [data-screen-label="Login"] h1{
+    font-size:22px !important; margin-bottom:0 !important;
+  }
+  [data-screen-label="Login"] h1 + div{ margin-top:15px !important; gap:10px !important }
+  [data-screen-label="Login"] h1 + div span[style*="font-size: 14.5px"]{ font-size:13.5px !important }
+  [data-screen-label="Login"] > div:last-child{ padding:22px 16px 30px !important }
+}
+
+/* Abajo de 560px el encabezado de cada pantalla se apila: el título arriba y el
+   botón de acción debajo, alineado a la izquierda. */
+@media (max-width: 560px){
+  [data-screen-label]:not([data-screen-label="Login"]) > div:first-child[style*="space-between"]{
+    flex-direction:column !important; align-items:flex-start !important;
+  }
+}
+
+/* La lupa cuesta 49px y esos 49px salen del selector de cartera, que es lo único
+   elástico de la barra. De 375px para arriba el selector aguanta el recorte y
+   sigue leyéndose ("Aires de …", "Todas la…"); abajo queda en dos sílabas, así
+   que gana la cartera y la lupa se va. */
+@media (max-width: 374px){
+  #btn-buscar{ display:none !important }
+}
+
+/* A 320px el rótulo del rol de cada usuario es lo primero que sobra: sin él, el
+   conmutador entra entero y sigue siendo lo más grande de la franja. */
+@media (max-width: 360px){
+  .franja-demo button > span{ display:none !important }
+}
+
+@media (prefers-reduced-motion: reduce){
+  nav, #velo-menu{ transition:none !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  var CORTE = 900;          // el mismo tramo que ya usaba el prototipo
+  var btnMenu = null, btnBuscar = null, velo = null, cruz = null;
+  var abiertoPorTour = false;
+
+  function q(sel, raiz) { return (raiz || document).querySelector(sel); }
+  function angosto() { return window.innerWidth <= CORTE; }
+  function tieneClase(c) { return document.body.classList.contains(c); }
+
+  var ICONO_MENU =
+    '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round"><path d="M4 6h16"></path><path d="M4 12h16"></path>' +
+    '<path d="M4 18h16"></path></svg>';
+  var ICONO_CRUZ =
+    '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2.1" stroke-linecap="round"><path d="m18 6-12 12"></path>' +
+    '<path d="m6 6 12 12"></path></svg>';
+  var ICONO_LUPA =
+    '<svg class="ico-lupa" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle>' +
+    '<path d="m21 21-4.3-4.3"></path></svg>' +
+    '<svg class="ico-cerrar" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2.1" stroke-linecap="round"><path d="m18 6-12 12"></path>' +
+    '<path d="m6 6 12 12"></path></svg>';
+
+  function boton(id, etiqueta, html) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = id;
+    b.title = etiqueta;
+    b.setAttribute('aria-label', etiqueta);
+    b.innerHTML = html;
+    return b;
+  }
+
+  // ------------------------------------------------------------ las etiquetas
+  // El prototipo arranca con la barra contraída abajo de 900px y las etiquetas
+  // ni siquiera están en el DOM. En vez de tocar su estado desde afuera se le
+  // pide lo mismo que le pediría el usuario: un clic en su propio conmutador.
+  function etiquetasALaVista() {
+    var b = q('nav button[title="Inicio"]');
+    return !b || b.textContent.trim().length > 0;
+  }
+
+  function expandirBarra() {
+    if (etiquetasALaVista()) return;
+    var nav = q('nav');
+    var pie = nav ? nav.lastElementChild : null;
+    var b = pie ? pie.querySelector('button') : null;
+    if (b) b.click();
+  }
+
+  // ---------------------------------------------------------------- el cajón
+  function abrirMenu(porTour) {
+    if (!angosto()) return;
+    if (tieneClase('menu-abierto')) return;
+    cerrarBusqueda();
+    expandirBarra();                       // antes de marcar: el clic no debe cerrarlo
+    abiertoPorTour = !!porTour;
+    document.body.classList.add('menu-abierto');
+    if (btnMenu) btnMenu.setAttribute('aria-expanded', 'true');
+    if (!porTour) {
+      setTimeout(function () {
+        var primero = q('nav button[title]');
+        if (primero) { try { primero.focus({ preventScroll: true }); } catch (e) {} }
+      }, 60);
+    }
+  }
+
+  function cerrarMenu(devolverFoco) {
+    if (!tieneClase('menu-abierto')) return;
+    abiertoPorTour = false;
+    document.body.classList.remove('menu-abierto');
+    if (btnMenu) {
+      btnMenu.setAttribute('aria-expanded', 'false');
+      if (devolverFoco) { try { btnMenu.focus({ preventScroll: true }); } catch (e) {} }
+    }
+  }
+
+  function alternarMenu() {
+    if (tieneClase('menu-abierto')) cerrarMenu(true); else abrirMenu(false);
+  }
+
+  // ------------------------------------------------------------- el buscador
+  function abrirBusqueda() {
+    if (!angosto() || tieneClase('buscando')) return;
+    cerrarMenu(false);
+    document.body.classList.add('buscando');
+    setTimeout(function () {
+      var i = q('header.barra-app input');
+      if (i) { try { i.focus(); } catch (e) {} }
+    }, 40);
+  }
+
+  function cerrarBusqueda() {
+    if (!tieneClase('buscando')) return;
+    document.body.classList.remove('buscando');
+    var i = q('header.barra-app input');
+    if (i) { try { i.blur(); } catch (e) {} }
+  }
+
+  function alternarBusqueda() {
+    if (tieneClase('buscando')) cerrarBusqueda(); else abrirBusqueda();
+  }
+
+  // ------------------------------------------------------------- el montaje
+  function montar() {
+    var barra = q('header.barra-app');
+
+    // Sin barra superior no hay sistema: es la pantalla de login. Si veníamos del
+    // cajón abierto —por ejemplo tocando "Salir"— el velo y la cruz se quedaban
+    // encima del login y no se podía entrar. Se limpia el estado y se sale.
+    if (!barra) {
+      cerrarMenu(false);
+      cerrarBusqueda();
+      return;
+    }
+
+    // Marcas para poder medir el alto real del visor en celular.
+    var franja = q('.franja-demo');
+    if (franja && franja.parentElement) {
+      franja.parentElement.classList.add('molins-shell');
+      if (franja.parentElement.parentElement) {
+        franja.parentElement.parentElement.classList.add('molins-marco');
+      }
+    }
+
+    // El bloque del usuario es el último <div> de la barra; la campana, el
+    // anterior. Se marcan por posición y no por índice fijo porque el tour
+    // inserta su propio botón en el medio.
+    var usuario = null;
+    for (var k = barra.children.length - 1; k >= 0; k--) {
+      if (barra.children[k].tagName === 'DIV') { usuario = barra.children[k]; break; }
+    }
+    if (usuario) usuario.classList.add('tb-usuario');
+
+    // La hamburguesa va al final del DOM y primera en pantalla por CSS: así el
+    // tour sigue encontrando su lugar (barra.children[3]) sin correrse.
+    if (!btnMenu || btnMenu.parentNode !== barra) {
+      btnMenu = boton('btn-menu', 'Abrir el menú', ICONO_MENU);
+      btnMenu.setAttribute('aria-expanded', tieneClase('menu-abierto') ? 'true' : 'false');
+      btnMenu.addEventListener('click', function (e) { e.stopPropagation(); alternarMenu(); });
+      barra.appendChild(btnMenu);
+    }
+
+    if (!btnBuscar || btnBuscar.parentNode !== barra) {
+      btnBuscar = boton('btn-buscar', 'Buscar', ICONO_LUPA);
+      btnBuscar.addEventListener('click', function (e) { e.stopPropagation(); alternarBusqueda(); });
+      // Antes del disparador del tour si ya está, si no antes de la campana.
+      var antes = q('#tour-abrir', barra) || (usuario ? usuario.previousElementSibling : null);
+      if (antes) barra.insertBefore(btnBuscar, antes); else barra.appendChild(btnBuscar);
+    }
+
+    if (!velo) {
+      velo = document.createElement('div');
+      velo.id = 'velo-menu';
+      velo.addEventListener('click', function () { cerrarMenu(true); });
+      document.body.appendChild(velo);
+    }
+
+    if (!cruz) {
+      cruz = boton('cerrar-menu', 'Cerrar el menú', ICONO_CRUZ);
+      cruz.addEventListener('click', function (e) { e.stopPropagation(); cerrarMenu(true); });
+      document.body.appendChild(cruz);
+    }
+  }
+
+  // --------------------------------------------------------------- el tour
+  // El recorrido guiado señala el <nav> en uno de sus pasos. Con el cajón
+  // cerrado no habría nada que señalar, así que se abre mientras dura ese paso
+  // y se cierra cuando el tour pasa al siguiente o termina.
+  function sincronizarTour() {
+    if (!angosto()) return;
+    var enfocado = q('nav[data-tour]');
+    if (enfocado) abrirMenu(true);
+    else if (abiertoPorTour) cerrarMenu(false);
+  }
+
+  // ------------------------------------------------------------ los cierres
+  function alElegirOpcion(e) {
+    if (!tieneClase('menu-abierto')) return;
+    var nav = q('nav');
+    if (!nav || !nav.contains(e.target)) return;
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if (!b) return;
+    setTimeout(function () { cerrarMenu(false); }, 0);
+  }
+
+  function alClicSuelto(e) {
+    if (!tieneClase('buscando')) return;
+    var barra = q('header.barra-app');
+    if (barra && barra.contains(e.target)) {
+      var b = e.target.closest ? e.target.closest('button') : null;
+      if (b && b !== btnBuscar) cerrarBusqueda();   // eligió un resultado
+      return;
+    }
+    cerrarBusqueda();
+  }
+
+  function alTeclado(e) {
+    if ((e.key || '').toLowerCase() !== 'escape') return;
+    if (tieneClase('buscando')) { cerrarBusqueda(); return; }
+    if (tieneClase('menu-abierto')) cerrarMenu(true);
+  }
+
+  function alRedimensionar() {
+    // El buscador se cierra siempre: abajo de 380px la lupa no está y no habría
+    // con qué salir. El cajón solo se cierra al volver a escritorio.
+    cerrarBusqueda();
+    if (!angosto()) cerrarMenu(false);
+  }
+
+  function iniciar() {
+    montar();
+    document.addEventListener('click', alElegirOpcion, false);
+    document.addEventListener('click', alClicSuelto, false);
+    window.addEventListener('keydown', alTeclado, false);
+    window.addEventListener('resize', alRedimensionar, false);
+
+    // Mismo patrón que el tour: el runtime vuelve a dibujar la barra superior en
+    // cada cambio de estado y las piezas nuevas se reponen solas.
+    var obs = new MutationObserver(function () { montar(); sincronizarTour(); });
+    obs.observe(document.body, {
+      childList: true, subtree: true,
+      attributes: true, attributeFilter: ['data-tour']
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 40); });
+  } else {
+    setTimeout(iniciar, 40);
+  }
+})();
+</script>
+
+<!-- ===========================================================================
+     Los módulos por dentro, en celular y tablet (hasta 900px).
+
+     Tercer bloque plano del archivo, después del recorrido guiado y del cajón
+     de navegación, y con el mismo criterio: CSS con @media y JavaScript que
+     opera sobre el DOM ya renderizado. No toca la plantilla <x-dc>, ni
+     support.js, ni datos.js, y de 901px para arriba no cambia nada.
+
+     La regla que ordena todo: en celular una tabla no se desplaza de costado,
+     se convierte en tarjetas. Y se convierte sin tocar el HTML: las filas
+     siguen siendo las mismas, con los mismos hijos en el mismo orden —de eso
+     dependen el recorrido guiado y sus ejemplos— y lo único que cambia es
+     cómo se acomodan. Por eso las filas se reconocen por el min-width que la
+     plantilla les escribe en el style, igual que hace el tour.
+     =========================================================================== -->
+<style>
+:root{
+  /* Los mismos colores del prototipo, nombrados una vez. Los que ya tienen
+     token —tinta, líneas, papel, acento, velo, sombra, curva— se toman del
+     recorrido guiado, y el objetivo táctil, del cajón. */
+  --mv-alerta:#b42318;            /* rojo de vencido */
+  --mv-alerta-linea:#f0c4ba;
+  --mv-hueso:#f7f9fb;
+  --mv-radio:12px;
+  --mv-aire:9px;
+  --mv-sombra-tarjeta:0 1px 2px rgba(16,24,40,.06);
+}
+
+/* La hoja de filtros y su velo no existen en escritorio. */
+#mv-filtros, #mv-velo-filtros{ display:none }
+
+@media (max-width: 900px){
+
+/* =========================================================================
+   1 · Inicio
+   ========================================================================= */
+
+  /* Acciones rápidas: dos por fila. */
+  [data-screen-label="Inicio"] [style*="minmax(160px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+  [data-screen-label="Inicio"] [style*="minmax(160px"] > button{
+    padding:9px 10px !important; gap:8px !important; min-height:54px;
+  }
+  [data-screen-label="Inicio"] [style*="minmax(160px"] > button > span:first-child{
+    width:28px !important; height:28px !important;
+  }
+
+  /* Las tarjetas del tablero se apilan: el "span" de escritorio deja de mandar. */
+  [data-screen-label="Inicio"] [style*="repeat(12"]{
+    grid-template-columns:minmax(0,1fr) !important;
+    gap:12px !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(12"] > section{
+    grid-column:auto !important;
+  }
+
+  /* Los índices, de a dos, con la línea corriendo entre ellos y no colgando. */
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div{
+    border-bottom:1px solid var(--tour-linea-2);
+    padding:11px 13px !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div:nth-child(2n),
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div:last-child{
+    border-right:0 !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div:last-child{
+    grid-column:1/-1; border-bottom:0;
+  }
+
+  /* Estado de la cartera: los cuatro estados en dos filas legibles. */
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"] > div{
+    border-bottom:1px solid var(--tour-linea-2); padding:11px 13px !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"] > div:nth-child(2n){
+    border-right:0 !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"] > div:nth-last-child(-n+2){
+    border-bottom:0;
+  }
+
+  /* Consultas por canal: el rótulo cede ancho antes que la barra, pero solo lo
+     que haga falta. "Campañas Meta" —el canal que más consultas trae— necesita
+     los 106px del prototipo; con 92 fijos se partía en dos renglones y dejaba
+     su barra desalineada del resto. El ancho acompaña a la pantalla: 92 en un
+     teléfono chico, los 106 completos de 366px para arriba. */
+  [data-screen-label="Inicio"] section [style*="width: 106px"]{
+    width:clamp(92px, 29vw, 106px) !important;
+  }
+
+/* =========================================================================
+   2 · Consultas
+   ========================================================================= */
+
+  /* El contenedor deja de ser una caja con desplazamiento propio. */
+  [data-screen-label="Consultas"] > div:has(> div[style*="min-width: 1180px"]){
+    max-height:none !important; overflow:visible !important;
+    border:0 !important; background:transparent !important;
+    box-shadow:none !important; border-radius:0 !important;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"][style*="white-space"]{
+    display:none !important;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"][style*="text-align"]{
+    min-width:0 !important; padding:44px 16px !important;
+    border:1px solid var(--tour-linea); border-radius:var(--mv-radio);
+    background:var(--tour-papel);
+  }
+
+  /* Cada consulta, una tarjeta. */
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]){
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:start !important;
+    gap:4px 10px !important;
+    min-width:0 !important;
+    padding:11px 13px !important;
+    margin-bottom:var(--mv-aire);
+    border:1px solid var(--tour-linea) !important;
+    border-radius:var(--mv-radio);
+    box-shadow:var(--mv-sombra-tarjeta);
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]):not([style*="rgb(254, 247, 245)"]){
+    background:var(--tour-papel) !important;
+  }
+  /* Las que pasaron las 24 horas quedan marcadas con una barra al costado. */
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"][style*="rgb(254, 247, 245)"]{
+    border-color:var(--mv-alerta-linea) !important;
+    box-shadow:inset 3px 0 0 var(--mv-alerta), var(--mv-sombra-tarjeta);
+    padding-left:16px !important;
+  }
+
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(1){ grid-area:1/1/2/2 }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(6){
+    grid-area:1/2/2/3; width:auto !important; justify-self:end;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(2){
+    grid-area:2/1/3/3; margin-top:3px;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(3){
+    grid-area:3/1/4/3; white-space:normal !important;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(4){
+    grid-area:4/1/5/2; width:auto !important; margin-top:5px;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(5){
+    grid-area:4/2/5/3; width:88px !important; margin-top:5px; justify-self:end;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]):not([style*="text-align"]) > span:nth-child(7){
+    grid-area:5/1/6/3; width:auto !important;
+    justify-content:space-between !important;
+    border-top:1px solid var(--tour-linea-2);
+    margin-top:8px; padding-top:9px;
+  }
+  /* Sin encabezado, estas dos columnas necesitan que se las nombre. */
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(3)::before{
+    content:'Miró '; color:var(--tour-suave); font-weight:600;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(4)::before{
+    content:'Espera '; color:var(--tour-suave); font-weight:600;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(5)::before{
+    content:'IA'; flex:0 0 auto; font-size:9.5px; font-weight:800;
+    letter-spacing:.07em; color:var(--tour-suave);
+  }
+  /* Los dos botones del pie, con el dedo en mente. */
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(7) > button{
+    min-height:38px;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(7) > button:first-child{
+    padding:4px 9px !important;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"] > span:nth-child(7) > button:last-child{
+    height:38px !important; padding:0 16px !important;
+  }
+
+  /* El aviso de reparto automático entra entero, en tres renglones. */
+  [data-screen-label="Consultas"] > div:nth-child(2)[style*="rgb(233, 239, 246)"]{
+    align-items:flex-start !important; gap:9px !important; padding:12px 14px !important;
+  }
+  [data-screen-label="Consultas"] > div:nth-child(2)[style*="rgb(233, 239, 246)"] > span{
+    min-width:0;
+  }
+  [data-screen-label="Consultas"] > div:nth-child(2)[style*="rgb(233, 239, 246)"] > span:nth-child(2){
+    flex:1 1 100%;
+  }
+
+  /* Los filtros y el conmutador de vista, con altura de dedo y sin salirse
+     de la pantalla en un celular chico. */
+  [data-screen-label="Consultas"] > div:first-child button{ min-height:36px }
+  [data-screen-label="Consultas"] > div:first-child > div:last-child > div:first-child{
+    flex-wrap:wrap; gap:7px !important;
+  }
+
+  /* El tablero: un carrusel de columnas enteras, no cinco tiras espichadas. */
+  [data-screen-label="Consultas"] [style*="minmax(210px"]{
+    grid-template-columns:none !important;
+    grid-auto-flow:column !important;
+    grid-auto-columns:82% !important;
+    gap:10px !important;
+    overflow-x:auto !important; -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity; scrollbar-width:none;
+    padding-bottom:4px;
+    margin-left:-14px; margin-right:-14px;
+    padding-left:14px; padding-right:14px;
+  }
+  [data-screen-label="Consultas"] [style*="minmax(210px"]::-webkit-scrollbar{ display:none }
+  [data-screen-label="Consultas"] [style*="minmax(210px"] > div{
+    scroll-snap-align:start; min-height:220px !important;
+  }
+
+/* =========================================================================
+   3 · Propiedades
+   ========================================================================= */
+
+  /* Solapas por estado: se deslizan en horizontal, de borde a borde. */
+  [data-screen-label="Propiedades"] > div:nth-child(2){
+    overflow-x:auto !important; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; overscroll-behavior-x:contain;
+    margin-left:-14px; margin-right:-14px;
+    padding-left:14px; padding-right:14px;
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(2)::-webkit-scrollbar{ display:none }
+  [data-screen-label="Propiedades"] > div:nth-child(2) > button{
+    flex:0 0 auto; padding:11px 13px !important;
+  }
+
+  /* Los filtros dejan de estar amontonados: son una hoja que sube desde abajo.
+
+     La pantalla entra con la animación "subir", que toca transform. Con
+     fill-mode "both" el transform le queda puesto para siempre —aunque valga
+     la identidad— y eso convierte a la pantalla en el bloque contenedor de
+     todo lo que esté en position:fixed adentro: la hoja terminaba anclada al
+     final del listado en vez de al borde de abajo. Sin fill la animación se
+     ve igual y el transform vuelve a none cuando termina. */
+  [data-screen-label="Propiedades"]{ animation-fill-mode:none !important }
+  [data-screen-label="Propiedades"] > div:nth-child(3){
+    display:block !important;
+    position:fixed; left:0; right:0; bottom:0; z-index:316;
+    margin:0 !important;
+    padding:16px 14px calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+    max-height:78vh; overflow-y:auto; overscroll-behavior:contain;
+    background:var(--tour-papel);
+    border-radius:18px 18px 0 0;
+    box-shadow:var(--tour-sombra);
+    transform:translateY(100%); visibility:hidden;
+    transition:transform var(--cajon-paso) var(--cajon-curva),
+               visibility 0s linear var(--cajon-paso);
+  }
+  body.mv-filtros [data-screen-label="Propiedades"] > div:nth-child(3){
+    transform:none; visibility:visible;
+    transition:transform var(--cajon-paso) var(--cajon-curva);
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(3)::before{
+    content:'Filtrar propiedades';
+    display:block; margin:0 0 13px;
+    font-size:15.5px; font-weight:800; letter-spacing:-.018em;
+    color:var(--tour-tinta);
+  }
+  /* El buscador y cada filtro ocupan el ancho de la hoja. */
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div{
+    width:100% !important; margin-bottom:7px;
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div > input{
+    height:var(--toque) !important; font-size:14px !important;
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div > svg{ top:15px !important }
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div > button{
+    width:100%; height:var(--toque) !important;
+    justify-content:space-between !important;
+    padding:0 14px !important; font-size:13.5px !important;
+  }
+  /* El desplegable se abre dentro de la hoja, no flotando sobre ella. */
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div > div[style*="position: absolute"]{
+    position:static !important;
+    width:100% !important; min-width:0 !important;
+    margin:5px 0 3px;
+    border:0 !important; border-left:2px solid var(--tour-acento) !important;
+    border-radius:0 !important; box-shadow:none !important;
+    background:var(--mv-hueso) !important;
+    padding:4px 4px 4px 8px !important;
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(3) > div > div[style*="position: absolute"] > button{
+    min-height:40px; font-size:13.5px !important;
+  }
+  [data-screen-label="Propiedades"] > div:nth-child(3) > button{
+    width:100%; height:var(--toque) !important; margin-top:4px;
+  }
+
+  /* La pastilla que abre y cierra la hoja. */
+  #mv-filtros{
+    display:none;
+    position:fixed; z-index:320;
+    left:50%; transform:translateX(-50%);
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    align-items:center; gap:8px;
+    height:var(--toque); padding:0 20px;
+    border-radius:99px;
+    background:var(--tour-noche); color:var(--cajon-blanco);
+    font-size:13.5px; font-weight:700;
+    box-shadow:var(--tour-sombra);
+  }
+  body.mv-propiedades #mv-filtros{ display:flex }
+  #mv-filtros .mv-f-cerrar{ display:none }
+  body.mv-filtros #mv-filtros .mv-f-abrir{ display:none }
+  body.mv-filtros #mv-filtros .mv-f-cerrar{ display:inline }
+  #mv-filtros .mv-f-cuenta{
+    min-width:19px; padding:1px 6px; border-radius:99px;
+    background:var(--cajon-claro); font-size:11px; font-weight:800;
+  }
+  #mv-filtros[data-cuenta="0"] .mv-f-cuenta{ display:none }
+
+  #mv-velo-filtros{
+    position:fixed; inset:0; z-index:315;
+    background:var(--tour-velo);
+    opacity:0; pointer-events:none;
+    transition:opacity var(--cajon-paso) ease;
+  }
+  body.mv-propiedades #mv-velo-filtros{ display:block }
+  body.mv-filtros #mv-velo-filtros{ opacity:1; pointer-events:auto }
+
+  /* El listado deja de ser tabla y pasa a ser una grilla de tarjetas. */
+  [data-screen-label="Propiedades"] > div:has(> div[style*="min-width: 1060px"]){
+    max-height:none !important; overflow:visible !important;
+    border:0 !important; background:transparent !important;
+    box-shadow:none !important; border-radius:0 !important;
+    display:grid !important; grid-template-columns:minmax(0,1fr);
+    gap:10px; padding-bottom:64px;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"][style*="white-space"]{
+    display:none !important;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"][style*="text-align"]{
+    grid-column:1/-1; min-width:0 !important; padding:44px 16px !important;
+    border:1px solid var(--tour-linea); border-radius:var(--mv-radio);
+    background:var(--tour-papel);
+  }
+
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"]:not([style*="white-space"]):not([style*="text-align"]){
+    position:relative;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center !important;
+    gap:5px 10px !important;
+    min-width:0 !important;
+    padding:10px !important;
+    border:1px solid var(--tour-linea) !important;
+    border-radius:var(--mv-radio);
+    background:var(--tour-papel) !important;
+    box-shadow:var(--mv-sombra-tarjeta);
+  }
+  /* La casilla de selección se apoya sobre la foto y libera la grilla. */
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > button:nth-child(1){
+    position:absolute; top:18px; left:18px; z-index:2;
+    width:34px !important; height:34px;
+    justify-content:center !important;
+    border-radius:9px; background:rgba(255,255,255,.94);
+    box-shadow:0 1px 4px rgba(16,24,40,.22);
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(2){
+    grid-area:1/1/2/3; width:100% !important; height:138px !important;
+    border-radius:10px !important;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(3){
+    grid-area:2/1/3/2; margin-top:3px;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(3) > span:nth-child(2){
+    flex-wrap:wrap;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(4){
+    grid-area:2/2/3/3; width:auto !important; margin-top:3px;
+    /* Que la celda mida lo que mide el anillo: el recorrido guiado la señala y
+       si se estira contra el precio termina enmarcando aire. */
+    justify-self:end;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(5){
+    grid-area:3/1/4/2; width:auto !important;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(6){
+    grid-area:3/2/4/3; width:auto !important;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(7){
+    grid-area:4/1/5/2; width:auto !important;
+    border-top:1px solid var(--tour-linea-2); margin-top:6px; padding-top:8px;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(8){
+    grid-area:4/2/5/3; width:auto !important; text-align:right;
+    border-top:1px solid var(--tour-linea-2); margin-top:6px; padding-top:8px;
+  }
+  [data-screen-label="Propiedades"] div[style*="min-width: 1060px"] > span:nth-child(9){
+    grid-area:5/1/6/3; width:auto !important; flex-wrap:wrap;
+  }
+
+/* =========================================================================
+   4 · Clientes
+   ========================================================================= */
+
+  [data-screen-label="Clientes"] > div:has(> div[style*="min-width: 1060px"]){
+    max-height:none !important; overflow:visible !important;
+    border:0 !important; background:transparent !important;
+    box-shadow:none !important; border-radius:0 !important;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"][style*="white-space"]{
+    display:none !important;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"]:not([style*="white-space"]){
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:start !important;
+    gap:4px 10px !important;
+    min-width:0 !important;
+    padding:11px 13px !important;
+    margin-bottom:var(--mv-aire);
+    border:1px solid var(--tour-linea) !important;
+    border-radius:var(--mv-radio);
+    background:var(--tour-papel);
+    box-shadow:var(--mv-sombra-tarjeta);
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(1){ grid-area:1/1/2/2 }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(7){
+    grid-area:1/2/2/3; width:auto !important; justify-self:end;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(2){
+    grid-area:2/1/3/3; margin-top:2px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(3){
+    grid-area:3/1/4/2; width:auto !important; text-align:left !important; margin-top:6px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(4){
+    grid-area:3/2/4/3; width:auto !important; text-align:right !important; margin-top:6px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(5){
+    grid-area:4/1/5/2; width:auto !important; flex-wrap:wrap;
+    border-top:1px solid var(--tour-linea-2); margin-top:7px; padding-top:8px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(6){
+    grid-area:4/2/5/3; width:auto !important; justify-content:flex-end; align-self:flex-end;
+    border-top:1px solid var(--tour-linea-2); margin-top:7px; padding-top:8px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(3)::before{ content:'Presupuesto' }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(4)::before{ content:'Propiedades vistas' }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(5)::before{ content:'Último contacto'; flex:1 1 100% }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(3)::before,
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(4)::before,
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(5)::before{
+    display:block; font-size:9.5px; font-weight:800; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--tour-suave); margin-bottom:1px;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] > span:nth-child(7) > button{
+    min-height:36px;
+  }
+  /* El desplegable de campañas se recorta contra la pantalla. */
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"] div[style*="min-width: 250px"]{
+    right:0 !important; min-width:0 !important; width:calc(100vw - 56px) !important;
+    max-width:280px;
+  }
+  /* El aviso de contactos de WhatsApp: el botón entero abajo. */
+  [data-screen-label="Clientes"] > div:nth-child(2) > button{
+    flex:1 1 100%; justify-content:center; height:var(--toque) !important;
+  }
+
+/* =========================================================================
+   5 · Campañas
+   ========================================================================= */
+
+  [data-screen-label="Campañas"] > div:has(> div[style*="min-width: 980px"]){
+    overflow-x:visible !important;
+    border:0 !important; background:transparent !important;
+    box-shadow:none !important; border-radius:0 !important;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"][style*="white-space"]{
+    display:none !important;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"]:not([style*="white-space"]){
+    min-width:0 !important;
+    margin-bottom:var(--mv-aire);
+    border:1px solid var(--tour-linea) !important;
+    border-radius:var(--mv-radio);
+    background:var(--tour-papel);
+    box-shadow:var(--mv-sombra-tarjeta);
+    overflow:hidden;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"]:not([style*="white-space"]) > div:first-child{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) 26px;
+    align-items:start !important;
+    gap:4px 10px !important;
+    padding:12px 13px !important;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(1){ grid-area:1/1/2/3 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(7){
+    grid-area:1/3/2/4; width:auto !important; margin-top:3px;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(2){ grid-area:2/1/3/2 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(3){ grid-area:2/2/3/4 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(4){ grid-area:3/1/4/2 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(5){ grid-area:3/2/4/4 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(6){
+    grid-area:4/1/5/4; width:auto !important;
+    border-top:1px solid var(--tour-linea-2); margin-top:7px; padding-top:9px;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(2),
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(3),
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(4),
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(5){
+    width:auto !important; text-align:left !important; margin-top:5px;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(2)::before{ content:'Invertido' }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(3)::before{ content:'Consultas' }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(4)::before{ content:'Costo por consulta' }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(5)::before{ content:'Convertidas' }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(2)::before,
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(3)::before,
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(4)::before,
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(5)::before{
+    display:block; font-size:9.5px; font-weight:800; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--tour-suave); margin-bottom:1px;
+  }
+  /* Los contactos que trajo la campaña, ya sin la sangría de escritorio. */
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:nth-child(2){
+    padding:0 13px 13px !important;
+  }
+  [data-screen-label="Campañas"] div[style*="minmax(280px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+
+/* =========================================================================
+   6 · Calendario
+   ========================================================================= */
+
+  /* En celular no va la grilla semanal: va la agenda, un día por renglón. */
+  [data-screen-label="Calendario"] [style*="repeat(7"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div{
+    display:grid; grid-template-columns:74px minmax(0,1fr);
+    align-items:start;
+    min-height:0 !important;
+    border-right:0 !important;
+    border-bottom:1px solid var(--tour-linea-2);
+  }
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div:last-child{ border-bottom:0 }
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div > div:first-child{
+    border-bottom:0 !important;
+    padding:11px 8px 11px 13px !important;
+    position:sticky; top:0;
+  }
+  /* "Miércoles" es el día más largo y es el que fija el ancho del riel. */
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div > div:first-child > div:first-child{
+    letter-spacing:.03em !important;
+  }
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div > div:last-child{
+    padding:9px 13px 11px 3px !important;
+  }
+  /* Un día sin nada no puede quedar en blanco: el hueco se nombra.
+     No se usa :empty porque la plantilla deja espacios entre las etiquetas. */
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div > div:last-child:not(:has(> div))::after{
+    content:'Sin actividad';
+    display:block; padding:11px 0 12px;
+    font-size:12px; color:var(--tour-suave);
+  }
+  [data-screen-label="Calendario"] [style*="repeat(7"] > div > div:last-child > div{
+    padding:8px 10px !important;
+  }
+  /* La referencia de colores se desliza si no entra. */
+  [data-screen-label="Calendario"] > div:first-child > div:last-child{
+    flex-wrap:wrap; gap:8px 14px !important;
+  }
+
+/* =========================================================================
+   7 · Aires de San Lorenzo
+   ========================================================================= */
+
+  /* Los tres números del encabezado, a lo ancho. */
+  [data-screen-label="Aires de San Lorenzo"] > div:first-child > div:last-child{
+    flex:1 1 100%;
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px !important;
+  }
+  [data-screen-label="Aires de San Lorenzo"] > div:first-child > div:last-child > div{
+    padding:9px 11px !important;
+  }
+
+  /* Los tres recuadros miden lo mismo —los estira la grilla— pero el número
+     arrancaba pegado abajo del rótulo, y "Consultas del mes" usa dos renglones
+     mientras "Reservadas" y "Vendidas" usan uno: el 111 quedaba trece píxeles
+     más abajo que el 4 y el 3 de al lado. El rótulo se queda arriba y el número
+     se apoya abajo, así los tres se leen en la misma línea. Se resuelve con el
+     reparto y no reservando dos renglones a mano, para que en tablet —donde los
+     tres rótulos entran en uno— el recuadro no cargue con aire de más. */
+  [data-screen-label="Aires de San Lorenzo"] > div:first-child > div:last-child > div{
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  /* La grilla de unidades: cuatro por fila en tablet, tres en celular. */
+  [data-screen-label="Aires de San Lorenzo"] [style*="repeat(6"]{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+    gap:6px !important; padding:11px !important;
+  }
+  [data-screen-label="Aires de San Lorenzo"] [style*="repeat(6"] > div{
+    padding:7px !important;
+  }
+  /* La referencia de estados, abajo, sin apretarse. */
+  [data-screen-label="Aires de San Lorenzo"] [style*="repeat(6"] + div{
+    flex-wrap:wrap; gap:7px 14px !important;
+  }
+
+/* =========================================================================
+   8 · Usuarios
+   ========================================================================= */
+
+  /* La grilla de esta pantalla se quedaba afuera del corte de 300 y 320. */
+  [data-screen-label="Usuarios"] [style*="1fr) 350px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  [data-screen-label="Usuarios"] > div:has(> div[style*="min-width: 660px"]){
+    overflow-x:visible !important;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"][style*="white-space"]{
+    display:none !important;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"]:not([style*="white-space"]){
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center !important;
+    gap:8px 10px !important;
+    min-width:0 !important;
+    padding:13px !important;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(1){ grid-area:1/1/2/2 }
+  /* El correo es largo y no puede meterse abajo de la etiqueta del rol. */
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(1) > span:nth-child(2) > span:nth-child(2){
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(2){
+    grid-area:1/2/2/3; width:auto !important; justify-self:end;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(3){
+    grid-area:2/1/3/3; width:auto !important;
+  }
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(3)::before{
+    content:'Carteras que ve';
+    flex:1 1 100%;
+    font-size:9.5px; font-weight:800; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--tour-suave);
+  }
+  /* El formulario de alta: todo lo que se toca, de 44px. */
+  [data-screen-label="Usuarios"] input{ height:var(--toque) !important; font-size:14px !important }
+  [data-screen-label="Usuarios"] [style*="rgb(233, 237, 242)"] > button{ height:38px !important }
+  [data-screen-label="Usuarios"] [style*="rgb(233, 237, 242)"] + div > button,
+  [data-screen-label="Usuarios"] label + div button{ min-height:40px }
+
+/* =========================================================================
+   9 · Mi portal web
+   ========================================================================= */
+
+  [data-screen-label="Portal"] [style*="minmax(180px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:9px !important;
+  }
+  [data-screen-label="Portal"] [style*="minmax(180px"] > div{ padding:11px 12px !important }
+  /* Los rótulos de los números entran en dos renglones antes que cortarse. Y
+     como en cada fila conviven rótulos de uno y de dos renglones —"Conversión
+     del sitio" contra "Consultas del formulario"—, todos reservan los dos: sin
+     eso, el número del vecino queda trece píxeles más arriba. Los 2,6em son
+     exactamente dos renglones de este rótulo, que mide 1,3 de alto. */
+  [data-screen-label="Portal"] [style*="minmax(180px"] > div > div:first-child{
+    white-space:normal !important; overflow:visible !important;
+    line-height:1.3; min-height:2.6em;
+  }
+  /* La vista previa se escala al ancho real en vez de quedar cortada. */
+  [data-screen-label="Portal"] [style*="overflow-x: auto"]{
+    padding:11px !important;
+  }
+  [data-screen-label="Portal"] [style*="overflow-x: auto"] > div{
+    width:100% !important; min-width:0 !important; max-width:420px;
+  }
+  /* En la barra del navegador simulado mandan la dirección y el enlace. */
+  [data-screen-label="Portal"] [style*="overflow-x: auto"]{ overflow-x:hidden !important }
+  [data-screen-label="Portal"] > div:last-child > div:first-child > div:first-child{
+    padding:8px 10px !important; gap:7px !important;
+  }
+  [data-screen-label="Portal"] > div:last-child > div:first-child > div:first-child > span:first-child{
+    display:none !important;
+  }
+  /* El aviso de cambios sin publicar: el botón principal, entero. */
+  [data-screen-label="Portal"] [style*="rgb(253, 243, 223)"]{
+    flex-wrap:wrap; align-items:flex-start !important;
+  }
+  [data-screen-label="Portal"] [style*="rgb(253, 243, 223)"] > button:last-child{
+    flex:1 1 auto !important; justify-content:center; height:var(--toque) !important;
+  }
+  [data-screen-label="Portal"] input{ height:var(--toque) !important; font-size:14px !important }
+  [data-screen-label="Portal"] [style*="max-height: 290px"]{ max-height:330px !important }
+
+/* =========================================================================
+   10 · Mapa
+   ========================================================================= */
+
+  [data-screen-label="Mapa"]{ height:auto !important }
+  [data-screen-label="Mapa"] [style*="1fr) 300px"]{
+    min-height:0 !important; gap:11px !important;
+  }
+  [data-screen-label="Mapa"] #mapa-crm{
+    height:56vh !important; min-height:330px !important; max-height:440px;
+  }
+  [data-screen-label="Mapa"] [style*="1fr) 300px"] > div:last-child{
+    max-height:none !important;
+  }
+  [data-screen-label="Mapa"] [style*="1fr) 300px"] > div:last-child > div:last-child > div:last-child{
+    overflow-y:visible !important; max-height:none !important;
+  }
+  /* El cartel de "tocá una etiqueta" no necesita media pantalla. */
+  [data-screen-label="Mapa"] [style*="1fr) 300px"] > div:last-child > div:first-child > div{
+    padding:20px 16px !important;
+  }
+  [data-screen-label="Mapa"] > div:first-child > div:last-child{
+    flex-wrap:wrap;
+  }
+  [data-screen-label="Mapa"] > div:first-child button{ min-height:36px }
+
+/* =========================================================================
+   11 · Hasta dónde puede crecer
+   ========================================================================= */
+
+  [data-screen-label="Fase 2"] [style*="minmax(300px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  [data-screen-label="Fase 2"] [style*="minmax(300px"] > div > div:last-child{
+    flex-wrap:wrap;
+  }
+
+/* =========================================================================
+   12 · La ficha de propiedad y los demás modales
+   ========================================================================= */
+
+  [data-screen-label="Ficha de propiedad"],
+  [data-screen-label="Nueva campaña"]{
+    margin-bottom:0 !important;
+  }
+  [data-screen-label="Ficha de propiedad"]{ border-radius:14px !important }
+  [data-screen-label="Ficha de propiedad"] [style*="1fr) 310px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child{
+    flex-wrap:wrap; padding:11px 13px !important; gap:7px !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > span:nth-child(3){
+    flex:1 1 100% !important; order:3;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:last-child{ padding:13px 13px 18px !important }
+  [data-screen-label="Ficha de propiedad"] [style*="repeat(4, minmax(0px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  /* Los datos internos son pares dato/valor: en dos columnas se pisan. */
+  [data-screen-label="Ficha de propiedad"] [style*="1fr) minmax(0px, 1fr)"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  [data-screen-label="Ficha de propiedad"] [style*="1fr) minmax(0px, 1fr)"] > div > span:first-child{
+    flex:0 1 auto !important;
+  }
+  /* Los modales aprovechan el ancho de la pantalla. */
+  div:has(> [data-screen-label="Ficha de propiedad"]),
+  div:has(> [data-screen-label="Nueva campaña"]){
+    padding:10px 8px !important;
+  }
+  [data-screen-label="Ficha de propiedad"],
+  [data-screen-label="Nueva campaña"]{ width:100% !important }
+  /* El formulario de campaña y su resumen, uno abajo del otro. */
+  [data-screen-label="Nueva campaña"] [style*="1fr) 250px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+    padding:15px 14px !important; gap:14px !important;
+  }
+  [data-screen-label="Nueva campaña"] [style*="position: sticky"]{ position:static !important }
+  [data-screen-label="Nueva campaña"] input{ height:var(--toque) !important; font-size:14px !important }
+  [data-screen-label="Nueva campaña"] > div:first-child{ padding:13px 14px !important }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > span:nth-child(4){
+    margin-left:auto;
+  }
+
+  /* Con un modal, el recorrido o el cajón encima, la pastilla de filtros
+     estorba: se va y vuelve sola. */
+  body:has([data-screen-label="Ficha de propiedad"]) #mv-filtros,
+  body:has([data-screen-label="Nueva campaña"]) #mv-filtros,
+  body:has(#paleta-input) #mv-filtros,
+  body.tour-activo #mv-filtros,
+  body.menu-abierto #mv-filtros,
+  body.buscando #mv-filtros{ display:none !important }
+}
+
+/* ---------------------------------------------------------------------------
+   De 561 a 900 —tablet— hay lugar para dos columnas de tarjetas.
+   --------------------------------------------------------------------------- */
+@media (min-width: 561px) and (max-width: 900px){
+  [data-screen-label="Inicio"] [style*="repeat(12"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  /* Los índices siguen mereciendo el ancho entero. */
+  [data-screen-label="Inicio"] [style*="repeat(12"] > section:has([style*="repeat(5, minmax(0px"]){
+    grid-column:1/-1 !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"]{
+    grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div{ border-bottom:0 }
+  [data-screen-label="Inicio"] [style*="repeat(5, minmax(0px"] > div:last-child{ grid-column:auto }
+  [data-screen-label="Inicio"] [style*="minmax(160px"]{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+
+  [data-screen-label="Propiedades"] > div:has(> div[style*="min-width: 1060px"]){
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  [data-screen-label="Consultas"] [style*="minmax(210px"]{ grid-auto-columns:46% !important }
+  [data-screen-label="Portal"] [style*="minmax(180px"]{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Fase 2"] [style*="minmax(300px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Campañas"] div[style*="minmax(280px"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Celular chico: 320px. Lo que sobra se va, no se achica hasta ser ilegible.
+   --------------------------------------------------------------------------- */
+@media (max-width: 374px){
+  [data-screen-label="Aires de San Lorenzo"] [style*="repeat(6"]{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Inicio"] [style*="minmax(160px"] > button > span:last-child > span:first-child{
+    font-size:12px !important;
+  }
+  [data-screen-label="Consultas"] [style*="minmax(210px"]{ grid-auto-columns:88% !important }
+  [data-screen-label="Portal"] [style*="minmax(180px"]{
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+@media (min-width: 375px) and (max-width: 560px){
+  [data-screen-label="Aires de San Lorenzo"] [style*="repeat(6"]{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  [data-screen-label="Propiedades"] > div:nth-child(3),
+  #mv-velo-filtros{ transition:none !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // La hoja de filtros de Propiedades.
+  //
+  // La fila de filtros es de la plantilla y se queda donde está: el CSS la
+  // convierte en una hoja anclada abajo. Lo único que hace falta desde acá es
+  // el interruptor, y va colgado del <body> —igual que el velo y la cruz del
+  // cajón— para no meter nodos dentro de lo que dibuja el runtime.
+
+  var CORTE = 900;
+  var pastilla = null, velo = null;
+
+  function q(sel) { return document.querySelector(sel); }
+  function angosto() { return window.innerWidth <= CORTE; }
+  function enPropiedades() { return !!q('[data-screen-label="Propiedades"]'); }
+
+  var ICONO =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg>';
+
+  function abrir() {
+    if (!angosto() || !enPropiedades()) return;
+    document.body.classList.add('mv-filtros');
+    if (pastilla) pastilla.setAttribute('aria-expanded', 'true');
+  }
+
+  function cerrar() {
+    if (!document.body.classList.contains('mv-filtros')) return;
+    document.body.classList.remove('mv-filtros');
+    if (pastilla) pastilla.setAttribute('aria-expanded', 'false');
+  }
+
+  function alternar() {
+    if (document.body.classList.contains('mv-filtros')) cerrar(); else abrir();
+  }
+
+  // Cuántos filtros hay puestos: se lee de la pantalla, que es la que sabe.
+  // Un filtro elegido deja su pastilla con el borde del acento; el botón de
+  // limpiar aparece solo cuando hay al menos uno.
+  function contar() {
+    var fila = q('[data-screen-label="Propiedades"] > div:nth-child(3)');
+    if (!fila) return 0;
+    var n = 0;
+    var hijos = fila.children;
+    for (var k = 0; k < hijos.length; k++) {
+      var b = hijos[k].tagName === 'DIV' ? hijos[k].querySelector(':scope > button') : null;
+      if (b && /rgb\(44, 74, 110\)/.test(b.getAttribute('style') || '')) n++;
+    }
+    var busca = fila.querySelector('input');
+    if (busca && busca.value.trim()) n++;
+    return n;
+  }
+
+  function montar() {
+    if (!pastilla) {
+      pastilla = document.createElement('button');
+      pastilla.type = 'button';
+      pastilla.id = 'mv-filtros';
+      pastilla.setAttribute('aria-expanded', 'false');
+      pastilla.innerHTML =
+        ICONO +
+        '<span class="mv-f-abrir">Filtros</span>' +
+        '<span class="mv-f-cerrar">Listo</span>' +
+        '<span class="mv-f-cuenta"></span>';
+      pastilla.addEventListener('click', function (e) { e.stopPropagation(); alternar(); });
+      document.body.appendChild(pastilla);
+    }
+    if (!velo) {
+      velo = document.createElement('div');
+      velo.id = 'mv-velo-filtros';
+      velo.addEventListener('click', cerrar);
+      document.body.appendChild(velo);
+    }
+  }
+
+  function sincronizar() {
+    var hay = enPropiedades() && angosto();
+    document.body.classList.toggle('mv-propiedades', hay);
+    if (!hay) { cerrar(); return; }
+    var n = contar();
+    pastilla.setAttribute('data-cuenta', String(n));
+    var c = pastilla.querySelector('.mv-f-cuenta');
+    if (c) c.textContent = n ? String(n) : '';
+    pastilla.setAttribute(
+      'aria-label',
+      n ? 'Filtros, ' + n + ' aplicados' : 'Filtrar propiedades'
+    );
+  }
+
+  function alTeclado(e) {
+    if ((e.key || '').toLowerCase() === 'escape') cerrar();
+  }
+
+  function iniciar() {
+    montar();
+    sincronizar();
+    window.addEventListener('keydown', alTeclado, false);
+    window.addEventListener('resize', sincronizar, false);
+
+    // Mismo patrón que el tour y que el cajón: el runtime redibuja y esto se
+    // vuelve a poner al día solo.
+    var pendiente = false;
+    var obs = new MutationObserver(function () {
+      if (pendiente) return;
+      pendiente = true;
+      setTimeout(function () { pendiente = false; sincronizar(); }, 80);
+    });
+    obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 60); });
+  } else {
+    setTimeout(iniciar, 60);
+  }
+})();
+</script>
+
+<!-- ===========================================================================
+     Repaso del celular: lo que entraba pero todavía no se usaba bien.
+
+     Cuarto bloque plano del archivo, con el mismo criterio que los tres
+     anteriores: CSS con @media y JavaScript sobre el DOM ya renderizado. No
+     toca la plantilla <x-dc>, ni support.js, ni datos.js, y de 901px para
+     arriba no cambia nada.
+
+     Tres cosas que la revisión a 375px encontró mal, en orden de peso:
+
+     1 · El selector de cartera se leía "Todas la…". Es el eje del sistema —el
+         propio recorrido guiado lo dice— y no se podía leer en qué cartera
+         estabas parado. El ancho no salía de ningún lado: la barra tenía un
+         botón de más. El del tutorial se va al cajón, que es donde vive la
+         ayuda en un celular, y esos 43px vuelven al nombre de la cartera.
+
+     2 · Datos cortados con puntos suspensivos justo donde el dato importa: la
+         dirección de cada propiedad, el correo de cada usuario, el subtítulo
+         de las tarjetas del portal. En escritorio son celdas de una tabla y el
+         corte tiene sentido; en una tarjeta de celular sobra el renglón de
+         abajo, así que bajan de renglón y se leen enteras.
+
+     3 · Objetivos táctiles de 21, 24, 29, 31 y 33px. Todo lo que se toca sube a
+         44. Lo que no puede crecer sin deformarse —el interruptor del portal,
+         la estrella de destacar, la casilla sobre la foto— se queda del tamaño
+         que tiene y estira su zona sensible con un pseudoelemento, igual que
+         ya hacían la campana y el avatar de la barra.
+     =========================================================================== -->
+<style>
+/* El botón del tutorial dentro del cajón no existe en escritorio. */
+#rv-tutorial{ display:none }
+
+@media (max-width: 900px){
+
+  /* --- 1 · El selector de cartera vuelve a leerse ------------------------ */
+
+  /* La ayuda deja la barra y baja al pie del cajón. De 700px para arriba el
+     repaso de tablet la devuelve a la barra: ahí su zona sensible daba 42px de
+     ancho —38 del botón más dos de cada lado— y le faltaban esos dos. */
+  .barra-app #tour-abrir{ display:none !important }
+  #tour-abrir::after{
+    left:50% !important; right:auto !important; top:50% !important;
+    width:var(--toque) !important; height:var(--toque) !important;
+    transform:translate(-50%,-50%) !important;
+  }
+  nav > div:last-child{ display:block !important }
+  nav > div:last-child > button:not(#rv-tutorial){ display:none !important }  /* contraer la barra no aplica acá */
+  #rv-tutorial{
+    display:flex; align-items:center; gap:10px; width:100%;
+    min-height:var(--toque); padding:0 10px; text-align:left;
+    background:transparent; color:var(--cajon-tenue);
+    font-weight:600; font-size:13px; border-radius:9px;
+    transition:background .14s, color .14s;
+  }
+  #rv-tutorial:hover, #rv-tutorial:focus-visible{ background:var(--cajon-claro); color:var(--cajon-blanco) }
+  #rv-tutorial svg{ flex:0 0 auto }
+
+  /* Con esos 43px libres, el nombre de la cartera entra entero. Baja de
+     renglón si hace falta —"Aires de San Lorenzo" usa dos— y por eso la
+     píldora deja de tener alto fijo. El rótulo CARTERA se va: con el punto de
+     color y el chevrón ya se entiende que es un selector, y el recorrido
+     guiado lo explica en su paso 3. */
+  .barra-app > div:first-child{ flex:1 1 auto !important }
+  .barra-app > div:first-child > button{
+    height:auto !important; min-height:var(--toque) !important;
+    padding-top:4px !important; padding-bottom:4px !important;
+  }
+  .barra-app > div:first-child > button > span:nth-child(2) > span:first-child{ display:none !important }
+  .barra-app > div:first-child > button > span:nth-child(2) > span:last-child{
+    white-space:normal !important; overflow:visible !important; text-overflow:clip !important;
+    font-size:13.5px !important; line-height:1.14 !important;
+  }
+
+  /* --- 2 · Los datos, enteros ------------------------------------------- */
+
+  /* El corte con puntos suspensivos viene escrito en el style de cada celda,
+     que es lo que la tabla de escritorio necesita. Dentro de una pantalla y en
+     celular no hace falta: hay renglón de sobra hacia abajo. */
+  [data-screen-label] [style*="text-overflow: ellipsis"]{
+    white-space:normal !important; overflow:visible !important; text-overflow:clip !important;
+  }
+  /* El correo del usuario no viene cortado desde el style sino desde la regla
+     que arma la tarjeta: es el dato con el que se da de alta a alguien, así
+     que baja de renglón aunque la tarjeta crezca catorce píxeles. */
+  [data-screen-label="Usuarios"] div[style*="min-width: 660px"] > span:nth-child(1) > span:nth-child(2) > span:nth-child(2){
+    white-space:normal !important; overflow:visible !important; text-overflow:clip !important;
+    overflow-wrap:anywhere; line-height:1.3;
+  }
+
+  /* Salvo la barra de direcciones del navegador de mentira que dibuja "Mi
+     portal web": ahí el recorte es el dibujo. */
+  [data-screen-label="Portal"] [style*="font-family: ui-monospace"],
+  [data-screen-label="Portal"] [style*="monospace"][style*="text-overflow: ellipsis"]{
+    white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important;
+  }
+
+  /* --- 3 · 44px para el dedo -------------------------------------------- */
+
+  [data-screen-label]:not([data-screen-label="Login"]) button,
+  [data-screen-label]:not([data-screen-label="Login"]) a[style*="display: flex"],
+  .franja-demo button,
+  #tour-saltar, #tour-atras, #tour-siguiente{
+    min-height:var(--toque) !important;
+  }
+
+  /* El login es la primera pantalla que abre el cliente en el teléfono y venía
+     con los campos en 40, "Entrar" en 41 y los dos enlaces del pie en la altura
+     de la letra. Los enlaces son de texto: crecen con relleno, no con alto, para
+     no separarse del párrafo que los rodea. */
+  [data-screen-label="Login"] input,
+  [data-screen-label="Login"] > div:last-child button{
+    min-height:var(--toque) !important;
+  }
+  [data-screen-label="Login"] > div:last-child button[style*="font-size: 12"]{
+    min-height:0 !important; padding:12px 4px !important; margin:-12px -4px !important;
+  }
+
+  /* Un botón con texto crece a 44 y sigue siendo el mismo botón, apenas más
+     alto. Uno que trae ancho y alto escritos en el style —los interruptores,
+     las flechas de la ficha, la estrella de destacar— si crece queda deformado:
+     una píldora de 28 de ancho por 44 de alto. Ésos se quedan del tamaño que
+     tienen y estiran la zona sensible con un pseudoelemento transparente, igual
+     que ya hacían la campana y el avatar de la barra.
+     Se reconocen por traer las dos medidas juntas; la casilla que va sobre la
+     foto de cada propiedad trae solo el ancho, y además ya viene posicionada por
+     el bloque de los módulos, así que a ésa no se le toca el position. */
+  [data-screen-label] button[style*="width: 36px"][style*="height: 20px"],
+  [data-screen-label] button[style*="width: 28px"][style*="height: 28px"],
+  [data-screen-label] button[style*="width: 26px"][style*="height: 26px"]{
+    min-height:0 !important; position:relative;
+  }
+  [data-screen-label] button[style*="width: 28px"]:not([style*="height"]){ min-height:0 !important }
+  [data-screen-label] button[style*="width: 36px"][style*="height: 20px"]::after,
+  [data-screen-label] button[style*="width: 28px"][style*="height: 28px"]::after,
+  [data-screen-label] button[style*="width: 26px"][style*="height: 26px"]::after,
+  [data-screen-label] button[style*="width: 28px"]:not([style*="height"])::after{
+    content:''; position:absolute; left:50%; top:50%;
+    width:var(--toque); height:var(--toque); transform:translate(-50%,-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  #rv-tutorial{ transition:none !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // El disparador del tutorial que vive en el pie del cajón. No toca al del
+  // recorrido guiado —ése se repone solo en la barra y acá está oculto por
+  // CSS—: le habla por el mismo evento que ya escucha, así que si mañana
+  // cambia la ayuda, esto sigue andando sin enterarse.
+  var EVENTO = 'molins:abrir-tutorial';
+  var boton = null;
+
+  var ICONO =
+    '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="12" cy="12" r="10"></circle>' +
+    '<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>' +
+    '<path d="M12 17h.01"></path></svg>';
+
+  function ponerlo() {
+    var nav = document.querySelector('nav');
+    if (!nav) return;
+    var pie = nav.lastElementChild;
+    if (!pie || pie === nav.firstElementChild) return;
+    if (boton && boton.parentNode === pie) return;
+
+    boton = document.createElement('button');
+    boton.type = 'button';
+    boton.id = 'rv-tutorial';
+    boton.title = 'Volver a ver el recorrido guiado';
+    boton.innerHTML = ICONO + '<span>Ver el tutorial</span>';
+    boton.addEventListener('click', function () {
+      // Primero se cierra el cajón como lo cerraría el usuario, y recién
+      // después arranca el recorrido: el paso 2 lo vuelve a abrir solo.
+      var cruz = document.getElementById('cerrar-menu');
+      if (cruz) cruz.click();
+      setTimeout(function () { window.dispatchEvent(new Event(EVENTO)); }, 180);
+    });
+
+    // Se agrega al final: el botón de contraer la barra tiene que seguir
+    // siendo el primero del pie, que es el que busca el cajón para
+    // desplegar las etiquetas.
+    pie.appendChild(boton);
+  }
+
+  function iniciar() {
+    ponerlo();
+    new MutationObserver(ponerlo).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 80); });
+  } else {
+    setTimeout(iniciar, 80);
+  }
+})();
+</script>
+
+<!-- ===========================================================================
+     Repaso de tablet: de 700 a 900px.
+
+     Quinto bloque plano, con el mismo criterio que los cuatro anteriores: CSS
+     con @media sobre el DOM ya renderizado, sin tocar la plantilla <x-dc>, ni
+     support.js, ni datos.js. De 901px para arriba no cambia nada.
+
+     Las pasadas anteriores armaron el sistema para un teléfono y de 561 para
+     arriba abrieron dos columnas de tarjetas. Revisado a 768 —un iPad de pie,
+     que es como Francisco lo va a abrir— quedaban decisiones de teléfono
+     aplicadas donde sobra ancho:
+
+     1 · El buscador estaba escondido detrás de una lupa y en su lugar había
+         250px de barra vacía. Es la pieza que más se usa después del menú.
+     2 · El rótulo CARTERA se había sacado para ganar ancho. Acá no hace falta:
+         el selector entra entero con su rótulo, como en escritorio.
+     3 · "Campañas Meta" —el canal que más consultas trae— se partía en dos
+         renglones porque su columna estaba achicada a 92px para el teléfono.
+     4 · Las consultas y los clientes iban de a una tarjeta por fila, con media
+         pantalla en blanco a la derecha.
+     5 · Los cuatro números de cada campaña estaban de a dos, y la vista previa
+         del portal quedaba topeada en 420px: el conmutador Escritorio / Celular
+         mostraba lo mismo en los dos casos.
+
+     El corte es 700 y no 561 porque abajo de 700 las cuentas no dan —el buscador
+     queda en menos de 80px y "RESERVADAS" no entra en su celda—. Ese tramo se
+     queda con el armado de teléfono, que ya está verificado.
+     =========================================================================== -->
+<style>
+@media (min-width: 700px) and (max-width: 900px){
+
+  /* --- 1 · La barra superior ----------------------------------------------
+     Vuelven el buscador y el botón del tutorial, y con ellos desaparecen la
+     lupa y el atajo del cajón: una sola puerta para cada cosa, como en
+     escritorio. El separador elástico deja de comerse el ancho. */
+  .barra-app > div:nth-child(2){ display:block !important }
+  #btn-buscar{ display:none !important }
+  .barra-app #tour-abrir{ display:flex !important }
+  #rv-tutorial{ display:none !important }
+  nav > div:last-child{ display:none !important }
+  .barra-app > div:nth-child(3){ flex:0 1 auto !important }
+  .barra-app [style*="Buscar propiedad"]{ font-size:13px !important }
+
+  /* --- 2 · El selector de cartera, con su rótulo --------------------------
+     Con el buscador al lado ya no es lo único que se lee en la barra, así que
+     no necesita crecer: mide lo suyo y no se recorta nunca. */
+  .barra-app > div:first-child{ flex:0 0 auto !important }
+  .barra-app > div:first-child > button{
+    height:42px !important; padding-top:0 !important; padding-bottom:0 !important;
+  }
+  .barra-app > div:first-child > button > span:nth-child(2) > span:first-child{
+    display:block !important;
+  }
+  .barra-app > div:first-child > button > span:nth-child(2) > span:last-child{
+    white-space:nowrap !important; font-size:13px !important; line-height:1.2 !important;
+  }
+  /* El campo del buscador viene de 37px, que es alto de mouse. En una tablet se
+     toca con el dedo: sube a 44 y la barra sigue midiendo 56. */
+  .barra-app > div:nth-child(2) input{ height:var(--toque) !important }
+
+  /* --- 3 · Inicio ---------------------------------------------------------- */
+
+  /* La columna de los canales vuelve a los 106px del prototipo: con 92 el
+     nombre más largo se iba a dos renglones y desalineaba su barra. */
+  [data-screen-label="Inicio"] section [style*="width: 106px"]{ width:106px !important }
+
+  /* Estado de la cartera: los cuatro estados en una fila, con menos aire a los
+     costados que en el teléfono para que los rótulos entren de un renglón. */
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"]{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  }
+  [data-screen-label="Inicio"] [style*="repeat(4, minmax(0px"] > div{
+    border-bottom:0; padding:11px 8px !important;
+  }
+
+  /* --- 4 · Consultas y clientes, de a dos --------------------------------- */
+  [data-screen-label="Consultas"] > div:has(> div[style*="min-width: 1180px"]){
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:var(--mv-aire);
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"]:not([style*="white-space"]){
+    margin-bottom:0 !important;
+  }
+  [data-screen-label="Consultas"] div[style*="min-width: 1180px"][style*="text-align"]{
+    grid-column:1/-1;
+  }
+
+  [data-screen-label="Clientes"] > div:has(> div[style*="min-width: 1060px"]){
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:start;
+    gap:var(--mv-aire);
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"]:not([style*="white-space"]){
+    margin-bottom:0 !important;
+  }
+  [data-screen-label="Clientes"] div[style*="min-width: 1060px"][style*="text-align"]{
+    grid-column:1/-1;
+  }
+
+  /* --- 5 · Campañas: los cuatro números en una fila ------------------------ */
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"]:not([style*="white-space"]) > div:first-child{
+    grid-template-columns:repeat(4,minmax(0,1fr)) 26px;
+  }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(1){ grid-area:1/1/2/5 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(7){ grid-area:1/5/2/6 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(2){ grid-area:2/1/3/2 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(3){ grid-area:2/2/3/3 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(4){ grid-area:2/3/3/4 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(5){ grid-area:2/4/3/5 }
+  [data-screen-label="Campañas"] div[style*="min-width: 980px"] > div:first-child > span:nth-child(6){ grid-area:3/1/4/6 }
+
+  /* --- 6 · Mi portal web: la vista previa usa el ancho que hay ------------- */
+  [data-screen-label="Portal"] [style*="overflow-x: auto"] > div{
+    max-width:none !important;
+  }
+  [data-screen-label="Portal"] [style*="overflow-x: auto"] > div[style*="width: 380px"]{
+    width:380px !important; min-width:380px !important; max-width:380px !important;
+  }
+}
+</style>
+
+<!-- ===========================================================================
+     Repaso de 320px: lo que quedó después de los cinco bloques anteriores.
+
+     Sexto bloque plano, mismo criterio que los cinco de arriba: CSS con @media
+     y JavaScript sobre el DOM ya renderizado. No toca la plantilla <x-dc>, ni
+     support.js, ni datos.js, y de 901px para arriba no cambia nada.
+
+     Tres cosas se revisaron en un celular de 320 y no estaban:
+
+     1 · El buscador global no se podía abrir. Abajo de 375px la lupa se saca de
+         la barra para que el nombre de la cartera entre entero, pero no quedaba
+         ninguna otra puerta: el buscador desaparecía del sistema. Ahora baja al
+         pie del cajón, al lado del tutorial, con el mismo patrón.
+
+     2 · La cabecera de la ficha de propiedad se desarmaba: la cruz de cerrar
+         caía sola en un renglón del medio y la dirección de la propiedad
+         —el dato que dice qué estás mirando— terminaba abajo de todo.
+
+     3 · Lo mismo en el modal de campaña nueva: la cruz se caía de renglón.
+     =========================================================================== -->
+<style>
+/* En escritorio el atajo del cajón no existe. */
+#rv-buscar{ display:none }
+
+/* ---------------------------------------------------------------------------
+   1 · El buscador, alcanzable en un celular chico
+   --------------------------------------------------------------------------- */
+@media (max-width: 374px){
+
+  /* El pie pasa a columna para poder ordenar sus dos botones. El de contraer
+     la barra sigue siendo el primer hijo del DOM —el cajón lo necesita ahí—
+     pero está oculto, así que no ocupa lugar. */
+  nav > div:last-child{ display:flex !important; flex-direction:column; gap:2px }
+
+  /* Se dibuja como el resto del pie del cajón —mismo alto de dedo, mismos
+     colores prestados del recorrido guiado— y va arriba del tutorial: buscar
+     es de todos los días, volver a ver el tutorial es de una vez.
+     El selector lleva "button" porque la regla que esconde todo lo que no sea
+     el tutorial también apunta con un id y hay que ganarle en especificidad. */
+  nav > div:last-child > button#rv-buscar{
+    display:flex !important; order:-1;
+    align-items:center; gap:10px; width:100%;
+    min-height:var(--toque); padding:0 10px; text-align:left;
+    background:transparent; color:var(--cajon-tenue);
+    font-weight:600; font-size:13px; border-radius:9px;
+    transition:background .14s, color .14s;
+  }
+  nav > div:last-child > button#rv-buscar:hover,
+  nav > div:last-child > button#rv-buscar:focus-visible{
+    background:var(--cajon-claro); color:var(--cajon-blanco);
+  }
+  #rv-buscar svg{ flex:0 0 auto }
+
+  /* Con el buscador abierto la lupa vuelve a la barra: es la cruz que lo
+     cierra, y sin ella no habría con qué salir. */
+  body.buscando #btn-buscar{ display:flex !important }
+}
+
+/* ---------------------------------------------------------------------------
+   2 y 3 · Las cabeceras de los dos modales
+   --------------------------------------------------------------------------- */
+/* Hasta 699px. De 700 para arriba las dos cabeceras ya entran con la cruz en
+   su esquina y tocarlas solo las haría más altas. */
+@media (max-width: 699px){
+
+  /* La ficha: primero los rótulos y la cruz, después la dirección en su renglón,
+     y al final el precio con el paginador. El orden de la cabecera de
+     escritorio —dirección, precio, paginador, cruz— se apoya en que todo entra
+     en una línea; cuando se parte en tres, la cruz tiene que quedar en una
+     esquina y el nombre no puede ir último. */
+  [data-screen-label="Ficha de propiedad"] > div:first-child{
+    align-items:center !important; row-gap:2px !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > button{
+    order:1; margin-left:auto;
+    width:var(--toque) !important; justify-content:center !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > span:nth-child(3){
+    order:2 !important; flex:1 1 100% !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > span:nth-child(4){
+    order:3; margin-left:0 !important;
+  }
+  [data-screen-label="Ficha de propiedad"] > div:first-child > span:nth-child(5){ order:4 }
+
+  /* La campaña nueva: título y cruz comparten renglón. El título cede ancho
+     —baja de renglón si hace falta— antes que empujar la cruz para abajo. */
+  [data-screen-label="Nueva campaña"] > div:first-child{
+    flex-wrap:nowrap !important; gap:10px !important;
+  }
+  [data-screen-label="Nueva campaña"] > div:first-child > span:first-child{
+    flex:1 1 auto !important; min-width:0;
+  }
+  [data-screen-label="Nueva campaña"] > div:first-child > button{
+    flex:0 0 auto; margin-left:auto;
+    width:var(--toque) !important; justify-content:center !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  #rv-buscar{ transition:none !important }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // El atajo al buscador que vive en el pie del cajón, para los anchos en los
+  // que la lupa no entra en la barra. No duplica lógica: prende las mismas dos
+  // clases del <body> que ya maneja el bloque del cajón —"menu-abierto" fuera,
+  // "buscando" adentro— y deja que su CSS haga el resto.
+  var boton = null;
+
+  var ICONO =
+    '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="11" cy="11" r="8"></circle>' +
+    '<path d="m21 21-4.3-4.3"></path></svg>';
+
+  function abrir(e) {
+    // El bloque del cajón cierra el buscador con cualquier clic que caiga
+    // fuera de la barra superior, y este cae en el <nav>: si el evento sigue
+    // subiendo, se abre y se cierra en el mismo clic.
+    e.preventDefault();
+    e.stopPropagation();
+
+    document.body.classList.remove('menu-abierto');
+    var hamburguesa = document.getElementById('btn-menu');
+    if (hamburguesa) hamburguesa.setAttribute('aria-expanded', 'false');
+
+    document.body.classList.add('buscando');
+    setTimeout(function () {
+      var campo = document.querySelector('header.barra-app input');
+      if (campo) { try { campo.focus(); } catch (err) {} }
+    }, 60);
+  }
+
+  function ponerlo() {
+    var nav = document.querySelector('nav');
+    if (!nav) return;
+    var pie = nav.lastElementChild;
+    // El pie es el último <div> del cajón; en el login no hay <nav> y el
+    // cajón de una sola sección tampoco sirve.
+    if (!pie || pie === nav.firstElementChild) return;
+    if (boton && boton.parentNode === pie) return;
+
+    boton = document.createElement('button');
+    boton.type = 'button';
+    boton.id = 'rv-buscar';
+    boton.title = 'Buscar en todo el sistema';
+    boton.innerHTML = ICONO + '<span>Buscar</span>';
+    boton.addEventListener('click', abrir);
+
+    // Se agrega al final, como el tutorial: el botón de contraer la barra
+    // tiene que seguir siendo el primer hijo del pie, que es el que busca el
+    // cajón para desplegar las etiquetas. El orden visual lo pone el CSS.
+    pie.appendChild(boton);
+  }
+
+  function iniciar() {
+    ponerlo();
+    new MutationObserver(ponerlo).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(iniciar, 90); });
+  } else {
+    setTimeout(iniciar, 90);
+  }
 })();
 </script>
 

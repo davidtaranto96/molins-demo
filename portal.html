@@ -580,6 +580,17 @@ footer{background:var(--navy-900);color:var(--w-64);padding:50px 0 20px}
 </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+  /* Anota cada mapa que se crea. El bloque móvil del final los necesita para
+     soltar el arrastre en celular (si no, el dedo mueve el mapa y la página
+     no scrollea) y para recalcular el tamaño al girar el teléfono.
+     No cambia nada del comportamiento en escritorio. */
+  (function(){
+    if(!window.L || !L.Map || !L.Map.addInitHook) return;
+    window.MAPAS_MOLINS = [];
+    L.Map.addInitHook(function(){ window.MAPAS_MOLINS.push(this); });
+  })();
+  </script>
 </head>
 <body>
 
@@ -2593,6 +2604,602 @@ body.tour-activo .navlinks.open{opacity:0;visibility:hidden}
   else setTimeout(iniciar, 60);
 })();
 </script>
+
+<!-- ===========================================================================
+     PASADA DE CELULAR
+     Todo lo de acá vive dentro de @media: a 1440 la página queda igual que antes.
+     Se agrega al final a propósito, para que gane por orden en la cascada y para
+     poder leer la pasada entera de un tirón.
+     Cuatro anchos de referencia: 320 · 375 · 414 · 768.
+     =========================================================================== -->
+<style>
+/* ---------------------------------------------------------------- 1 · cajón lateral
+   El menú era un panel que aparecía por opacidad, y quedaba por debajo de la barra
+   superior y del botón flotante de WhatsApp: header.nav tiene z-index 100 y crea
+   contexto, así que el 200 del panel nunca superaba al 101 de .topbar.
+   Ahora entra deslizándose, con velo, con la página bloqueada detrás y con su
+   propia cruz adentro, sobre blanco. */
+/* las tres piezas del cajón se inyectan siempre, pero solo existen en celular:
+   en escritorio .navlinks es la fila de enlaces de la barra y no debe verlas */
+.cajon-cab,.cajon-pie,#velo-menu{display:none}
+
+@media(max-width:1000px){
+  #velo-menu{display:block}
+  .navlinks{
+    width:min(84vw,300px);
+    padding:0 0 calc(18px + env(safe-area-inset-bottom));
+    gap:0;justify-content:flex-start;
+    transform:translateX(100%);
+    transition:transform .32s var(--e),opacity .26s var(--e),visibility .26s;
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    box-shadow:-16px 0 48px var(--a-20);
+  }
+  .navlinks.open{transform:none}
+  .navlinks a{
+    display:flex;align-items:center;width:100%;min-height:54px;
+    padding:10px 22px;font-size:17px;border-bottom:1px solid var(--line);
+  }
+  .navlinks a::after{display:none}
+  .navlinks a:active{background:var(--bg-soft)}
+
+  .cajon-cab{
+    display:flex;align-items:center;gap:10px;width:100%;flex:0 0 auto;
+    padding:calc(14px + env(safe-area-inset-top)) 12px 14px 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .cajon-cab .mk{width:36px;height:36px;border-radius:9px;background:var(--navy-700);display:grid;place-items:center;flex:none}
+  .cajon-cab .mk span{font-family:var(--fd);font-size:16px;font-weight:600;color:var(--white)}
+  .cajon-cab .nm{flex:1;min-width:0;line-height:1.15}
+  .cajon-cab .nm b{display:block;font-family:var(--fd);font-size:16.5px;font-weight:600}
+  .cajon-cab .nm small{display:block;font-size:10px;font-weight:600;color:var(--terra-600);white-space:nowrap}
+  .cajon-x{
+    flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+    background:var(--bg-soft);color:var(--ink);display:grid;place-items:center;cursor:pointer;
+  }
+  .cajon-x svg{width:18px;height:18px}
+  .cajon-x:active{background:var(--navy-50)}
+
+  .cajon-pie{display:flex;flex-direction:column;gap:10px;padding:18px 22px 0;width:100%;flex:0 0 auto}
+  /* .navlinks a los pinta como enlaces del menú: acá vuelven a ser botón y dato */
+  .navlinks .cajon-pie a{border-bottom:0;font-family:var(--fs)}
+  .navlinks .cajon-pie .btn{width:100%;min-height:52px;font-size:15px;padding:12px 18px}
+  .navlinks .cajon-tel{
+    display:flex;align-items:center;gap:9px;min-height:46px;padding:0;
+    font-size:14.5px;font-weight:600;color:var(--navy-700);
+  }
+  .cajon-tel svg{width:17px;height:17px}
+  .cajon-mp{font-size:11.5px;color:var(--muted);line-height:1.5;padding-top:4px}
+
+  #velo-menu{
+    position:fixed;inset:0;z-index:440;background:var(--a-55);
+    opacity:0;visibility:hidden;transition:opacity .3s var(--e),visibility .3s;
+  }
+  body.menu-abierto #velo-menu{opacity:1;visibility:visible}
+
+  /* el cajón sube junto con su header para pasar por encima de la barra superior
+     y del botón flotante; lo demás del header se apaga para no pisar el panel */
+  body.menu-abierto header.nav{z-index:460}
+  body.menu-abierto header.nav::before{opacity:0}
+  body.menu-abierto .brand,
+  body.menu-abierto .burger,
+  body.menu-abierto #tour-abrir{opacity:0;pointer-events:none}
+  body.menu-abierto .wafab{opacity:0;visibility:hidden;pointer-events:none}
+  /* el botón de volver al sistema queda arriba de todo: el panel no lo tapa */
+  body.menu-abierto .back-crm{z-index:470}
+  body.tour-activo .navlinks.open{transform:translateX(100%)}
+}
+
+/* ------------------------------------------------------- 2 · volver al sistema
+   Con la etiqueta visible el botón mide 130px y se montaba encima de la marca
+   entre 641 y 900. Abajo de 900 queda solo la flecha, con 44px de zona táctil. */
+@media(max-width:900px){
+  .back-crm span{display:none}
+  .back-crm{padding:0 9px;height:30px}
+  /* -7 daba 42 de alto medidos: el borde se come dos. Con -8 los 44 son reales. */
+  .back-crm::after{content:"";position:absolute;inset:-8px;border-radius:100px}
+  .back-crm svg{width:14px;height:14px}
+}
+
+/* ------------------------------------------------------------------ 3 · marca */
+@media(max-width:374px){
+  .nav .wrap{height:62px}
+  .brand{gap:9px}
+  .brand .mk{width:34px;height:34px}
+  .brand .mk span{font-size:15px}
+  .brand b{font-size:16px}
+  .brand small{font-size:9.5px;white-space:nowrap}
+}
+
+/* -------------------------------------------------------------------- 4 · hero */
+@media(max-width:600px){
+  .hero{min-height:82svh}
+  .hero-actions{gap:10px}
+  .hero-actions .btn{min-height:52px;font-size:15px}
+  .hero p.tit{margin:16px 0 26px}
+  .strip .wrap{gap:12px;padding:18px 20px}
+}
+@media(max-width:340px){
+  .hero h1{font-size:30px}
+  .hero .mat{font-size:11.5px;line-height:1.45}
+}
+
+/* ---------------------------------------------------- 5 · filtros del catálogo
+   Las pastillas ocupaban tres renglones. Ahora se deslizan en horizontal, de
+   borde a borde, sin agrandar el ancho de la página (el margen negativo iguala
+   al padding de .wrap). */
+@media(max-width:700px){
+  .chips{
+    flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    margin:0 -20px 14px;padding:2px 20px 12px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:0 0 auto;scroll-snap-align:start;min-height:44px}
+}
+@media(max-width:640px){
+  .selects{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center}
+  .selects select{width:100%;min-height:48px;font-size:16px;
+    background-position:calc(100% - 17px) 22px,calc(100% - 12px) 22px}
+  .selects .clr{grid-column:1;justify-self:start;padding:8px 0;min-height:44px;display:flex;align-items:center}
+  .selects .res{grid-column:2;justify-self:end;margin-left:0}
+  .card .foot .wa{width:44px;height:44px}
+  .card .body{padding:15px 16px 16px}
+}
+@media(max-width:400px){
+  /* a dos columnas el nombre del filtro se cortaba: cada uno se lleva su renglón */
+  .selects select{grid-column:1/-1}
+}
+
+/* ------------------------------------------------------------------ 6 · zonas */
+@media(max-width:768px){
+  .mapa{height:300px}
+  /* los controles de Leaflet vienen de 30px: no se aciertan con el dedo */
+  .leaflet-touch .leaflet-bar a,.leaflet-bar a{width:40px;height:40px;line-height:40px;font-size:20px}
+  /* el punto chico mide 29px; se le agranda la zona táctil sin agrandar el dibujo */
+  .pin-zona{position:relative}
+  .pin-zona::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:44px;height:44px;border-radius:99px}
+  .zona-fila{padding:15px 16px}
+}
+
+/* ----------------------------------------------------------- 7 · calculadora */
+@media(max-width:600px){
+  .calc-row .cl{flex-direction:column;align-items:flex-start;gap:2px;margin-bottom:12px}
+  .calc-row .cv{font-size:19px}
+  .calc-card{padding:22px 18px}
+  .calc-row{margin-bottom:26px}
+  /* el control venía con 6px de alto: eso era todo lo que había para agarrar */
+  input[type=range]{height:44px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:var(--line-2)}
+  input[type=range]::-webkit-slider-thumb{width:26px;height:26px;margin-top:-10px}
+  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--line-2)}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px}
+  .calc-out{padding:24px 20px}
+  .calc-out .val small{white-space:nowrap}
+  .calc-split{gap:12px;margin-top:20px}
+}
+@media(max-width:400px){
+  .calc-out .val{font-size:34px}
+  .calc-split{gap:10px}
+  .calc-split b{font-size:17px;white-space:nowrap}
+  .calc-split div>span{font-size:11.5px}
+}
+
+/* -------------------------------------------------------------- 8 · contacto */
+@media(max-width:900px){
+  /* menos de 16px hace que iOS acerque la pantalla al enfocar el campo */
+  .field input,.field select{font-size:16px;min-height:50px;padding:13px}
+  .field{margin:14px 0}
+  .form .btn{min-height:52px;margin-top:4px}
+}
+@media(max-width:600px){
+  .form{padding:22px 18px}
+  .ci p,.ci a{overflow-wrap:anywhere}
+  .ci{padding:13px 0}
+  .foot-col a,.foot-brand p{overflow-wrap:anywhere}
+}
+@media(max-width:480px){
+  .foot-grid{grid-template-columns:1fr;gap:26px}
+  .foot-brand{grid-column:auto}
+  .foot-col a{padding:8px 0}
+}
+
+/* --------------------------------------------- 9 · ficha de propiedad, a pantalla
+   De 900 para abajo la ficha deja de ser una caja centrada y ocupa la pantalla
+   entera, con una barra pegada abajo, que es donde llega el pulgar. En tablet
+   hacía falta por un motivo puntual: la cruz vive dentro de la caja que
+   scrollea, así que apenas bajabas dos dedos la ficha se quedaba sin forma de
+   cerrarse. Las columnas del contenido no se tocan acá: a 768 la ficha rápida
+   sigue en cuatro y las similares en tres, que es como mejor se leen. */
+.ficha-barra{display:none}
+
+@media(max-width:900px){
+  .modal{padding:0;align-items:stretch}
+  .modal-box{max-height:100%;height:100%;border-radius:0}
+  .m-gal{border-radius:0}
+  .modal-close{
+    position:absolute;top:calc(10px + env(safe-area-inset-top));right:10px;
+    width:44px;height:44px;background:var(--nv-82);color:var(--white);
+    border:1px solid var(--w-22);backdrop-filter:blur(4px);
+  }
+  .modal-close:hover{background:var(--navy-900);transform:none}
+  .modal-close svg{width:19px;height:19px}
+  .m-arrow{width:44px;height:44px}
+
+  /* el z-index alto no es capricho: los paneles de Leaflet arrancan en 400 y el
+     control del zoom en 1000, así que con 6 el mapa de la ficha se dibujaba
+     encima de la barra y la tapaba entera al pasar por esa altura */
+  .ficha-barra{
+    display:flex;gap:9px;align-items:center;position:sticky;bottom:0;z-index:1100;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:var(--w-95);backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);box-shadow:0 -6px 20px var(--a-06);
+  }
+  .ficha-barra .fb-cerrar{
+    flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    height:50px;padding:0 15px;border-radius:var(--r-sm);
+    border:1.5px solid var(--line-2);background:var(--white);color:var(--navy-800);
+    font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .ficha-barra .fb-cerrar svg{width:16px;height:16px}
+  .ficha-barra .fb-wa{
+    flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    height:50px;border-radius:var(--r-sm);background:var(--wa);color:var(--white);
+    font-size:14.5px;font-weight:600;white-space:nowrap;
+  }
+  .ficha-barra .fb-wa svg{width:18px;height:18px}
+  .ficha-barra .fb-corta{display:none}
+  /* durante el recorrido guiado el cartel vive abajo: la barra le dejaría ruido */
+  body.tour-activo .ficha-barra{display:none}
+  /* la barra ya tiene el de WhatsApp, siempre a la vista: arriba sobra.
+     Queda en el DOM porque de ahí sale el enlace con el código de la propiedad. */
+  .m-acts .btn-wa{display:none}
+}
+
+/* de acá para abajo, cosas que solo tienen sentido con el teléfono en la mano */
+@media(max-width:640px){
+  /* el tirador avisa que la ficha se baja con el dedo */
+  .m-gal::after{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);
+    width:42px;height:4px;border-radius:99px;background:var(--w-55);z-index:5;pointer-events:none}
+  .m-ph{height:clamp(230px,38vh,320px);touch-action:pan-y}
+  .m-arrow.prev{left:8px}
+  .m-arrow.next{right:8px}
+  .m-count{bottom:14px}
+  .m-flag{bottom:14px}
+  .m-thumbs{scroll-snap-type:x proximity;scrollbar-width:none}
+  .m-thumbs::-webkit-scrollbar{display:none}
+  .m-thumbs button{scroll-snap-align:start}
+  .m-body{padding:18px 16px 18px}
+  .m-acts{gap:9px}
+  .m-acts .btn{min-height:50px}
+  .m-quick div{padding:13px 12px}
+  .m-dl div{padding:12px 0}
+  .m-dl dt,.m-dl dd{font-size:14px}
+  .m-sim button{min-height:96px}
+  .m-cont .cb p{overflow-wrap:anywhere}
+}
+@media(max-width:400px){
+  .ficha-barra .fb-larga{display:none}
+  .ficha-barra .fb-corta{display:inline}
+  .ficha-barra .fb-cerrar{padding:0 13px;font-size:13.5px}
+}
+/* en tablet el verde a todo lo ancho pesaba demasiado: los dos botones se van a
+   la derecha, que es de donde se agarra el aparato */
+@media(min-width:641px) and (max-width:900px){
+  .ficha-barra{justify-content:flex-end;padding:12px 18px}
+  .ficha-barra .fb-wa{flex:0 1 340px}
+}
+
+/* --------------------------------------------------------- 10 · botón flotante */
+@media(max-width:640px){
+  .wafab{right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:56px;height:56px}
+  footer{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+}
+/* El botón redondo se apoya justo arriba de "Enviar la consulta" y le tapaba una
+   punta. Mientras el formulario está en pantalla se aparta: ahí ya hay una forma
+   de escribir, no hace falta la de siempre. La clase la pone el script de abajo. */
+@media(max-width:900px){
+  .wafab{transition:opacity .25s var(--e),visibility .25s,transform .25s var(--e)}
+  body.form-a-la-vista .wafab{opacity:0;visibility:hidden;transform:scale(.86);pointer-events:none}
+}
+
+/* ------------------------------------------------ 11 · la barra de arriba a 320
+   A 320 la marca terminaba pegada al botón del recorrido, sin un pixel de aire:
+   la línea "Negocios Inmobiliarios" arrancaba abajo del círculo. No hay ancho
+   para las dos cosas, así que abajo de 375 queda solo el nombre. La bajada sigue
+   estando en el cajón, en el pie y en el título de la página. */
+@media(max-width:374px){
+  .brand small{display:none}
+  .brand b{font-size:17px}
+  .brand .mk{width:36px;height:36px}
+  .brand .mk span{font-size:16px}
+}
+/* -------------------------------------------------------- 12 · la matrícula
+   Sobre la foto el recuadro casi no se leía: el fondo era blanco al 6 por ciento
+   y abajo de él pasa una pared clara. Con el azul de la marca se lee siempre. */
+@media(max-width:600px){
+  .hero .mat{background:var(--nv-62);border-color:var(--w-22);color:var(--gold)}
+}
+
+/* ------------------------------------------------------- 13 · franja de confianza
+   Con separación entre extremos los tres ítems quedaban desparramados y el
+   tercero solo en su renglón. Alineados a la izquierda se leen como una lista. */
+@media(min-width:601px) and (max-width:900px){
+  .strip .wrap{justify-content:flex-start;gap:14px 34px;padding:18px 20px}
+}
+
+/* ------------------------------------------------------------------ 14 · Aires
+   Los dos botones tenían anchos distintos, uno abajo del otro: escalón feo y
+   objetivos angostos. Van a lo ancho, como los del comienzo. */
+@media(max-width:600px){
+  .aires .acts{gap:10px}
+  .aires .acts .btn{flex:1 1 100%;min-height:52px;font-size:15px}
+  .aires .pts{gap:14px}
+}
+
+/* --------------------------------------------------------------- 15 · terrenos
+   A 768 la grilla seguía en dos columnas y el texto entraba en 180px: "USD
+   290.000" se partía en dos renglones y los títulos en tres. Hasta 900 va una
+   sola tarjeta por fila, con la foto al costado. */
+@media(max-width:900px){
+  .grid-lotes{grid-template-columns:1fr}
+}
+
+/* ------------------------------------------------------------------ 16 · zonas
+   En tablet el mapa quedaba de 300px, más bajo que en el teléfono en proporción.
+   Con la pantalla apaisada del iPad se agradece el alto extra. */
+@media(min-width:601px) and (max-width:900px){
+  .mapa{height:380px}
+}
+
+/* ---------------------------------------------------------- 17 · el formulario
+   El bloque de contacto se partía en una sola columna desde 860, y en tablet eso
+   dejaba campos de 700px para escribir un nombre. Hasta 700 no hay ancho para
+   dos columnas, pero de 701 para arriba entran cómodas: los datos a un lado y el
+   formulario al otro, como en la computadora. */
+@media(min-width:701px) and (max-width:860px){
+  .contact{grid-template-columns:1fr 1fr;gap:30px}
+  .form{padding:24px 22px}
+}
+
+/* ------------------------------------------------------- 18 · zonas de toque
+   Repaso de todo lo que se toca con el dedo hasta 900: nada abajo de 44px.
+   Donde agrandar el botón movía el diseño, la zona de toque se agranda con un
+   pseudo-elemento transparente y el dibujo queda igual. */
+@media(max-width:900px){
+  /* la hamburguesa medía 39x32 y el botón del recorrido 38x36 */
+  .burger{padding:14px 8px;position:relative}
+  .burger::after{content:"";position:absolute;top:0;bottom:0;left:-3px;right:-3px}
+  #tour-abrir{position:relative}
+  #tour-abrir::after{content:"";position:absolute;inset:-4px;border-radius:12px}
+  .chip{min-height:44px}
+  .selects .clr{min-height:44px;display:inline-flex;align-items:center}
+  .card .foot .wa{width:44px;height:44px}
+  .foot-col a{padding:11px 0}
+  /* La franja de arriba lleva el teléfono y el WhatsApp: en un sitio inmobiliario
+     son los dos toques que más importan. Medían 40 porque ése es el alto de la
+     franja en escritorio; en celular la franja pasa a 44 y los enlaces la ocupan
+     entera. Son cuatro píxeles y la franja se va con el scroll. */
+  .topbar .wrap{height:44px}
+  .topbar a{height:44px;display:inline-flex;align-items:center}
+  /* Las tres barras de la calculadora: el riel mide 6px de alto y ésa era toda
+     la zona que respondía al dedo, aunque el círculo se vea de 22. El elemento
+     pasa a medir 44 con relleno arriba y abajo, y el fondo se recorta a la caja
+     de contenido: el riel se sigue dibujando de 6px, igual que en escritorio. */
+  input[type=range]{
+    box-sizing:border-box; height:44px; padding:19px 0;
+    background-clip:content-box;
+  }
+  /* Los tres botones del propio recorrido medían 38 y 33 de alto, y son los que
+     más se tocan mientras dura: siete pasos, siete toques en "Siguiente". Suben
+     a 44 sin mover el dibujo del cartel —el pie ya los alinea al centro—. */
+  #tour-saltar, #tour-atras, #tour-siguiente{
+    min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+  }
+  #tour-saltar{ padding:6px 10px; margin-left:-10px }
+}
+</style>
+
+<script>
+/* Pasada de celular · comportamiento.
+   Todo lo que sigue se activa por ancho; en escritorio no hace nada. */
+(function(){
+'use strict';
+var CORTE_CAJON = 1000, CORTE_MAPA = 768;
+var IC_X   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+var IC_TEL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92"/></svg>';
+var IC_WA  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.052z"/></svg>';
+
+var modal   = document.getElementById('modal');
+var caja    = document.getElementById('modalBox');
+var links   = document.getElementById('navlinks');
+var burger  = document.getElementById('burger');
+
+function fichaAbierta(){ return !!(modal && modal.classList.contains('open')); }
+
+/* ------------------------------------------------------------- el cajón lateral */
+if(links && burger){
+  var velo = document.createElement('div');
+  velo.id = 'velo-menu';
+  velo.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(velo);
+
+  var cab = document.createElement('div');
+  cab.className = 'cajon-cab';
+  cab.innerHTML =
+    '<span class="mk" aria-hidden="true"><span>M</span></span>' +
+    '<span class="nm" aria-hidden="true"><b>Molins</b><small>Negocios Inmobiliarios</small></span>' +
+    '<button type="button" class="cajon-x" aria-label="Cerrar el menú">' + IC_X + '</button>';
+  links.insertBefore(cab, links.firstChild);
+
+  var pie = document.createElement('div');
+  pie.className = 'cajon-pie';
+  pie.innerHTML =
+    '<a class="btn btn-terra" href="#contacto">Reservar una visita</a>' +
+    '<a class="cajon-tel" href="tel:+543874153669">' + IC_TEL + '387 415 3669</a>' +
+    '<span class="cajon-mp">20 de Febrero 1705, Of. 7 — Salta<br />CUCIS MP 251 · LPZ Grupo y Molins</span>';
+  links.appendChild(pie);
+
+  function cerrarMenu(){
+    links.classList.remove('open');
+    burger.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+  }
+
+  /* El estado lo manda la clase .open del panel, que la ponen tanto el botón del
+     sitio como el recorrido guiado. Se observa en vez de encadenarse al click,
+     así ningún camino deja el velo colgado. */
+  function sincronizar(){
+    var abierto = links.classList.contains('open') && window.innerWidth <= CORTE_CAJON;
+    document.body.classList.toggle('menu-abierto', abierto);
+    burger.classList.toggle('open', links.classList.contains('open'));
+    if(abierto) document.body.style.overflow = 'hidden';
+    else if(!fichaAbierta()) document.body.style.overflow = '';
+  }
+  new MutationObserver(sincronizar).observe(links, {attributes:true, attributeFilter:['class']});
+
+  cab.querySelector('.cajon-x').addEventListener('click', cerrarMenu);
+  velo.addEventListener('click', cerrarMenu);
+  /* el sitio ya cierra al tocar un enlace, pero los de acá se agregaron después */
+  links.addEventListener('click', function(ev){ if(ev.target.closest('a')) cerrarMenu(); });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape' && links.classList.contains('open')) cerrarMenu();
+  });
+  sincronizar();
+}
+
+/* --------------------------------------------------------- la barra de la ficha */
+if(modal && caja){
+  var barra = document.createElement('div');
+  barra.className = 'ficha-barra';
+  barra.innerHTML =
+    '<button type="button" class="fb-cerrar">' + IC_X + 'Cerrar</button>' +
+    '<a class="fb-wa" href="https://wa.me/5493874153669" target="_blank" rel="noopener">' + IC_WA +
+      '<span class="fb-larga">Consultar por WhatsApp</span><span class="fb-corta">Consultar</span></a>';
+  caja.appendChild(barra);
+
+  var cruz = document.getElementById('modalClose');
+  barra.querySelector('.fb-cerrar').addEventListener('click', function(){ if(cruz) cruz.click(); });
+
+  /* el enlace de WhatsApp lo arma la ficha con el código de la propiedad:
+     se copia de ahí cada vez que se repinta, en vez de rearmarlo por duplicado */
+  var acts = document.getElementById('mActs');
+  function copiarWa(){
+    var orig = acts && acts.querySelector('a.btn-wa');
+    var dest = barra.querySelector('.fb-wa');
+    if(orig && dest) dest.setAttribute('href', orig.getAttribute('href'));
+  }
+  if(acts){ new MutationObserver(copiarWa).observe(acts, {childList:true}); copiarWa(); }
+
+  /* Bajar la ficha con el dedo. El deslizar de costado para cambiar de foto ya
+     existe en el script del sitio; acá se suma solo el gesto hacia abajo, y nada
+     más que estando arriba de todo, para no pelearse con el scroll de la ficha. */
+  var ph = modal.querySelector('.m-ph');
+  if(ph){
+    var x0 = 0, y0 = 0, t0 = 0, vivo = false;
+    ph.addEventListener('touchstart', function(ev){
+      if(ev.touches.length !== 1){ vivo = false; return; }
+      vivo = true; x0 = ev.touches[0].clientX; y0 = ev.touches[0].clientY; t0 = Date.now();
+    }, {passive:true});
+    ph.addEventListener('touchend', function(ev){
+      if(!vivo) return;
+      vivo = false;
+      if(Date.now() - t0 > 800) return;
+      var t = ev.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if(dy > 96 && Math.abs(dy) > Math.abs(dx) * 1.5 && caja.scrollTop <= 2 && cruz) cruz.click();
+    }, {passive:true});
+  }
+}
+
+/* ---------------------------------------------------------------- los mapas
+   En celular el arrastre queda apagado: si no, el dedo mueve el mapa y la
+   página no baja. Los puntos y el zoom siguen funcionando. */
+function ajustarMapas(){
+  var angosto = window.innerWidth <= CORTE_MAPA;
+  var lista = window.MAPAS_MOLINS || [];
+  for(var i = 0; i < lista.length; i++){
+    var m = lista[i];
+    try{
+      if(angosto){ m.dragging.disable(); if(m.tap) m.tap.disable(); }
+      else { m.dragging.enable(); }
+      m.invalidateSize();
+    }catch(e){}
+  }
+}
+ajustarMapas();
+window.addEventListener('orientationchange', function(){ setTimeout(ajustarMapas, 240); });
+/* el mapa de la ficha nace recién cuando se abre una propiedad */
+if(modal){
+  new MutationObserver(function(){
+    if(!fichaAbierta()) return;
+    setTimeout(ajustarMapas, 90);
+    setTimeout(ajustarMapas, 380);
+  }).observe(modal, {attributes:true, attributeFilter:['class']});
+}
+
+/* ------------------------------------------------------------- la matrícula
+   En una línea de 375 el texto cortaba en "CUCIS MP" y dejaba el "251" solo en
+   el renglón de abajo. Con espacios duros la matrícula viaja entera. */
+(function(){
+  var mat = document.querySelector('.hero .mat');
+  if(!mat) return;
+  for(var i = 0; i < mat.childNodes.length; i++){
+    var n = mat.childNodes[i];
+    if(n.nodeType !== 3 || n.nodeValue.indexOf('CUCIS') === -1) continue;
+    n.nodeValue = n.nodeValue.replace(/CUCIS\s+MP\s+(\d+)/, 'CUCIS\u00A0MP\u00A0$1');
+  }
+})();
+
+/* -------------------------------------------------------- el botón flotante
+   Se aparta mientras el formulario está en pantalla: si no, se apoya arriba de
+   "Enviar la consulta". Vuelve solo apenas el formulario sale de la vista. */
+(function(){
+  var form = document.querySelector('#contacto .form');
+  if(!form || !window.IntersectionObserver) return;
+  new IntersectionObserver(function(entradas){
+    var visible = entradas[0] && entradas[0].isIntersecting;
+    document.body.classList.toggle('form-a-la-vista', !!visible);
+  }, {rootMargin:'0px 0px -25% 0px'}).observe(form);
+})();
+
+var reloj = null;
+window.addEventListener('resize', function(){
+  clearTimeout(reloj);
+  reloj = setTimeout(ajustarMapas, 160);
+});
+})();
+</script>
+
+<!-- ===========================================================================
+     Repaso de 320px: los dos controles que todavía no llegaban a los 44px.
+
+     La marca del encabezado —que además de marca es el enlace al inicio— mide
+     36 de alto, y el teléfono de la ficha de propiedad es un renglón de texto
+     de 18. Ninguno puede crecer sin deformar lo que tiene al lado, así que lo
+     que crece es la zona sensible y no el dibujo: un ::after transparente
+     centrado, el mismo recurso que ya usan la flecha de volver y el
+     disparador del recorrido. A 901px para arriba no cambia nada.
+     =========================================================================== -->
+<style>
+@media(max-width:900px){
+  .nav .brand,
+  .ci a[href^="tel:"]{ position:relative }
+
+  .nav .brand::after,
+  .ci a[href^="tel:"]::after{
+    content:'';
+    position:absolute; left:50%; top:50%;
+    width:100%; min-width:44px; height:44px;
+    transform:translate(-50%,-50%);
+  }
+
+  /* El disparador del recorrido ya estira su zona con un ::after, pero ahí el
+     recorte es de 4 y el borde de 1,5 se come dos: quedaban 42 de alto
+     medidos. Con la altura escrita, los 44 son reales. */
+  #tour-abrir::after{ height:44px }
+}
+</style>
 
 </body>
 </html>
