@@ -5812,5 +5812,261 @@ body.tour-activo nav{width:224px !important; transition:none !important}
 })();
 </script>
 
+
+<style>
+/* ===========================================================================
+   La tira de alertas del tablero
+   Tres tarjetas entre el saludo y las acciones rápidas. Responden qué hay que
+   resolver hoy, antes que cualquier número. Toman los mismos tokens que el
+   resto del prototipo.
+   =========================================================================== */
+
+#mol-alertas{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
+  margin:0 0 16px;
+}
+
+.mol-alerta{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #e3e5e8;
+  border-left:3px solid #b9bec4;
+  border-radius:10px;
+  background:#fff;
+  text-align:left;
+  cursor:pointer;
+  font:inherit;
+  color:inherit;
+  transition:border-color .16s ease, box-shadow .16s ease, transform .12s ease;
+}
+.mol-alerta:hover{
+  border-color:#c9ced4;
+  box-shadow:0 6px 18px -12px rgba(28,39,51,.45);
+}
+.mol-alerta:active{ transform:translateY(1px) }
+.mol-alerta:focus-visible{
+  outline:2px solid #2C4A6E;
+  outline-offset:2px;
+}
+
+.mol-alerta.es-urgente{ border-left-color:#ae1800 }
+.mol-alerta.es-urgente .mol-alerta-n{ color:#ae1800 }
+
+.mol-alerta-n{
+  font:700 27px/1 var(--dc-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em;
+  color:#1c2733;
+  flex:none;
+  min-width:1.4em;
+  text-align:right;
+}
+
+.mol-alerta-t{ flex:1; min-width:0 }
+.mol-alerta-t b{
+  display:block;
+  font:600 13px/1.3 var(--dc-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
+  color:#1c2733;
+}
+.mol-alerta-t em{
+  display:block;
+  font:400 11.5px/1.4 var(--dc-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif);
+  font-style:normal;
+  color:#8795a5;
+  margin-top:2px;
+}
+
+.mol-alerta-f{
+  flex:none;
+  color:#b9bec4;
+  display:flex;
+  align-items:center;
+  transition:transform .16s ease, color .16s ease;
+}
+.mol-alerta:hover .mol-alerta-f{ transform:translateX(2px); color:#5b6b7b }
+
+/* --- celular: una debajo de otra, y el número no se achica --------------- */
+@media (max-width:640px){
+  #mol-alertas{ grid-template-columns:1fr; gap:9px; margin-bottom:14px }
+  .mol-alerta{ padding:11px 12px; min-height:56px }
+  .mol-alerta-n{ font-size:24px }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .mol-alerta, .mol-alerta-f{ transition:none }
+  .mol-alerta:active{ transform:none }
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------------------
+  // La tira de alertas del tablero. Va entre el saludo y las acciones rápidas, y
+  // contesta la única pregunta que importa al entrar: qué hay que resolver hoy.
+  //
+  // Se escribe por fuera de la plantilla, como el recorrido guiado y el cajón:
+  // React vuelve a dibujar la pantalla cuando cambia la cartera o el usuario, así
+  // que un observador la vuelve a colocar en vez de pelearse con el ciclo de vida.
+  // ---------------------------------------------------------------------------
+
+  var ID = 'mol-alertas';
+
+  function D() { return window.DATOS_CRM; }
+
+  // La cartera elegida sale del propio selector, que es la fuente de verdad
+  // visible. Si cambia el nombre en los datos, esto sigue funcionando.
+  function carteraActual() {
+    var d = D();
+    if (!d) return 'todas';
+    var b = document.querySelector('header.barra-app button');
+    var t = b ? b.textContent : '';
+    for (var i = 0; i < d.CARTERAS.length; i++) {
+      if (t.indexOf(d.CARTERAS[i].nombre) >= 0) return d.CARTERAS[i].id;
+    }
+    return 'todas';
+  }
+
+  function enCartera(item, cart) {
+    return cart === 'todas' || item.cartera === cart;
+  }
+
+  function esVendedor() {
+    // Luis no ve Propiedades: si el ítem no está en el menú, la alerta de fichas
+    // no tiene a dónde llevar y no se muestra.
+    return !document.querySelector('nav button[title="Propiedades"]');
+  }
+
+  function numeros() {
+    var d = D();
+    if (!d) return null;
+    var c = carteraActual();
+
+    var esperan = d.CONSULTAS.filter(function (x) {
+      return enCartera(x, c) && x.hs >= 24 && /sin responder|nueva/i.test(x.estado);
+    }).length;
+
+    var fichas = d.PROPS.filter(function (p) {
+      return enCartera(p, c) && p.falta && p.falta.length;
+    }).length;
+
+    var hoy = d.AGENDA.filter(function (a) { return enCartera(a, c); }).length;
+
+    return { esperan: esperan, fichas: fichas, hoy: hoy };
+  }
+
+  function irA(pantalla) {
+    var b = document.querySelector('nav button[title="' + pantalla + '"]');
+    if (b) b.click();
+  }
+
+  function tarjeta(cfg) {
+    var a = document.createElement('button');
+    a.type = 'button';
+    a.className = 'mol-alerta' + (cfg.urgente ? ' es-urgente' : '');
+    a.innerHTML =
+      '<span class="mol-alerta-n">' + cfg.n + '</span>' +
+      '<span class="mol-alerta-t">' +
+        '<b>' + cfg.titulo + '</b>' +
+        '<em>' + cfg.pie + '</em>' +
+      '</span>' +
+      '<span class="mol-alerta-f" aria-hidden="true">' +
+        '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" ' +
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>' +
+      '</span>';
+    a.addEventListener('click', function () { irA(cfg.destino); });
+    return a;
+  }
+
+  function pintar() {
+    var pantalla = document.querySelector('[data-screen-label="Inicio"]');
+    if (!pantalla) return;
+
+    var previo = document.getElementById(ID);
+    var n = numeros();
+    if (!n) return;
+
+    // Si ya está y los números no cambiaron, no se toca: evita parpadeos.
+    if (previo && previo.dataset.firma === [n.esperan, n.fichas, n.hoy].join('-')) return;
+    if (previo) previo.remove();
+
+    var tira = document.createElement('div');
+    tira.id = ID;
+    tira.dataset.firma = [n.esperan, n.fichas, n.hoy].join('-');
+
+    if (n.esperan > 0) {
+      tira.appendChild(tarjeta({
+        n: n.esperan,
+        titulo: n.esperan === 1 ? 'consulta espera hace más de un día' : 'consultas esperan hace más de un día',
+        pie: 'Respondelas antes de que se enfríen',
+        destino: 'Consultas',
+        urgente: true
+      }));
+    }
+
+    if (n.fichas > 0 && !esVendedor()) {
+      tira.appendChild(tarjeta({
+        n: n.fichas,
+        titulo: n.fichas === 1 ? 'ficha por completar' : 'fichas por completar',
+        pie: 'Sin esos datos no se arma el legajo',
+        destino: 'Propiedades'
+      }));
+    }
+
+    if (n.hoy > 0) {
+      tira.appendChild(tarjeta({
+        n: n.hoy,
+        titulo: n.hoy === 1 ? 'compromiso para hoy' : 'compromisos para hoy',
+        pie: 'El primero, a las ' + (D().AGENDA[0] ? D().AGENDA[0].hora : '09:00'),
+        destino: 'Calendario'
+      }));
+    }
+
+    if (!tira.children.length) return;
+
+    var saludo = pantalla.children[0];
+    if (saludo && saludo.nextSibling) pantalla.insertBefore(tira, saludo.nextSibling);
+    else pantalla.appendChild(tira);
+  }
+
+  var pendiente = null;
+  function agendar() {
+    if (pendiente) return;
+    pendiente = requestAnimationFrame(function () { pendiente = null; pintar(); });
+  }
+
+  // El prototipo vuelve a dibujar la pantalla por su cuenta y el momento exacto
+  // no es predecible: un intervalo corto es más confiable acá que un observador,
+  // y no cuesta nada porque pintar() se corta solo cuando los números no
+  // cambiaron. El observador queda como vía rápida para que no se note el paso.
+  function arrancar() {
+    pintar();
+    setInterval(pintar, 400);
+    try {
+      new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var t = muts[i].target;
+          if (t && t.closest && t.closest('#' + ID)) continue;
+          agendar();
+          return;
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    } catch (e) { /* el intervalo alcanza */ }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(arrancar, 60); });
+  } else {
+    setTimeout(arrancar, 60);
+  }
+})();
+</script>
+
 </body>
 </html>

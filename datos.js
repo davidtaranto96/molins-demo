@@ -61,6 +61,15 @@ const CRUDO = [
   ['AIR-L04','Lote 04 · Aires de San Lorenzo','San Lorenzo','Terreno','Venta','USD',48000,0,0,300,60,'aires','activa','FM'],
   ['AIR-L07','Lote 07 · Aires de San Lorenzo','San Lorenzo','Terreno','Venta','USD',52500,0,0,340,60,'aires','activa','LL'],
   ['AIR-L11','Lote 11 · Aires de San Lorenzo','San Lorenzo','Terreno','Venta','USD',48000,0,0,300,60,'aires','reservada','FM'],
+  // Edificio Torre — el edificio que le están dando. Unidades de ejemplo, como las de Aires.
+  ['TOR-0201','Unidad 201 · Edificio Torre','Centro','Departamento','Venta','USD',96000,2,1,68,64,'torre','activa','FM'],
+  ['TOR-0402','Unidad 402 · Edificio Torre','Centro','Departamento','Venta','USD',112000,3,2,84,64,'torre','activa','FM'],
+  ['TOR-0701','Unidad 701 · Edificio Torre','Centro','Departamento','Venta','USD',134000,3,2,96,58,'torre','reservada','FM'],
+  ['TOR-0803','Unidad 803 · Edificio Torre','Centro','Departamento','Venta','USD',158000,4,2,118,58,'torre','activa','FM'],
+  // Loteos — los dos que mencionó. También de ejemplo.
+  ['LOT-0108','Lote 08 · Loteo La Ciénaga','La Ciénaga','Terreno','Venta','USD',39000,0,0,420,53,'loteos','activa','FM'],
+  ['LOT-0117','Lote 17 · Loteo La Ciénaga','La Ciénaga','Terreno','Venta','USD',44000,0,0,500,47,'loteos','activa','FM'],
+  ['LOT-0203','Lote 03 · Loteo Cerrillos','Cerrillos','Terreno','Venta','USD',31000,0,0,380,53,'loteos','activa','FM'],
 ];
 
 const FALTANTES = ['partida catastral','estado del título','informe de dominio','libre deuda de impuestos','libre deuda de expensas','plano aprobado','ubicación de las llaves','autorización de venta firmada','fotos en alta','matrícula del propietario'];
